@@ -58,7 +58,7 @@ public class UnityTransportTest : MonoBehaviour {
             while((cmd = this.driver.PopEventForConnection(this.connections[i], out stream)) != NetworkEvent.Type.Empty) {
                 if(cmd == NetworkEvent.Type.Data) {
                     //データを受信したとき
-                    Debug.Log("Received Data: " + stream.ToString());
+                    Debug.Log("Received Data: " + stream.ReadFixedString32());
                 } else if(cmd == NetworkEvent.Type.Disconnect) {
                     Debug.Log("Disconnected.");
                     this.connections[i] = default(NetworkConnection);

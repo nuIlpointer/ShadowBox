@@ -4,14 +4,12 @@ using Unity.Networking.Transport;
 using System.Net;
 using System.Text;
 using Unity.Collections;
-public class UnityTransportTestClient : MonoBehaviour
-{
+public class UnityTransportTestClient : MonoBehaviour {
     private NetworkDriver driver;
     private NetworkConnection connection;
     private IPAddress address;
     private float time = 0.0f;
-    void Start()
-    {
+    void Start() {
         NativeLeakDetection.Mode = NativeLeakDetectionMode.EnabledWithStackTrace;
         this.driver = NetworkDriver.Create();
         this.address = IPAddress.Parse("127.0.0.1");
@@ -25,8 +23,7 @@ public class UnityTransportTestClient : MonoBehaviour
 
     }
 
-    void Update()
-    {
+    void Update() {
         time += Time.deltaTime;
         if(time > 1.5) {
             time = 0;
@@ -34,17 +31,14 @@ public class UnityTransportTestClient : MonoBehaviour
             if (!this.connection.IsCreated) {
                 return;
             }
-            byte[] data = Encoding.UTF8.GetBytes("aaaaa");
-            using (var dataArray = new NativeArray<byte>(data.Length, Allocator.Temp)) {
-                dataArray.CopyFrom(data);
-                DataStreamWriter stream;
-                var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw, 128);
-                Debug.Log(writer);
-                dsw.WriteBytes(dataArray);
+
+            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw, 128);
+            if (writer >= 0) {
+                dsw.WriteFixedString32(new FixedString32Bytes("testaaaaaaaaa"));
                 this.driver.EndSend(dsw);
                 this.connection.Disconnect(this.driver);
                 this.connection = default(NetworkConnection);
-            }
+            } else Debug.Log("Failed to create writer: " + writer);
         }
     }
 

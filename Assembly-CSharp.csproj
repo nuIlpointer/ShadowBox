@@ -47,6 +47,7 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\ShadowBoxClient.cs" />
      <Compile Include="Assets\Scripts\UnityTransportTest.cs" />
      <Compile Include="Assets\Scripts\UnityTransportTestClient.cs" />
  <Reference Include="UnityEngine">

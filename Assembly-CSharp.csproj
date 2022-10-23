@@ -56,10 +56,7 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\ShadowBoxClient.cs" />
-    <Compile Include="Assets\Scripts\UnityTransportTest.cs" />
-    <Compile Include="Assets\Scripts\WorldLoader.cs" />
-    <Compile Include="Assets\Scripts\UnityTransportTestClient.cs" />
+    <Compile Include="Assets\Scripts\ShadowBoxClientWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

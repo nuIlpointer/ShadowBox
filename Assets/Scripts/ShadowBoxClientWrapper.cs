@@ -4,11 +4,11 @@ using System.Net;
 using System;
 using Unity.Collections;
 
-public class ShadowBoxClient : MonoBehaviour {
+public class ShadowBoxClientWrapper : MonoBehaviour {
     public enum BlockLayer {
-        InsideWall   = 1,
-        InsideBlock  = 2,
-        OutsideWall  = 3,
+        InsideWall = 1,
+        InsideBlock = 2,
+        OutsideWall = 3,
         OutsideBlock = 4
     };
 
@@ -28,7 +28,6 @@ public class ShadowBoxClient : MonoBehaviour {
     private NetworkEndPoint endPoint;
     private NetworkConnection connection;
     private bool active = false;
-    private WorldLoader worldLoader;
     void Start() {
         this.driver = NetworkDriver.Create();
         // TODO さっさとやれ
@@ -59,12 +58,12 @@ public class ShadowBoxClient : MonoBehaviour {
     /// <returns>送信に成功したか</returns>
     public bool SendChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
         // まだ作り途中ですよ
-        if(this.connection.IsCreated) {
+        if (this.connection.IsCreated) {
             string sendDataTemp = "";
             foreach (int[] chunkRow in chunkData)
                 for (int i = 0; i < chunkRow.Length; i++)
                     sendDataTemp += chunkRow[i] + (i == chunkRow.Length - 1 ? "\n" : ",");
-            if((this.driver.BeginSend(this.connection, out DataStreamWriter dsw) >= 0)) {
+            if ((this.driver.BeginSend(this.connection, out DataStreamWriter dsw) >= 0)) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes(sendDataTemp));
                 this.driver.EndSend(dsw);
             }
@@ -81,7 +80,7 @@ public class ShadowBoxClient : MonoBehaviour {
     public void Connect(string ipAddress, int port) {
         this.connectAddress = IPAddress.Parse(ipAddress);
         endPoint = NetworkEndPoint.AnyIpv4;
-        using(NativeArray<byte> rawIpAddr = new NativeArray<byte>(this.connectAddress.GetAddressBytes().Length, Allocator.Temp)) {
+        using (NativeArray<byte> rawIpAddr = new NativeArray<byte>(this.connectAddress.GetAddressBytes().Length, Allocator.Temp)) {
             endPoint.SetRawAddressBytes(rawIpAddr);
         }
 
@@ -134,7 +133,7 @@ public class ShadowBoxClient : MonoBehaviour {
     /// <param name="y">ブロックのY座標</param>
     /// <param name="blockID">変更された後のブロックID</param>
     public void SendBlockChange(BlockLayer layer, int x, int y, int blockID) {
-    
+
     }
 
 

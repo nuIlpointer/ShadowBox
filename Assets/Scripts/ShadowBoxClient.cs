@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Networking.Transport;
 using System.Net;
+using System;
 using Unity.Collections;
 
 public class ShadowBoxClient : MonoBehaviour {
@@ -11,12 +12,23 @@ public class ShadowBoxClient : MonoBehaviour {
         OutsideBlock = 4
     };
 
+
+    public struct PlayerData {
+        string name;
+        int skinType;
+        Guid playerID;
+        float playerX;
+        float playerY;
+        BlockLayer playerLayer;
+    }
+
     private IPAddress connectAddress;
     private int connectPort;
     private NetworkDriver driver;
     private NetworkEndPoint endPoint;
     private NetworkConnection connection;
     private bool active = false;
+    private WorldLoader worldLoader;
     void Start() {
         this.driver = NetworkDriver.Create();
         // TODO さっさとやれ
@@ -30,10 +42,10 @@ public class ShadowBoxClient : MonoBehaviour {
     /// <summary>
     /// 現在接続しているサーバーへチャンクデータを要求する
     /// </summary>
-    /// <param name="layerId">要求するチャンクが存在するレイヤーのID</param>
-    /// <param name="chunkId">要求するチャンク</param>
+    /// <param name="layerID">要求するチャンクが存在するレイヤーのID</param>
+    /// <param name="chunkID">要求するチャンク</param>
     /// <returns>チャンク情報(int型2次元配列)</returns>
-    public int[][] getChunk(int layerId, int chunkId) {
+    public int[][] GetChunk(BlockLayer layerID, int chunkID) {
         // TODO さっさとやれ
         return null;
     }
@@ -41,11 +53,11 @@ public class ShadowBoxClient : MonoBehaviour {
     /// <summary>
     /// チャンクを現在接続しているサーバーに送信する
     /// </summary>
-    /// <param name="layerId">送信するチャンクが存在するレイヤーのID</param>
-    /// <param name="chunkId">送信するチャンクの場所</param>
+    /// <param name="layerID">送信するチャンクが存在するレイヤーのID</param>
+    /// <param name="chunkID">送信するチャンクの場所</param>
     /// <param name="chunkData">送信するチャンク情報</param>
     /// <returns>送信に成功したか</returns>
-    public bool sendChunk(int layerId, int chunkId, int[][] chunkData) {
+    public bool SendChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
         // まだ作り途中ですよ
         if(this.connection.IsCreated) {
             string sendDataTemp = "";
@@ -66,7 +78,7 @@ public class ShadowBoxClient : MonoBehaviour {
     /// </summary>
     /// <param name="ipAddress">接続先IPアドレス。</param>
     /// <param name="port">接続先ポート番号。デフォルトは11781。</param>
-    public void connect(string ipAddress, int port) {
+    public void Connect(string ipAddress, int port) {
         this.connectAddress = IPAddress.Parse(ipAddress);
         endPoint = NetworkEndPoint.AnyIpv4;
         using(NativeArray<byte> rawIpAddr = new NativeArray<byte>(this.connectAddress.GetAddressBytes().Length, Allocator.Temp)) {
@@ -78,4 +90,52 @@ public class ShadowBoxClient : MonoBehaviour {
         this.connectPort = port;
         this.connection = this.driver.Connect(endPoint);
     }
+
+    /// <summary>
+    /// サーバーにプレイヤー情報を送信する。
+    /// </summary>
+    /// <param name="name">他人に表示される名前</param>
+    /// <param name="skinID">他人から表示される見た目(いるか？これ)</param>
+    /// <returns>サーバーに登録されたPlayerData</returns>
+    public PlayerData SetPlayerData(string name, int skinID) {
+        return new PlayerData { };
+    }
+
+    /// <summary>
+    /// 接続中のプレイヤーをすべて取得する。SetPlayerData()の未実行等で登録がない場合はnull。
+    /// </summary>
+    /// <returns>接続中のプレイヤーが含まれる PlayerData 配列</returns>
+    public PlayerData[]? GetPlayers() {
+        return null;
+    }
+
+    /// <summary>
+    /// プレイヤーの情報を取得する。指定したGuidのプレイヤーが存在しない場合はnull。
+    /// </summary>
+    /// <param name="PlayerID">情報を取得するPlayerID。</param>
+    /// <returns></returns>
+    public PlayerData? GetPlayer(Guid PlayerID) {
+        return null;
+    }
+    /// <summary>
+    /// プレイヤーの移動情報を送信する。
+    /// </summary>
+    /// <param name="layer">プレイヤーが存在するレイヤー</param>
+    /// <param name="x">プレイヤーのX座標</param>
+    /// <param name="y">プレイヤーのY座標</param>
+    public void SendPlayerMove(BlockLayer layer, float x, float y) {
+    }
+
+    /// <summary>
+    /// ブロック単位の変更を送信する。
+    /// </summary>
+    /// <param name="layer">レイヤー番号</param>
+    /// <param name="x">ブロックのX座標</param>
+    /// <param name="y">ブロックのY座標</param>
+    /// <param name="blockID">変更された後のブロックID</param>
+    public void SendBlockChange(BlockLayer layer, int x, int y, int blockID) {
+    
+    }
+
+
 }

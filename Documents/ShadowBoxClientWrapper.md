@@ -1,14 +1,14 @@
-# ã‚¯ãƒ©ã‚¹ ShadowBoxClientWrapper
+# ƒNƒ‰ƒX ShadowBoxClientWrapper
 
-ç¶™æ‰¿: MonoBehaviour
+Œp³: MonoBehaviour
 
-## åˆ—æŒ™å‹
+## —ñ‹“Œ^
 
 
 
-### åˆ—æŒ™: BlockLayer
+### —ñ‹“: BlockLayer
 
-| åå‰ | å€¤ |
+| –¼‘O | ’l |
 |:-------------------|------:|
 | InsideWall | 1 |
 | InsideBlock | 2 |
@@ -18,13 +18,13 @@
 
 ----
 
-## æ§‹é€ ä½“
+## \‘¢‘Ì
 
 
 
-### æ§‹é€ ä½“: PlayerData
+### \‘¢‘Ì: PlayerData
 
-| åå‰ | å‹ |
+| –¼‘O | Œ^ |
 |:-------------------|:--------|
 | name | string |
 | skinType | int |
@@ -34,148 +34,215 @@
 | playerLayer | BlockLayer |
 
 
+### \‘¢‘Ì: Workspace
+
+| –¼‘O | Œ^ |
+|:-------------------|:--------|
+| workspaceID | Guid |
+| wsOwnerID | Guid |
+| intx1 |  |
+| inty1 |  |
+| intx2 |  |
+| inty2 |  |
+
+
 ----
 
-## å¤‰æ•°
+## •Ï”
 
 
 
 ----
 
-## ãƒ¡ã‚½ãƒƒãƒ‰
+## ƒƒ\ƒbƒh
 
 
 
-### ãƒ¡ã‚½ãƒƒãƒ‰: public int[][] GetChunk(BlockLayer layerID, int chunkID)
+### ƒƒ\ƒbƒh: public int[][] GetChunk(BlockLayer layerID, int chunkID)
 
-èª¬æ˜: 
+à–¾: 
 
-ç¾åœ¨æ¥ç¶šã—ã¦ã„ã‚‹ã‚µãƒ¼ãƒãƒ¼ã¸ãƒãƒ£ãƒ³ã‚¯ãƒ‡ãƒ¼ã‚¿ã‚’è¦æ±‚ã™ã‚‹
+Œ»İÚ‘±‚µ‚Ä‚¢‚éƒT[ƒo[‚Öƒ`ƒƒƒ“ƒNƒf[ƒ^‚ğ—v‹‚·‚é
 
-æˆ»ã‚Šå€¤: ãƒãƒ£ãƒ³ã‚¯æƒ…å ±(intå‹2æ¬¡å…ƒé…åˆ—)
+–ß‚è’l: ƒ`ƒƒƒ“ƒNî•ñ(intŒ^2ŸŒ³”z—ñ)
 
 
 
-| å‹ | å¼•æ•°å | èª¬æ˜ |
+| Œ^ | ˆø”–¼ | à–¾ |
 |:--------|:----------------------|--------------------------------------|
-| BlockLayer | layerID | è¦æ±‚ã™ã‚‹ãƒãƒ£ãƒ³ã‚¯ãŒå­˜åœ¨ã™ã‚‹ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ID |
-| int | chunkID | è¦æ±‚ã™ã‚‹ãƒãƒ£ãƒ³ã‚¯ |
+| BlockLayer | layerID | —v‹‚·‚éƒ`ƒƒƒ“ƒN‚ª‘¶İ‚·‚éƒŒƒCƒ„[‚ÌID |
+| int | chunkID | —v‹‚·‚éƒ`ƒƒƒ“ƒN |
 
 
-æˆ»ã‚Šå€¤ã®å‹: int[][]
+–ß‚è’l‚ÌŒ^: int[][]
 
-### ãƒ¡ã‚½ãƒƒãƒ‰: public bool SendChunk(BlockLayer layerID, int chunkID, int[][] chunkData)
+### ƒƒ\ƒbƒh: public bool SendChunk(BlockLayer layerID, int chunkID, int[][] chunkData)
 
-èª¬æ˜: 
+à–¾: 
 
-ãƒãƒ£ãƒ³ã‚¯ã‚’ç¾åœ¨æ¥ç¶šã—ã¦ã„ã‚‹ã‚µãƒ¼ãƒãƒ¼ã«é€ä¿¡ã™ã‚‹
+ƒ`ƒƒƒ“ƒN‚ğŒ»İÚ‘±‚µ‚Ä‚¢‚éƒT[ƒo[‚É‘—M‚·‚é
 
-æˆ»ã‚Šå€¤: é€ä¿¡ã«æˆåŠŸã—ãŸã‹
+–ß‚è’l: ‘—M‚É¬Œ÷‚µ‚½‚©
 
 
 
-| å‹ | å¼•æ•°å | èª¬æ˜ |
+| Œ^ | ˆø”–¼ | à–¾ |
 |:--------|:----------------------|--------------------------------------|
-| BlockLayer | layerID | é€ä¿¡ã™ã‚‹ãƒãƒ£ãƒ³ã‚¯ãŒå­˜åœ¨ã™ã‚‹ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ID |
-| int | chunkID | é€ä¿¡ã™ã‚‹ãƒãƒ£ãƒ³ã‚¯ã®å ´æ‰€ |
-| int[][] | chunkData | é€ä¿¡ã™ã‚‹ãƒãƒ£ãƒ³ã‚¯æƒ…å ± |
+| BlockLayer | layerID | ‘—M‚·‚éƒ`ƒƒƒ“ƒN‚ª‘¶İ‚·‚éƒŒƒCƒ„[‚ÌID |
+| int | chunkID | ‘—M‚·‚éƒ`ƒƒƒ“ƒN‚ÌêŠ |
+| int[][] | chunkData | ‘—M‚·‚éƒ`ƒƒƒ“ƒNî•ñ |
 
 
-æˆ»ã‚Šå€¤ã®å‹: bool
+–ß‚è’l‚ÌŒ^: bool
 
-### ãƒ¡ã‚½ãƒƒãƒ‰: public void Connect(string ipAddress, int port)
+### ƒƒ\ƒbƒh: public void Connect(string ipAddress, int port)
 
-èª¬æ˜: 
+à–¾: 
 
-æ¥ç¶šå…ˆã®ãƒãƒ¼ãƒˆ/IPã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’æŒ‡å®šã—ã€æ¥ç¶šã™ã‚‹ã€‚
+Ú‘±æ‚Ìƒ|[ƒg/IPƒAƒhƒŒƒX‚ğw’è‚µAÚ‘±‚·‚éB
 
-ãƒãƒ¼ãƒˆãŒç¯„å›²å¤–ã®æ™‚ã¯è‡ªå‹•çš„ã«ã€Œ11781ã€ã€‚
+ƒ|[ƒg‚ª”ÍˆÍŠO‚Ì‚Í©“®“I‚Éu11781vB
 
-| å‹ | å¼•æ•°å | èª¬æ˜ |
+| Œ^ | ˆø”–¼ | à–¾ |
 |:--------|:----------------------|--------------------------------------|
-| string | ipAddress | æ¥ç¶šå…ˆIPã‚¢ãƒ‰ãƒ¬ã‚¹ã€‚ |
-| int | port | æ¥ç¶šå…ˆãƒãƒ¼ãƒˆç•ªå·ã€‚ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯11781ã€‚ |
+| string | ipAddress | Ú‘±æIPƒAƒhƒŒƒXB |
+| int | port | Ú‘±æƒ|[ƒg”Ô†BƒfƒtƒHƒ‹ƒg‚Í11781B |
 
 
-æˆ»ã‚Šå€¤ã®å‹: void
+–ß‚è’l‚ÌŒ^: void
 
-### ãƒ¡ã‚½ãƒƒãƒ‰: public PlayerData SetPlayerData(string name, int skinID)
+### ƒƒ\ƒbƒh: public PlayerData SetPlayerData(string name, int skinID)
 
-èª¬æ˜: 
+à–¾: 
 
-ã‚µãƒ¼ãƒãƒ¼ã«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±ã‚’é€ä¿¡ã™ã‚‹ã€‚
+ƒT[ƒo[‚ÉƒvƒŒƒCƒ„[î•ñ‚ğ‘—M‚·‚éB
 
-æˆ»ã‚Šå€¤: ã‚µãƒ¼ãƒãƒ¼ã«ç™»éŒ²ã•ã‚ŒãŸPlayerData
+–ß‚è’l: ƒT[ƒo[‚É“o˜^‚³‚ê‚½PlayerData
 
 
 
-| å‹ | å¼•æ•°å | èª¬æ˜ |
+| Œ^ | ˆø”–¼ | à–¾ |
 |:--------|:----------------------|--------------------------------------|
-| string | name | ä»–äººã«è¡¨ç¤ºã•ã‚Œã‚‹åå‰ |
-| int | skinID | ä»–äººã‹ã‚‰è¡¨ç¤ºã•ã‚Œã‚‹è¦‹ãŸç›®(ã„ã‚‹ã‹ï¼Ÿã“ã‚Œ) |
+| string | name | ‘¼l‚É•\¦‚³‚ê‚é–¼‘O |
+| int | skinID | ‘¼l‚©‚ç•\¦‚³‚ê‚éŒ©‚½–Ú(‚¢‚é‚©H‚±‚ê) |
 
 
-æˆ»ã‚Šå€¤ã®å‹: PlayerData
+–ß‚è’l‚ÌŒ^: PlayerData
 
-### ãƒ¡ã‚½ãƒƒãƒ‰: public PlayerData[]? GetPlayers()
+### ƒƒ\ƒbƒh: public PlayerData[]? GetPlayers()
 
-èª¬æ˜: 
+à–¾: 
 
-æ¥ç¶šä¸­ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ã™ã¹ã¦å–å¾—ã™ã‚‹ã€‚SetPlayerData()ã®æœªå®Ÿè¡Œç­‰ã§ç™»éŒ²ãŒãªã„å ´åˆã¯nullã€‚
+Ú‘±’†‚ÌƒvƒŒƒCƒ„[‚ğ‚·‚×‚Äæ“¾‚·‚éBSetPlayerData()‚Ì–¢Às“™‚Å“o˜^‚ª‚È‚¢ê‡‚ÍnullB
 
-æˆ»ã‚Šå€¤: æ¥ç¶šä¸­ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå«ã¾ã‚Œã‚‹ PlayerData é…åˆ—
-
-
-
-æˆ»ã‚Šå€¤ã®å‹: PlayerData[]?
-
-### ãƒ¡ã‚½ãƒƒãƒ‰: public PlayerData? GetPlayer(Guid PlayerID)
-
-èª¬æ˜: 
-
-ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚æŒ‡å®šã—ãŸGuidã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯nullã€‚
-
-æˆ»ã‚Šå€¤: ãªã—
+–ß‚è’l: Ú‘±’†‚ÌƒvƒŒƒCƒ„[‚ªŠÜ‚Ü‚ê‚é PlayerData ”z—ñ
 
 
 
-| å‹ | å¼•æ•°å | èª¬æ˜ |
+–ß‚è’l‚ÌŒ^: PlayerData[]?
+
+### ƒƒ\ƒbƒh: public PlayerData? GetPlayer(Guid PlayerID)
+
+à–¾: 
+
+ƒvƒŒƒCƒ„[‚Ìî•ñ‚ğæ“¾‚·‚éBw’è‚µ‚½Guid‚ÌƒvƒŒƒCƒ„[‚ª‘¶İ‚µ‚È‚¢ê‡‚ÍnullB
+
+–ß‚è’l: ‚È‚µ
+
+
+
+| Œ^ | ˆø”–¼ | à–¾ |
 |:--------|:----------------------|--------------------------------------|
-| Guid | PlayerID | æƒ…å ±ã‚’å–å¾—ã™ã‚‹PlayerIDã€‚ |
+| Guid | PlayerID | î•ñ‚ğæ“¾‚·‚éPlayerIDB |
 
 
-æˆ»ã‚Šå€¤ã®å‹: PlayerData?
+–ß‚è’l‚ÌŒ^: PlayerData?
 
-### ãƒ¡ã‚½ãƒƒãƒ‰: public void SendPlayerMove(BlockLayer layer, float x, float y)
+### ƒƒ\ƒbƒh: public void SendPlayerMove(BlockLayer layer, float x, float y)
 
-èª¬æ˜: 
+à–¾: 
 
-ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç§»å‹•æƒ…å ±ã‚’é€ä¿¡ã™ã‚‹ã€‚
+ƒvƒŒƒCƒ„[‚ÌˆÚ“®î•ñ‚ğ‘—M‚·‚éB
 
-| å‹ | å¼•æ•°å | èª¬æ˜ |
+| Œ^ | ˆø”–¼ | à–¾ |
 |:--------|:----------------------|--------------------------------------|
-| BlockLayer | layer | ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå­˜åœ¨ã™ã‚‹ãƒ¬ã‚¤ãƒ¤ãƒ¼ |
-| float | x | ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Xåº§æ¨™ |
-| float | y | ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Yåº§æ¨™ |
+| BlockLayer | layer | ƒvƒŒƒCƒ„[‚ª‘¶İ‚·‚éƒŒƒCƒ„[ |
+| float | x | ƒvƒŒƒCƒ„[‚ÌXÀ•W |
+| float | y | ƒvƒŒƒCƒ„[‚ÌYÀ•W |
 
 
-æˆ»ã‚Šå€¤ã®å‹: void
+–ß‚è’l‚ÌŒ^: void
 
-### ãƒ¡ã‚½ãƒƒãƒ‰: public void SendBlockChange(BlockLayer layer, int x, int y, int blockID)
+### ƒƒ\ƒbƒh: public void SendBlockChange(BlockLayer layer, int x, int y, int blockID)
 
-èª¬æ˜: 
+à–¾: 
 
-ãƒ–ãƒ­ãƒƒã‚¯å˜ä½ã®å¤‰æ›´ã‚’é€ä¿¡ã™ã‚‹ã€‚
+ƒuƒƒbƒN’PˆÊ‚Ì•ÏX‚ğ‘—M‚·‚éB
 
-| å‹ | å¼•æ•°å | èª¬æ˜ |
+| Œ^ | ˆø”–¼ | à–¾ |
 |:--------|:----------------------|--------------------------------------|
-| BlockLayer | layer | ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå· |
-| int | x | ãƒ–ãƒ­ãƒƒã‚¯ã®Xåº§æ¨™ |
-| int | y | ãƒ–ãƒ­ãƒƒã‚¯ã®Yåº§æ¨™ |
-| int | blockID | å¤‰æ›´ã•ã‚ŒãŸå¾Œã®ãƒ–ãƒ­ãƒƒã‚¯ID |
+| BlockLayer | layer | ƒŒƒCƒ„[”Ô† |
+| int | x | ƒuƒƒbƒN‚ÌXÀ•W |
+| int | y | ƒuƒƒbƒN‚ÌYÀ•W |
+| int | blockID | •ÏX‚³‚ê‚½Œã‚ÌƒuƒƒbƒNID |
 
 
-æˆ»ã‚Šå€¤ã®å‹: void
+–ß‚è’l‚ÌŒ^: void
+
+### ƒƒ\ƒbƒh: public void SendWSInfo(WorkSpace workspace)
+
+à–¾: 
+
+ƒ[ƒNƒXƒy[ƒX‚Ìî•ñ‚ğ‘—M‚·‚éB
+
+| Œ^ | ˆø”–¼ | à–¾ |
+|:--------|:----------------------|--------------------------------------|
+| WorkSpace | workspace | ‘—M‚·‚éWorkspace \‘¢‘Ì”z—ñ |
+
+
+–ß‚è’l‚ÌŒ^: void
+
+### ƒƒ\ƒbƒh: public Workspace[]? GetWorkspaces()
+
+à–¾: 
+
+ƒ[ƒ‹ƒh‚É‘¶İ‚·‚é‚·‚×‚Ä‚Ìƒ[ƒNƒXƒy[ƒX‚ğæ“¾‚·‚éB
+
+–ß‚è’l: ‘¶İ‚·‚éWorkspace \‘¢‘Ì”z—ñ(ƒ[ƒNƒXƒy[ƒX‚ª‘¶İ‚µ‚È‚¢ê‡‚Ínull)
+
+
+
+–ß‚è’l‚ÌŒ^: Workspace[]?
+
+### ƒƒ\ƒbƒh: public Workspace[]? GetWorkspacesOfPlayer(Guid wsOwnerGuid)
+
+à–¾: 
+
+w’è‚µ‚½ƒvƒŒƒCƒ„[‚ªŠ—L‚·‚éƒ[ƒNƒXƒy[ƒX‚ğæ“¾‚·‚éB
+
+–ß‚è’l: ŒŸõŒ‹‰Ê‚Æ‚µ‚Ä‚ÌWorkspace \‘¢‘Ì”z—ñ(ƒ[ƒNƒXƒy[ƒX‚ª‘¶İ‚µ‚È‚¢AƒvƒŒƒCƒ„[‚ª‘¶İ‚µ‚È‚¢ê‡‚Ínull
+
+
+
+| Œ^ | ˆø”–¼ | à–¾ |
+|:--------|:----------------------|--------------------------------------|
+| Guid | wsOwnerGuid | ŒŸõ‚·‚éƒvƒŒƒCƒ„[‚ÌGuid |
+
+
+–ß‚è’l‚ÌŒ^: Workspace[]?
+
+### ƒƒ\ƒbƒh: public void SendWSRemove(Guid removeWorkspaceGuid)
+
+à–¾: 
+
+ƒ[ƒNƒXƒy[ƒX‚ğíœ‚·‚é
+
+| Œ^ | ˆø”–¼ | à–¾ |
+|:--------|:----------------------|--------------------------------------|
+| Guid | removeWorkspaceGuid | íœ‚·‚éƒ[ƒNƒXƒy[ƒX‚ÌGuid |
+
+
+–ß‚è’l‚ÌŒ^: void
 
 ----
 

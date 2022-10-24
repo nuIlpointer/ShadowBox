@@ -147,7 +147,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <summary>
     /// ワークスペースの情報を送信する。
     /// </summary>
-    /// <param name="workSpace">送信するWorkspace 構造体配列</param>
+    /// <param name="workspace">送信するWorkspace 構造体配列</param>
     public void SendWSInfo(WorkSpace workspace) {
 
     }
@@ -172,7 +172,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <summary>
     /// ワークスペースを削除する
     /// </summary>
-    /// <param name="removeWorkSpaceGuid">削除するワークスペースのGuid</param>
+    /// <param name="removeWorkspaceGuid">削除するワークスペースのGuid</param>
     public void SendWSRemove(Guid removeWorkspaceGuid) {
 
     }

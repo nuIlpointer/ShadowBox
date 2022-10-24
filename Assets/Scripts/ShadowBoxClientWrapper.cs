@@ -22,6 +22,14 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         BlockLayer playerLayer;
     }
 
+    public struct Workspace {
+        Guid workspaceID;
+        Guid wsOwnerID;
+        int x1;
+        int y1;
+        int x2;
+        int y2;
+    }
     private IPAddress connectAddress;
     private int connectPort;
     private NetworkDriver driver;
@@ -136,5 +144,36 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
 
     }
 
+    /// <summary>
+    /// ワークスペースの情報を送信する。
+    /// </summary>
+    /// <param name="workSpace">送信するWorkspace 構造体配列</param>
+    public void SendWSInfo(WorkSpace workspace) {
 
+    }
+
+    /// <summary>
+    /// ワールドに存在するすべてのワークスペースを取得する。
+    /// </summary>
+    /// <returns>存在するWorkspace 構造体配列(ワークスペースが存在しない場合はnull)</returns>
+    public Workspace[]? GetWorkspaces() {
+        return null;
+    }
+
+    /// <summary>
+    /// 指定したプレイヤーが所有するワークスペースを取得する。
+    /// </summary>
+    /// <param name="wsOwnerGuid">検索するプレイヤーのGuid</param>
+    /// <returns>検索結果としてのWorkspace 構造体配列(ワークスペースが存在しない、プレイヤーが存在しない場合はnull</returns>
+    public Workspace[]? GetWorkspacesOfPlayer(Guid wsOwnerGuid) {
+        return null;
+    }
+
+    /// <summary>
+    /// ワークスペースを削除する
+    /// </summary>
+    /// <param name="removeWorkSpaceGuid">削除するワークスペースのGuid</param>
+    public void SendWSRemove(Guid removeWorkspaceGuid) {
+
+    }
 }

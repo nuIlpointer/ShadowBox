@@ -148,7 +148,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// ワークスペースの情報を送信する。
     /// </summary>
     /// <param name="workspace">送信するWorkspace 構造体配列</param>
-    public void SendWSInfo(WorkSpace workspace) {
+    public void SendWSInfo(Workspace workspace) {
 
     }
 

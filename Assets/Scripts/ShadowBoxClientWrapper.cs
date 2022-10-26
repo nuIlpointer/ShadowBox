@@ -10,8 +10,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         InsideBlock = 2,
         OutsideWall = 3,
         OutsideBlock = 4
-    };
-
+    }
 
     public struct PlayerData {
         string name;
@@ -22,14 +21,26 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         BlockLayer playerLayer;
     }
 
+    public struct EditBuffer {
+        Guid workspaceID;
+        int[][] editBufferLayer1;
+        int[][] editBufferLayer2;
+        int[][] editBufferLayer3;
+        int[][] editBufferLayer4;
+    }
+
     public struct Workspace {
         Guid workspaceID;
         Guid wsOwnerID;
+        Guid[] editablePlayerID;
         int x1;
         int y1;
         int x2;
         int y2;
+        EditBuffer buffer;
+        bool inEdit;
     }
+
     private IPAddress connectAddress;
     private int connectPort;
     private NetworkDriver driver;
@@ -145,10 +156,19 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     /// <summary>
-    /// ワークスペースの情報を送信する。
+    /// ワークスペースの情報を送信する。存在するワークスペースの場合は上書きされる。
+    /// ワークスペース設定の変更もこのMethodを利用する。
     /// </summary>
     /// <param name="workspace">送信するWorkspace 構造体配列</param>
-    public void SendWSInfo(WorkSpace workspace) {
+    public void SendWorkspace(Workspace workspace) {
+
+    }
+
+    /// <summary>
+    /// ワークスペースを削除する
+    /// </summary>
+    /// <param name="removeWorkspaceGuid">削除するワークスペースのGuid</param>
+    public void SendWorkspaceRemove(Guid removeWorkspaceGuid) {
 
     }
 
@@ -170,10 +190,34 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     /// <summary>
-    /// ワークスペースを削除する
+    /// バッファを送信する。
     /// </summary>
-    /// <param name="removeWorkspaceGuid">削除するワークスペースのGuid</param>
-    public void SendWSRemove(Guid removeWorkspaceGuid) {
+    /// <param name="workspaceGuid">送信するEditBufferが属するWorkspaceのGuid</param>
+    /// <param name="editBuffer">送信するEditBuffer</param>
+    /// <param name="layer">EditBufferの中で更新を通知するLayer</param>
+    public void SendEditBuffer(Guid workspaceGuid, EditBuffer editBuffer, BlockLayer layer) {
+    
+    }
 
+    /// <summary>
+    /// ブロック単位のWorkspaceに発生した変更を通知する。
+    /// </summary>
+    /// <param name="workspaceGuid">変更が発生したWorkspaceのGuid</param>
+    /// <param name="layer">変更が発生したEditBufferレイヤー</param>
+    /// <param name="relativeX">EditBufferの左上を起点とした変更点の相対座標X</param>
+    /// <param name="relativeY">EditBufferの左上を起点とした変更点の相対座標Y</param>
+    /// <param name="blockID">変更先のブロックID</param>
+    public void SendEditBufferBlockChange(Guid workspaceGuid, BlockLayer layer, int relativeX, int relativeY, int blockID) {
+    
+    }
+
+    /// <summary>
+    /// 手動でバッファの更新状況を取得する。
+    /// </summary>
+    /// <param name="workspaceGuid">変更を取得するWorkspaceのGuid</param>
+    /// <param name="layer">変更を取得するWorkspaceのレイヤー</param>
+    /// <returns></returns>
+    public int[][] GetEditBufferManual(Guid workspaceGuid, BlockLayer layer) {
+        return null;
     }
 }

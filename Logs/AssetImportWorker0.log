@@ -74,3 +74,39 @@ Received Import Request.
 Start importing Assets/Scripts/ShadowBoxClientWrapper.cs using Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5100eb2a7b71ed17b11bbf94c628e1ff') in 0.117832 seconds
   Import took 0.128380 seconds .
 
+========================================================================
+Received Import Request.
+  Time since last request: 3959.425931 seconds.
+  path: Assets/Scripts/ShadowBoxClientWrapper.cs
+  artifactKey: Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/ShadowBoxClientWrapper.cs using Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '958dd0e8e79f980415143a0e708b6b0a') in 0.056011 seconds
+  Import took 0.345944 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.032308 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 1.24 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  3.989 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.26 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2158 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 104.4 MB.
+System memory in use after: 104.4 MB.
+
+Unloading 19 unused Assets to reduce memory usage. Loaded Objects now: 2604.
+Total: 7.045000 ms (FindLiveObjects: 0.445100 ms CreateObjectMapping: 0.185900 ms MarkObjects: 5.997900 ms  DeleteObjects: 0.411600 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 51.903151 seconds.
+  path: Assets/Scripts/ShadowBoxClientWrapper.cs
+  artifactKey: Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/ShadowBoxClientWrapper.cs using Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7e082f4ce75209884ee00dcccd019c4a') in 0.029980 seconds
+  Import took 0.041478 seconds .
+

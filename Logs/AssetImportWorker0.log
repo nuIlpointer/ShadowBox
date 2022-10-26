@@ -15,11 +15,11 @@ C:/Users/a2209/Documents/GitHub/ShadowBox
 -logFile
 Logs/AssetImportWorker0.log
 -srvPort
-56047
+53155
 Successfully changed project path to: C:/Users/a2209/Documents/GitHub/ShadowBox
 C:/Users/a2209/Documents/GitHub/ShadowBox
 Using Asset Import Pipeline V2.
-Refreshing native plugins compatible for Editor in 230.03 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 172.70 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2020.3.8f1 (507919d4fff5)
 [Subsystems] Discovering subsystems at path C:/Unity/2020.3.8f1/Editor/Data/Resources/UnitySubsystems
@@ -35,78 +35,230 @@ Initialize mono
 Mono path[0] = 'C:/Unity/2020.3.8f1/Editor/Data/Managed'
 Mono path[1] = 'C:/Unity/2020.3.8f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
 Mono config path = 'C:/Unity/2020.3.8f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56748
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56332
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Unity/2020.3.8f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.011656 seconds.
+Registered in 0.010416 seconds.
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 190.73 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 182.64 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Mono: successfully reloaded assembly
-- Completed reload, in  8.280 seconds
+- Completed reload, in  7.380 seconds
 Platform modules already initialized, skipping
 Registering precompiled user dll's ...
-Registered in 0.048646 seconds.
+Registered in 0.037034 seconds.
 Begin MonoManager ReloadAssembly
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 256.12 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 171.38 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Mono: successfully reloaded assembly
-- Completed reload, in  4.894 seconds
+- Completed reload, in  4.472 seconds
 Platform modules already initialized, skipping
 ========================================================================
 Worker process is ready to serve import requests
-Launched and connected shader compiler UnityShaderCompiler.exe after 0.24 seconds
-Refreshing native plugins compatible for Editor in 1.31 ms, found 1 plugins.
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.21 seconds
+Refreshing native plugins compatible for Editor in 1.29 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Unloading 2163 Unused Serialized files (Serialized files now loaded: 0)
 System memory in use before: 104.5 MB.
 System memory in use after: 104.4 MB.
 
 Unloading 31 unused Assets to reduce memory usage. Loaded Objects now: 2599.
-Total: 9.914400 ms (FindLiveObjects: 0.723200 ms CreateObjectMapping: 0.383300 ms MarkObjects: 8.231700 ms  DeleteObjects: 0.570700 ms)
+Total: 7.504000 ms (FindLiveObjects: 0.549700 ms CreateObjectMapping: 0.202200 ms MarkObjects: 6.276500 ms  DeleteObjects: 0.471600 ms)
 
 ========================================================================
 Received Import Request.
   path: Assets/Scripts/ShadowBoxClientWrapper.cs
   artifactKey: Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Scripts/ShadowBoxClientWrapper.cs using Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5100eb2a7b71ed17b11bbf94c628e1ff') in 0.117832 seconds
-  Import took 0.128380 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 3959.425931 seconds.
-  path: Assets/Scripts/ShadowBoxClientWrapper.cs
-  artifactKey: Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Scripts/ShadowBoxClientWrapper.cs using Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '958dd0e8e79f980415143a0e708b6b0a') in 0.056011 seconds
-  Import took 0.345944 seconds .
+Start importing Assets/Scripts/ShadowBoxClientWrapper.cs using Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c8b484cc68a49ebc5d1222592ca45e9a') in 0.152516 seconds
+  Import took 0.171315 seconds .
 
 ========================================================================
 Received Prepare
 Registering precompiled user dll's ...
-Registered in 0.032308 seconds.
+Registered in 0.032026 seconds.
 Begin MonoManager ReloadAssembly
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 1.24 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 1.39 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Mono: successfully reloaded assembly
-- Completed reload, in  3.989 seconds
+- Completed reload, in  3.572 seconds
 Platform modules already initialized, skipping
-Refreshing native plugins compatible for Editor in 1.26 ms, found 1 plugins.
+Refreshing native plugins compatible for Editor in 1.38 ms, found 1 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Unloading 2158 Unused Serialized files (Serialized files now loaded: 0)
 System memory in use before: 104.4 MB.
 System memory in use after: 104.4 MB.
 
 Unloading 19 unused Assets to reduce memory usage. Loaded Objects now: 2604.
-Total: 7.045000 ms (FindLiveObjects: 0.445100 ms CreateObjectMapping: 0.185900 ms MarkObjects: 5.997900 ms  DeleteObjects: 0.411600 ms)
+Total: 5.552000 ms (FindLiveObjects: 0.462800 ms CreateObjectMapping: 0.162100 ms MarkObjects: 4.632800 ms  DeleteObjects: 0.290300 ms)
 
 ========================================================================
 Received Import Request.
-  Time since last request: 51.903151 seconds.
+  Time since last request: 289.465726 seconds.
   path: Assets/Scripts/ShadowBoxClientWrapper.cs
   artifactKey: Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Scripts/ShadowBoxClientWrapper.cs using Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7e082f4ce75209884ee00dcccd019c4a') in 0.029980 seconds
-  Import took 0.041478 seconds .
+Start importing Assets/Scripts/ShadowBoxClientWrapper.cs using Guid(b674f356e82714d4dbcea16037270932) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd1ed1e85ece5ef167e516bdf40449b9c') in 0.048863 seconds
+  Import took 0.064842 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 392.123445 seconds.
+  path: Assets/Scripts/Server
+  artifactKey: Guid(c7425d718c4e87c49b74afcc2ea11c0c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Server using Guid(c7425d718c4e87c49b74afcc2ea11c0c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2f2832bdd16d23e3a0503c4634329675') in 0.034433 seconds
+  Import took 0.049922 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 21.210297 seconds.
+  path: Assets/Scripts/Server/ShadowBoxServer.cs
+  artifactKey: Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Server/ShadowBoxServer.cs using Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0e6bd6169f0f576b79c83201a578a364') in 0.026538 seconds
+  Import took 0.040753 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.023285 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 1.57 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  4.021 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.36 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2159 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 104.5 MB.
+System memory in use after: 104.5 MB.
+
+Unloading 19 unused Assets to reduce memory usage. Loaded Objects now: 2610.
+Total: 6.470700 ms (FindLiveObjects: 0.765700 ms CreateObjectMapping: 0.120300 ms MarkObjects: 5.278200 ms  DeleteObjects: 0.303300 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 8790.060173 seconds.
+  path: Assets/Scripts/Server/ShadowBoxServer.cs
+  artifactKey: Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Server/ShadowBoxServer.cs using Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '085fa1459c7eed4275fefc9acdefff49') in 0.769691 seconds
+  Import took 1.262118 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.057694 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 1.35 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  4.687 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.29 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2159 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 104.5 MB.
+System memory in use after: 104.5 MB.
+
+Unloading 19 unused Assets to reduce memory usage. Loaded Objects now: 2615.
+Total: 7.529100 ms (FindLiveObjects: 0.484300 ms CreateObjectMapping: 0.191300 ms MarkObjects: 5.907700 ms  DeleteObjects: 0.941200 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 46.126791 seconds.
+  path: Assets/Scripts/Server/ShadowBoxServer.cs
+  artifactKey: Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Server/ShadowBoxServer.cs using Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f146cb287688d072c425a3b3d780c948') in 0.032930 seconds
+  Import took 0.045292 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 689.272677 seconds.
+  path: Assets/Scripts/Server/ShadowBoxServer.cs
+  artifactKey: Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Server/ShadowBoxServer.cs using Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1400b209cfff3756f12f79bf0f2fdf99') in 0.030610 seconds
+  Import took 0.041391 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.008103 seconds.
+  path: Assets/Scripts/Server/ShadowBoxServer.cs
+  artifactKey: Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Server/ShadowBoxServer.cs using Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1400b209cfff3756f12f79bf0f2fdf99') in 0.022084 seconds
+  Import took 0.030845 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.057618 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 1.32 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  4.021 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.72 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2159 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 104.5 MB.
+System memory in use after: 104.5 MB.
+
+Unloading 19 unused Assets to reduce memory usage. Loaded Objects now: 2620.
+Total: 51.163900 ms (FindLiveObjects: 1.400300 ms CreateObjectMapping: 2.396600 ms MarkObjects: 47.060300 ms  DeleteObjects: 0.302600 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 160.475785 seconds.
+  path: Assets/Scripts/Server/ShadowBoxServer.cs
+  artifactKey: Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Server/ShadowBoxServer.cs using Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f8121fc6aa8921aa466fc834f44b9c32') in 0.024331 seconds
+  Import took 0.034736 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 614.860188 seconds.
+  path: Assets/Scripts/Server/ShadowBoxServer.cs
+  artifactKey: Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Server/ShadowBoxServer.cs using Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '06ab7f2675d2d421677f847f2b1ec342') in 0.039889 seconds
+  Import took 0.061658 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 15.529372 seconds.
+  path: Assets/Scripts/Server/ShadowBoxServer.cs
+  artifactKey: Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Server/ShadowBoxServer.cs using Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2fe4a6fd41a8cc817f1d6e8ae0b3776f') in 0.032597 seconds
+  Import took 0.048204 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.023002 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 1.20 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  3.653 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 1.21 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2159 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 104.5 MB.
+System memory in use after: 104.5 MB.
+
+Unloading 19 unused Assets to reduce memory usage. Loaded Objects now: 2625.
+Total: 8.052300 ms (FindLiveObjects: 0.526000 ms CreateObjectMapping: 0.210900 ms MarkObjects: 7.055200 ms  DeleteObjects: 0.256800 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 23.297367 seconds.
+  path: Assets/Scripts/Server/ShadowBoxServer.cs
+  artifactKey: Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Server/ShadowBoxServer.cs using Guid(6f0a767e7c815ce4893ee8570c94f109) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8fef2b6a8d308a4e84ec543419d04296') in 0.035734 seconds
+  Import took 0.047368 seconds .
 

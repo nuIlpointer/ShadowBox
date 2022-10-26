@@ -34,26 +34,34 @@
 | playerLayer | BlockLayer |
 
 
+### 構造体: EditBuffer
+
+| 名前 | 型 |
+|:-------------------|:--------|
+| workspaceID | Guid |
+| int[][] | editBufferLayer1 |
+| int[][] | editBufferLayer2 |
+| int[][] | editBufferLayer3 |
+| int[][] | editBufferLayer4 |
+
+
 ### 構造体: Workspace
 
 | 名前 | 型 |
 |:-------------------|:--------|
 | workspaceID | Guid |
 | wsOwnerID | Guid |
+| Guid[] | editablePlayerID |
 | int | x1 |
 | int | y1 |
 | int | x2 |
 | int | y2 |
+| buffer | EditBuffer |
 | inEdit | bool |
 
 
 ----
 
-## 変数
-
-
-
-----
 
 ## メソッド
 
@@ -148,10 +156,6 @@
 
 プレイヤーの情報を取得する。指定したGuidのプレイヤーが存在しない場合はnull。
 
-戻り値: なし
-
-
-
 | 型 | 引数名 | 説明 |
 |:--------|:----------------------|--------------------------------------|
 | Guid | PlayerID | 情報を取得するPlayerID。 |
@@ -190,15 +194,30 @@
 
 戻り値の型: void
 
-### メソッド: public void SendWSInfo(WorkSpace workspace)
+### メソッド: public void SendWorkspace(Workspace workspace)
 
 説明: 
 
 ワークスペースの情報を送信する。存在するワークスペースの場合は上書きされる。
 
+ワークスペース設定の変更もこのMethodを利用する。
+
 | 型 | 引数名 | 説明 |
 |:--------|:----------------------|--------------------------------------|
-| WorkSpace | workspace | 送信するWorkspace 構造体配列 |
+| Workspace | workspace | 送信するWorkspace 構造体配列 |
+
+
+戻り値の型: void
+
+### メソッド: public void SendWorkspaceRemove(Guid removeWorkspaceGuid)
+
+説明: 
+
+ワークスペースを削除する
+
+| 型 | 引数名 | 説明 |
+|:--------|:----------------------|--------------------------------------|
+| Guid | removeWorkspaceGuid | 削除するワークスペースのGuid |
 
 
 戻り値の型: void
@@ -232,18 +251,54 @@
 
 戻り値の型: Workspace[]?
 
-### メソッド: public void SendWSRemove(Guid removeWorkspaceGuid)
+### メソッド: public void SendEditBuffer(Guid workspaceGuid, EditBuffer editBuffer, BlockLayer layer)
 
 説明: 
 
-ワークスペースを削除する
+バッファを送信する。
 
 | 型 | 引数名 | 説明 |
 |:--------|:----------------------|--------------------------------------|
-| Guid | removeWorkspaceGuid | 削除するワークスペースのGuid |
+| Guid | workspaceGuid | 送信するEditBufferが属するWorkspaceのGuid |
+| EditBuffer | editBuffer | 送信するEditBuffer |
+| BlockLayer | layer | EditBufferの中で更新を通知するLayer |
 
 
 戻り値の型: void
 
-----
+### メソッド: public void SendEditBufferBlockChange(Guid workspaceGuid, BlockLayer layer, int relativeX, int relativeY, int blockID)
 
+説明: 
+
+ブロック単位のWorkspaceに発生した変更を通知する。
+
+| 型 | 引数名 | 説明 |
+|:--------|:----------------------|--------------------------------------|
+| Guid | workspaceGuid | 変更が発生したWorkspaceのGuid |
+| BlockLayer | layer | 変更が発生したEditBufferレイヤー |
+| int | relativeX | EditBufferの左上を起点とした変更点の相対座標X |
+| int | relativeY | EditBufferの左上を起点とした変更点の相対座標Y |
+| int | blockID | 変更先のブロックID |
+
+
+戻り値の型: void
+
+### メソッド: public int[][] GetEditBufferManual(Guid workspaceGuid, BlockLayer layer)
+
+説明: 
+
+手動でバッファの更新状況を取得する。
+
+戻り値: なし
+
+
+
+| 型 | 引数名 | 説明 |
+|:--------|:----------------------|--------------------------------------|
+| Guid | workspaceGuid | 変更を取得するWorkspaceのGuid |
+| BlockLayer | layer | 変更を取得するWorkspaceのレイヤー |
+
+
+戻り値の型: int[][]
+
+----

@@ -40,6 +40,10 @@ public class InitialProcess : MonoBehaviour
 
     void Awake()
     {
+        this.chunkSize = chunkSize;
+
+
+
         if (noNetMode) { GetBlockIDReference(); } else {
 
         }
@@ -74,6 +78,14 @@ public class InitialProcess : MonoBehaviour
     public int GetChunksNumY()
     {
         return chunksNumY;
+    }
+
+    /// <summary>
+    /// チャンク1つあたりのブロックサイズを返す
+    /// </summary>
+    /// <returns>チャンクの１辺の長さ</returns>
+    public int GetChunkSize() {
+        return chunkSize;
     }
 
     /// <summary>

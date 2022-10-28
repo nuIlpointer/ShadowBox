@@ -40,8 +40,6 @@ public class InitialProcess : MonoBehaviour
 
     void Awake()
     {
-        this.chunkSize = chunkSize;
-
 
 
         if (noNetMode) { GetBlockIDReference(); } else {

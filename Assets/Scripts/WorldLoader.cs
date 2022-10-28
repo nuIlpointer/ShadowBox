@@ -13,25 +13,30 @@ public class WorldLoader : MonoBehaviour
     /// <summary>
     /// 各レイヤーの参照を格納　添え字はenum blockLayerと揃える為1~4(0は欠番)
     /// </summary>
-    LayerManager[] layers = new LayerManager[5];
+    public LayerManager[] layers = new LayerManager[5];
 
     private int cNumX;
     private int cNumY;
     private int cSize;
-    InitialProcess ip;
-    ShadowBoxClientWrapper wrapper;
+    public InitialProcess ip;
+    public ShadowBoxClientWrapper wrapper;
     int lastMakePoint = -1;
+
+    public bool autoSetCompnents = false;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        wrapper = gameObject.GetComponent<ShadowBoxClientWrapper>();
-        ip = gameObject.GetComponent<InitialProcess>();
-        layers[1] = transform.Find("LayerInsideWall").GetComponent<LayerManager>();
-        layers[2] = transform.Find("LayerInsideBlock").GetComponent<LayerManager>();
-        layers[3] = transform.Find("LayerOutsideWall").GetComponent<LayerManager>();
-        layers[4] = transform.Find("LayerOutsideBlock").GetComponent<LayerManager>();
+        if (autoSetCompnents) {
+            wrapper = gameObject.GetComponent<ShadowBoxClientWrapper>();
+            ip = gameObject.GetComponent<InitialProcess>();
+            layers[1] = transform.Find("LayerInsideWall").GetComponent<LayerManager>();
+            layers[2] = transform.Find("LayerInsideBlock").GetComponent<LayerManager>();
+            layers[3] = transform.Find("LayerOutsideWall").GetComponent<LayerManager>();
+            layers[4] = transform.Find("LayerOutsideBlock").GetComponent<LayerManager>();
+            
+        }
         cNumX = ip.chunksNumX;
         cNumY = ip.chunksNumY;
         cSize = ip.chunkSize;
@@ -50,7 +55,7 @@ public class WorldLoader : MonoBehaviour
     /// <param name="pos">基準座標を指定</param>
     public void LoadChunks(Vector2 pos)
     {
-        cSize = 25; cNumX = 4; cNumY = 2;
+        Debug.Log(cSize +" "+cNumX);
         int chunkNumber = ((int)pos.x / cSize) + cNumX * (((int)pos.y / cSize)+1);
         if(chunkNumber != lastMakePoint) {
             for (int i = 1; i <= 4; i++) {

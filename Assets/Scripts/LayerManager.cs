@@ -34,14 +34,14 @@ public class LayerManager : MonoBehaviour
         }
 
         //chunks‰Šú‰»
-        cNumX = ip.chunksNumX;
+        /*cNumX = ip.chunksNumX;
         cNumY = ip.chunksNumY;
         chunks = new Chunk[cNumX, cNumY];
         for(int i = 0; i < cNumX; i++) {
             for(int j = 0; j < cNumY; j++) {
                 chunks[i, j].blocks = blocks;
             }
-        }
+        }*/
         
 
 

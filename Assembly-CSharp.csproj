@@ -61,6 +61,7 @@
     <Compile Include="Assets\Scripts\LayerManager.cs" />
     <Compile Include="Assets\Scripts\InitialProcess.cs" />
     <Compile Include="Assets\Scripts\generaTester.cs" />
+    <Compile Include="Assets\Scripts\LayerIndicatorChange.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

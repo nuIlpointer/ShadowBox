@@ -95,11 +95,6 @@ public class LayerManager : MonoBehaviour
         cNumY = ip.chunksNumY;
         cSize = ip.chunkSize;
 
-        //ipのメンバが参照できないためココで値を決め打ち
-        cNumX = 4;
-        cNumY = 2;
-        cSize = 25;
-
         chunks = new Chunk[cNumX * cNumY];
         
         for(int i = 0; i < chunks.Length; i++) {
@@ -154,7 +149,7 @@ public class LayerManager : MonoBehaviour
                         pos.x = posBase.x + px;
                         pos.y = posBase.y - py;
                         block = Instantiate(block, transform);
-                        block.transform.position = pos;
+                        block.transform.localPosition = pos;
                         //block.transform.SetParent(this.gameObject.transform);
                     }
                 }

@@ -37,9 +37,18 @@ public class WorldLoader : MonoBehaviour
             layers[4] = transform.Find("LayerOutsideBlock").GetComponent<LayerManager>();
             
         }
-        cNumX = ip.chunksNumX;
-        cNumY = ip.chunksNumY;
-        cSize = ip.chunkSize;
+        
+    }
+
+    /// <summary>
+    /// InitialProcessから値を取得する
+    /// Start()メソッドが常に他のメソッドより早く実行されるとは限らない為
+    /// LoadChunks()実行前に必ず値が取得されるようにする
+    /// </summary>
+    void GetInitializeProcessValues() {
+        cNumX = ip.GetChunksNumX();
+        cNumY = ip.GetChunksNumY();
+        cSize = ip.GetChunkSize();
     }
 
     // Update is called once per frame
@@ -55,6 +64,7 @@ public class WorldLoader : MonoBehaviour
     /// <param name="pos">基準座標を指定</param>
     public void LoadChunks(Vector2 pos)
     {
+        GetInitializeProcessValues();
         Debug.Log(cSize +" "+cNumX);
 
         cNumX = 4;

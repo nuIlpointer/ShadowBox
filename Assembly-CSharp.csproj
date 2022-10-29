@@ -57,11 +57,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\ShadowBoxClientWrapper.cs" />
+    <Compile Include="Assets\Scripts\LayerIndicatorChange.cs" />
     <Compile Include="Assets\Scripts\WorldLoader.cs" />
     <Compile Include="Assets\Scripts\LayerManager.cs" />
     <Compile Include="Assets\Scripts\InitialProcess.cs" />
     <Compile Include="Assets\Scripts\generaTester.cs" />
-    <Compile Include="Assets\Scripts\LayerIndicatorChange.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

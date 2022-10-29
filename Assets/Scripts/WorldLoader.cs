@@ -56,13 +56,19 @@ public class WorldLoader : MonoBehaviour
     public void LoadChunks(Vector2 pos)
     {
         Debug.Log(cSize +" "+cNumX);
-        int chunkNumber = ((int)pos.x / cSize) + cNumX * (((int)pos.y / cSize)+1);
+
+        cNumX = 4;
+        cNumY = 2;
+        cSize = 25;
+        
+        int chunkNumber = ((int)pos.x / cSize) + cNumX * (((int)pos.y / cSize));
+        Debug.Log("number:"+chunkNumber);
         if(chunkNumber != lastMakePoint) {
             for (int i = 1; i <= 4; i++) {
                 layers[i].MakeChunk(chunkNumber);
                 bool up = false, lo = false, le = false, ri = false;
-                if(chunkNumber - cNumX >= 0) { layers[i].MakeChunk(chunkNumber - cNumX); up = true; }
-                if(chunkNumber + cNumX < cNumX * cNumY) { layers[i].MakeChunk(chunkNumber + cNumX); lo = true; }
+                if(chunkNumber - cNumX >= 0) { layers[i].MakeChunk(chunkNumber - cNumX); up = true; Debug.Log("ue"); }
+                if(chunkNumber + cNumX < cNumX * cNumY) { layers[i].MakeChunk(chunkNumber + cNumX); lo = true; Debug.Log("sita"); }
                 if((chunkNumber + 1) / cNumX != 0) { layers[i].MakeChunk(chunkNumber + 1); ri = true; }
                 if((chunkNumber - 1) / cNumX != cNumX - 1) { layers[i].MakeChunk(chunkNumber - 1); le = true; }
                 if(up && ri) { layers[i].MakeChunk(chunkNumber - cNumX + 1); }

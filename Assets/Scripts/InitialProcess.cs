@@ -40,7 +40,9 @@ public class InitialProcess : MonoBehaviour
 
     void Awake()
     {
-
+        chunkSize = 25;
+        chunksNumX = 4;
+        chunksNumY = 2;
 
         if (noNetMode) { GetBlockIDReference(); } else {
 

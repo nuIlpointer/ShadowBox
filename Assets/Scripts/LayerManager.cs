@@ -27,11 +27,11 @@ public class LayerManager : MonoBehaviour
         ip = GetComponentInParent<InitialProcess>();
         blocks = new int[ip.chunkSize, ip.chunkSize];
         //blocks初期化
-        for(int i = 0; i < ip.chunkSize; i++) {
+        /*for(int i = 0; i < ip.chunkSize; i++) {
             for(int j = 0; j < ip.chunkSize; j++) {
                 blocks[i,j] = 0;
             }
-        }
+        }*/
 
         //chunks初期化
         /*cNumX = ip.chunksNumX;
@@ -58,9 +58,13 @@ public class LayerManager : MonoBehaviour
     /// </summary>
     /// <param name="chankNumber">チャンク番号</param>
     public void MakeChunk(int chankNumber) {
+        //テスト用ログ
         if (makeTest) {
-            Debug.Log(chankNumber);
+            Debug.Log("seisei:"+chankNumber);
         }
+
+
+
     }
 
     /// <summary>

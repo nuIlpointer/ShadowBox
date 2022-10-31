@@ -63,7 +63,10 @@
     <Compile Include="Assets\Scripts\InitialProcess.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\generaTester.cs" />
+<<<<<<< HEAD
     <Compile Include="Assets\Scripts\Player.cs" />
+=======
+>>>>>>> dadd2dffe76ae3e82e2929826205f3c2c2bbc659
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

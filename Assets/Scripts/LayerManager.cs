@@ -74,10 +74,13 @@ public class LayerManager : MonoBehaviour
     };
 
 
+    public GameObject chunkFrame = new GameObject();
+    
+
 
 
     // Start is called before the first frame update
-    
+
 
     void Start()
     {
@@ -111,7 +114,7 @@ public class LayerManager : MonoBehaviour
             }
         }
         //chunks初期化ここまで
-
+        
 
         started = true;
     }
@@ -134,27 +137,42 @@ public class LayerManager : MonoBehaviour
         }
 
         if (makeTest) {
-            Debug.Log("seisei:"+chunkNumber);
+            //Debug.Log(this.gameObject.name + " seisei:"+ chunkNumber + " " + );
         }
 
-        /*
+        chunks[chunkNumber].blocks[0,0] = chunkNumber;//テスト用
 
-        }*/
-        cNumX = 4;
-        chunks[chunkNumber].blocks[0,0] = chunkNumber;
+
+
+        chunkFrame =  Instantiate(chunkFrame);
+        chunkFrame.transform.parent = transform;
+        chunkFrame.name = "chunk"+chunkNumber;
+        Transform frame = chunkFrame.transform;
+
         Vector2Int posBase = new Vector2Int(chunkNumber % cNumX * cSize, chunkNumber / cNumX * cSize);
-        Vector3Int pos = new Vector3Int(0,0,0);
+        Vector3Int pos = new Vector3Int(0, 0, 0);
+        chunkFrame.transform.localPosition = new Vector3(posBase.x, posBase.y, 0);
+
+        if (makeTest) {
+            Debug.Log(this.gameObject.name + " seisei:" + chunkNumber + "   " + chunkFrame.name + " " + chunkFrame.transform.position.x + " " + chunkFrame.transform.position.y);
+        }
+
+       
         foreach (int id in Enum.GetValues(typeof(BLOCK_ID))) {
-            Debug.Log(" id:"+Enum.GetName(typeof(BLOCK_ID), id));
+            //Debug.Log(" id:"+Enum.GetName(typeof(BLOCK_ID), id));
+
+            //ブロックプレハブ取得
             block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID),id));
             if (block == null) { block = (GameObject)Resources.Load("Blocks/unknown"); }
+
             for (int px = 0; px < cSize; px++) {
                 for (int py = 0; py < cSize; py++) {
                     if(chunks[chunkNumber].blocks[py,px] == id && id != 0) {
                         pos.x = posBase.x + px;
-                        pos.y = posBase.y - py;
-                        block = Instantiate(block, transform);
-                        block.transform.position = pos;
+                        pos.y = posBase.y + py;
+                        block = Instantiate(block, frame);
+                        block.transform.localPosition = pos;
+                        block.name = px + "_" + py + "_" + Enum.GetName(typeof(BLOCK_ID), id);
                         //block.transform.SetParent(this.gameObject.transform);
                     }
                 }

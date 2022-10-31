@@ -16,16 +16,16 @@ public class CameraController : MonoBehaviour
     {
 
         if (Input.GetKey(KeyCode.UpArrow)) {
-            pos.y += (float)0.5;
+            pos.y += (float)0.1;
         }
         if (Input.GetKey(KeyCode.DownArrow)) {
-            pos.y -= (float)0.5;
+            pos.y -= (float)0.1;
         }
         if (Input.GetKey(KeyCode.LeftArrow)) {
-            pos.x -= (float)0.5;
+            pos.x -= (float)0.1;
         }
         if (Input.GetKey(KeyCode.RightArrow)) {
-            pos.x += (float)0.5;
+            pos.x += (float)0.1;
         }
 
         this.gameObject.transform.position = pos;

@@ -164,16 +164,10 @@ public class LayerManager : MonoBehaviour
                 for (int py = 0; py < cSize; py++) {
                     if(chunks[chunkNumber].blocks[py,px] == id && id != 0) {
                         pos.x = posBase.x + px;
-<<<<<<< HEAD
                         pos.y = posBase.y + py;
                         block = Instantiate(block, frame);
                         block.transform.localPosition = pos;
                         block.name = px + "_" + py + "_" + Enum.GetName(typeof(BLOCK_ID), id);
-=======
-                        pos.y = posBase.y - py;
-                        block = Instantiate(block, transform);
-                        block.transform.localPosition = pos;
->>>>>>> dadd2dffe76ae3e82e2929826205f3c2c2bbc659
                         //block.transform.SetParent(this.gameObject.transform);
                     }
                 }

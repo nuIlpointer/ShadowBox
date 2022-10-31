@@ -5,6 +5,8 @@ using System.Net;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
+using System.IO;
+
 public class ShadowBoxServer : MonoBehaviour {
     public enum BlockLayer {
         InsideWall = 1,
@@ -68,10 +70,14 @@ public class ShadowBoxServer : MonoBehaviour {
     /// <summary>
     /// レイヤーデータを保存する
     /// </summary>
-    /// <param name="layerID"></param>
-    /// <param name="chunkData"></param>
-    void SaveChunk(BlockLayer layerID, int[][] chunkData) {
+    /// <param name="layerID">レイヤーのID</param>
+    /// <param name="chunkID">チャンクのID</param>
+    /// <param name="chunkData">保存するデータ</param>
+    void SaveChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
+        string fileName = "layer" + layerID + ".chunk" + chunkID + ".dat";
+        using(var writer = new StreamWriter(fileName)) {
 
+        }
     }
 
     /// <summary>

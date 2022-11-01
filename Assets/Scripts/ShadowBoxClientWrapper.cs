@@ -30,6 +30,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     public struct Workspace {
+        string name;
         Guid workspaceID;
         Guid wsOwnerID;
         Guid[] editablePlayerID;
@@ -55,6 +56,13 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         // TODO さっさとやれ
+    }
+
+    /// <summary>
+    /// ドライバと接続情報の破棄を行う
+    /// </summary>
+    public void OnDestroy() {
+        this.driver.Dispose();
     }
 
     /// <summary>

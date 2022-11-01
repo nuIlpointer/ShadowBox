@@ -48,6 +48,7 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\ShadowBoxClientWrapper.cs" />
+     <Compile Include="Assets\Scripts\Player.cs" />
      <Compile Include="Assets\Scripts\WorldLoader.cs" />
      <Compile Include="Assets\Scripts\LayerManager.cs" />
      <Compile Include="Assets\Scripts\InitialProcess.cs" />

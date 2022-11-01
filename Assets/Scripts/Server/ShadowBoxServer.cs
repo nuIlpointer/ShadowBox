@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
@@ -31,6 +32,31 @@ public class ShadowBoxServer : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
+
+
+        // 以下デバッグ 
+         /*
+
+        //仮で適当なintのArrayを生成する
+        int[][] arr = {
+            new int[] {1, 2, 3, 4, 5},
+
+            new int[] {1, 2, 3, 4, 5},
+
+            new int[] {1, 2, 3, 4, 5},
+
+            new int[] {1, 2, 3, 4, 5},
+
+            new int[] {1, 2, 3, 4, 5},
+        };
+
+        //チャンクライターテスト
+        SaveChunk(BlockLayer.InsideBlock, 0, arr);
+
+        //チャンクリーダーテスト
+        foreach (int[] larr in LoadChunk(BlockLayer.InsideBlock, 0))
+            Debug.Log(string.Join(",", larr));
+        // */
     }
 
     /// <summary>
@@ -38,7 +64,10 @@ public class ShadowBoxServer : MonoBehaviour {
     /// </summary>
     public void OnDestroy() {
         this.driver.Dispose();
-        this.connectionList.Dispose();
+        if(this.connectionList.IsCreated) {
+
+            this.connectionList.Dispose();
+        }
     }
 
     public bool StartServer(int port) {
@@ -61,7 +90,7 @@ public class ShadowBoxServer : MonoBehaviour {
     }
 
     /// <summary>
-    /// 内部サーバー(127.0.0.1:11781
+    /// 内部サーバー(127.0.0.1:11781)を作成する
     /// </summary>
     public void CreateInternalServer() {
 
@@ -74,12 +103,17 @@ public class ShadowBoxServer : MonoBehaviour {
     /// <param name="chunkID">チャンクのID</param>
     /// <param name="chunkData">保存するデータ</param>
     void SaveChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
-        string fileName = "layer" + layerID + ".chunk" + chunkID + ".dat";
-        using(var writer = new StreamWriter(fileName)) {
-
+        if(!Directory.Exists("./worlddata/")) {
+            Directory.CreateDirectory("./worlddata");
+        }
+        string fileName = "./worlddata/" + layerID + ".chunk" + chunkID + ".dat";
+        using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
+            foreach(int[] row in chunkData)
+                writer.WriteLine(string.Join(",", row));
         }
     }
 
+#nullable enable
     /// <summary>
     /// レイヤーデータをファイルから読み込む
     /// </summary>
@@ -87,7 +121,15 @@ public class ShadowBoxServer : MonoBehaviour {
     /// <param name="chunkId">読み込むチャンクのID</param>
     /// <returns></returns>
     int[][]? LoadChunk(BlockLayer layerID, int chunkId) {
-        return null;
+        string fileName = "./worlddata/" + layerID + ".chunk" + chunkId + ".dat";
+        if(File.Exists(fileName)) {
+            List<int[]> tempList = new List<int[]>();
+            using (var reader = new StreamReader(fileName, Encoding.UTF8)) {
+                while (0 <= reader.Peek())
+                    tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
+                return tempList.ToArray();
+            }
+        } else return null;
     }
 
 

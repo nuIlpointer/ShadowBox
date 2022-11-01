@@ -1,6 +1,8 @@
-Library/
-Temp/
-Logs/*
+[Ll]ibrary/
+[Tt]emp/
+[Ll]ogs/
+[Ll]ogs/*
 obj/
 .vs/
+worlddata/*.dat
 *.log

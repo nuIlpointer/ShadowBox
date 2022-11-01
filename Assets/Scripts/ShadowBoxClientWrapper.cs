@@ -50,41 +50,41 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     private bool active = false;
     void Start() {
         this.driver = NetworkDriver.Create();
-        // TODO ‚³‚Á‚³‚Æ‚â‚ê
+        // TODO ã•ã£ã•ã¨ã‚„ã‚Œ
     }
 
     // Update is called once per frame
     void Update() {
-        // TODO ‚³‚Á‚³‚Æ‚â‚ê
+        // TODO ã•ã£ã•ã¨ã‚„ã‚Œ
     }
 
     /// <summary>
-    /// ƒhƒ‰ƒCƒo‚ÆÚ‘±î•ñ‚Ì”jŠü‚ğs‚¤
+    /// ãƒ‰ãƒ©ã‚¤ãƒã¨æ¥ç¶šæƒ…å ±ã®ç ´æ£„ã‚’è¡Œã†
     /// </summary>
     public void OnDestroy() {
         this.driver.Dispose();
     }
 
     /// <summary>
-    /// Œ»İÚ‘±‚µ‚Ä‚¢‚éƒT[ƒo[‚Öƒ`ƒƒƒ“ƒNƒf[ƒ^‚ğ—v‹‚·‚é
+    /// ç¾åœ¨æ¥ç¶šã—ã¦ã„ã‚‹ã‚µãƒ¼ãƒãƒ¼ã¸ãƒãƒ£ãƒ³ã‚¯ãƒ‡ãƒ¼ã‚¿ã‚’è¦æ±‚ã™ã‚‹
     /// </summary>
-    /// <param name="layerID">—v‹‚·‚éƒ`ƒƒƒ“ƒN‚ª‘¶İ‚·‚éƒŒƒCƒ„[‚ÌID</param>
-    /// <param name="chunkID">—v‹‚·‚éƒ`ƒƒƒ“ƒN</param>
-    /// <returns>ƒ`ƒƒƒ“ƒNî•ñ(intŒ^2ŸŒ³”z—ñ)</returns>
+    /// <param name="layerID">è¦æ±‚ã™ã‚‹ãƒãƒ£ãƒ³ã‚¯ãŒå­˜åœ¨ã™ã‚‹ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ID</param>
+    /// <param name="chunkID">è¦æ±‚ã™ã‚‹ãƒãƒ£ãƒ³ã‚¯</param>
+    /// <returns>ãƒãƒ£ãƒ³ã‚¯æƒ…å ±(intå‹2æ¬¡å…ƒé…åˆ—)</returns>
     public int[][] GetChunk(BlockLayer layerID, int chunkID) {
-        // TODO ‚³‚Á‚³‚Æ‚â‚ê
+        // TODO ã•ã£ã•ã¨ã‚„ã‚Œ
         return null;
     }
 
     /// <summary>
-    /// ƒ`ƒƒƒ“ƒN‚ğŒ»İÚ‘±‚µ‚Ä‚¢‚éƒT[ƒo[‚É‘—M‚·‚é
+    /// ãƒãƒ£ãƒ³ã‚¯ã‚’ç¾åœ¨æ¥ç¶šã—ã¦ã„ã‚‹ã‚µãƒ¼ãƒãƒ¼ã«é€ä¿¡ã™ã‚‹
     /// </summary>
-    /// <param name="layerID">‘—M‚·‚éƒ`ƒƒƒ“ƒN‚ª‘¶İ‚·‚éƒŒƒCƒ„[‚ÌID</param>
-    /// <param name="chunkID">‘—M‚·‚éƒ`ƒƒƒ“ƒN‚ÌêŠ</param>
-    /// <param name="chunkData">‘—M‚·‚éƒ`ƒƒƒ“ƒNî•ñ</param>
-    /// <returns>‘—M‚É¬Œ÷‚µ‚½‚©</returns>
+    /// <param name="layerID">é€ä¿¡ã™ã‚‹ãƒãƒ£ãƒ³ã‚¯ãŒå­˜åœ¨ã™ã‚‹ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ID</param>
+    /// <param name="chunkID">é€ä¿¡ã™ã‚‹ãƒãƒ£ãƒ³ã‚¯ã®å ´æ‰€</param>
+    /// <param name="chunkData">é€ä¿¡ã™ã‚‹ãƒãƒ£ãƒ³ã‚¯æƒ…å ±</param>
+    /// <returns>é€ä¿¡ã«æˆåŠŸã—ãŸã‹</returns>
     public bool SendChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
-        // ‚Ü‚¾ì‚è“r’†‚Å‚·‚æ
+        // ã¾ã ä½œã‚Šé€”ä¸­ã§ã™ã‚ˆ
         if (this.connection.IsCreated) {
             string sendDataTemp = "";
             foreach (int[] chunkRow in chunkData)
@@ -99,11 +99,11 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     /// <summary>
-    /// Ú‘±æ‚Ìƒ|[ƒg/IPƒAƒhƒŒƒX‚ğw’è‚µAÚ‘±‚·‚éB
-    /// ƒ|[ƒg‚ª”ÍˆÍŠO‚Ì‚Í©“®“I‚Éu11781vB
+    /// æ¥ç¶šå…ˆã®ãƒãƒ¼ãƒˆ/IPã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’æŒ‡å®šã—ã€æ¥ç¶šã™ã‚‹ã€‚
+    /// ãƒãƒ¼ãƒˆãŒç¯„å›²å¤–ã®æ™‚ã¯è‡ªå‹•çš„ã«ã€Œ11781ã€ã€‚
     /// </summary>
-    /// <param name="ipAddress">Ú‘±æIPƒAƒhƒŒƒXB</param>
-    /// <param name="port">Ú‘±æƒ|[ƒg”Ô†BƒfƒtƒHƒ‹ƒg‚Í11781B</param>
+    /// <param name="ipAddress">æ¥ç¶šå…ˆIPã‚¢ãƒ‰ãƒ¬ã‚¹ã€‚</param>
+    /// <param name="port">æ¥ç¶šå…ˆãƒãƒ¼ãƒˆç•ªå·ã€‚ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯11781ã€‚</param>
     public void Connect(string ipAddress, int port) {
         this.connectAddress = IPAddress.Parse(ipAddress);
         endPoint = NetworkEndPoint.AnyIpv4;
@@ -118,114 +118,115 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     /// <summary>
-    /// ƒT[ƒo[‚ÉƒvƒŒƒCƒ„[î•ñ‚ğ‘—M‚·‚éB
+    /// ã‚µãƒ¼ãƒãƒ¼ã«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±ã‚’é€ä¿¡ã™ã‚‹ã€‚
     /// </summary>
-    /// <param name="name">‘¼l‚É•\¦‚³‚ê‚é–¼‘O</param>
-    /// <param name="skinID">‘¼l‚©‚ç•\¦‚³‚ê‚éŒ©‚½–Ú(‚¢‚é‚©H‚±‚ê)</param>
-    /// <returns>ƒT[ƒo[‚É“o˜^‚³‚ê‚½PlayerData</returns>
+    /// <param name="name">ä»–äººã«è¡¨ç¤ºã•ã‚Œã‚‹åå‰</param>
+    /// <param name="skinID">ä»–äººã‹ã‚‰è¡¨ç¤ºã•ã‚Œã‚‹è¦‹ãŸç›®(ã„ã‚‹ã‹ï¼Ÿã“ã‚Œ)</param>
+    /// <returns>ã‚µãƒ¼ãƒãƒ¼ã«ç™»éŒ²ã•ã‚ŒãŸPlayerData</returns>
     public PlayerData SetPlayerData(string name, int skinID) {
         return new PlayerData { };
     }
 
+#nullable enable
     /// <summary>
-    /// Ú‘±’†‚ÌƒvƒŒƒCƒ„[‚ğ‚·‚×‚Äæ“¾‚·‚éBSetPlayerData()‚Ì–¢Às“™‚Å“o˜^‚ª‚È‚¢ê‡‚ÍnullB
+    /// æ¥ç¶šä¸­ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ã™ã¹ã¦å–å¾—ã™ã‚‹ã€‚SetPlayerData()ã®æœªå®Ÿè¡Œç­‰ã§ç™»éŒ²ãŒãªã„å ´åˆã¯nullã€‚
     /// </summary>
-    /// <returns>Ú‘±’†‚ÌƒvƒŒƒCƒ„[‚ªŠÜ‚Ü‚ê‚é PlayerData ”z—ñ</returns>
+    /// <returns>æ¥ç¶šä¸­ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå«ã¾ã‚Œã‚‹ PlayerData é…åˆ—</returns>
     public PlayerData[]? GetPlayers() {
         return null;
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚Ìî•ñ‚ğæ“¾‚·‚éBw’è‚µ‚½Guid‚ÌƒvƒŒƒCƒ„[‚ª‘¶İ‚µ‚È‚¢ê‡‚ÍnullB
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚æŒ‡å®šã—ãŸGuidã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯nullã€‚
     /// </summary>
-    /// <param name="PlayerID">î•ñ‚ğæ“¾‚·‚éPlayerIDB</param>
+    /// <param name="PlayerID">æƒ…å ±ã‚’å–å¾—ã™ã‚‹PlayerIDã€‚</param>
     /// <returns></returns>
     public PlayerData? GetPlayer(Guid PlayerID) {
         return null;
     }
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚ÌˆÚ“®î•ñ‚ğ‘—M‚·‚éB
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç§»å‹•æƒ…å ±ã‚’é€ä¿¡ã™ã‚‹ã€‚
     /// </summary>
-    /// <param name="layer">ƒvƒŒƒCƒ„[‚ª‘¶İ‚·‚éƒŒƒCƒ„[</param>
-    /// <param name="x">ƒvƒŒƒCƒ„[‚ÌXÀ•W</param>
-    /// <param name="y">ƒvƒŒƒCƒ„[‚ÌYÀ•W</param>
+    /// <param name="layer">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå­˜åœ¨ã™ã‚‹ãƒ¬ã‚¤ãƒ¤ãƒ¼</param>
+    /// <param name="x">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Xåº§æ¨™</param>
+    /// <param name="y">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Yåº§æ¨™</param>
     public void SendPlayerMove(BlockLayer layer, float x, float y) {
     }
 
     /// <summary>
-    /// ƒuƒƒbƒN’PˆÊ‚Ì•ÏX‚ğ‘—M‚·‚éB
+    /// ãƒ–ãƒ­ãƒƒã‚¯å˜ä½ã®å¤‰æ›´ã‚’é€ä¿¡ã™ã‚‹ã€‚
     /// </summary>
-    /// <param name="layer">ƒŒƒCƒ„[”Ô†</param>
-    /// <param name="x">ƒuƒƒbƒN‚ÌXÀ•W</param>
-    /// <param name="y">ƒuƒƒbƒN‚ÌYÀ•W</param>
-    /// <param name="blockID">•ÏX‚³‚ê‚½Œã‚ÌƒuƒƒbƒNID</param>
+    /// <param name="layer">ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·</param>
+    /// <param name="x">ãƒ–ãƒ­ãƒƒã‚¯ã®Xåº§æ¨™</param>
+    /// <param name="y">ãƒ–ãƒ­ãƒƒã‚¯ã®Yåº§æ¨™</param>
+    /// <param name="blockID">å¤‰æ›´ã•ã‚ŒãŸå¾Œã®ãƒ–ãƒ­ãƒƒã‚¯ID</param>
     public void SendBlockChange(BlockLayer layer, int x, int y, int blockID) {
 
     }
 
     /// <summary>
-    /// ƒ[ƒNƒXƒy[ƒX‚Ìî•ñ‚ğ‘—M‚·‚éB‘¶İ‚·‚éƒ[ƒNƒXƒy[ƒX‚Ìê‡‚Íã‘‚«‚³‚ê‚éB
-    /// ƒ[ƒNƒXƒy[ƒXİ’è‚Ì•ÏX‚à‚±‚ÌMethod‚ğ—˜—p‚·‚éB
+    /// ãƒ¯ãƒ¼ã‚¯ã‚¹ãƒšãƒ¼ã‚¹ã®æƒ…å ±ã‚’é€ä¿¡ã™ã‚‹ã€‚å­˜åœ¨ã™ã‚‹ãƒ¯ãƒ¼ã‚¯ã‚¹ãƒšãƒ¼ã‚¹ã®å ´åˆã¯ä¸Šæ›¸ãã•ã‚Œã‚‹ã€‚
+    /// ãƒ¯ãƒ¼ã‚¯ã‚¹ãƒšãƒ¼ã‚¹è¨­å®šã®å¤‰æ›´ã‚‚ã“ã®Methodã‚’åˆ©ç”¨ã™ã‚‹ã€‚
     /// </summary>
-    /// <param name="workspace">‘—M‚·‚éWorkspace \‘¢‘Ì”z—ñ</param>
+    /// <param name="workspace">é€ä¿¡ã™ã‚‹Workspace æ§‹é€ ä½“é…åˆ—</param>
     public void SendWorkspace(Workspace workspace) {
 
     }
 
     /// <summary>
-    /// ƒ[ƒNƒXƒy[ƒX‚ğíœ‚·‚é
+    /// ãƒ¯ãƒ¼ã‚¯ã‚¹ãƒšãƒ¼ã‚¹ã‚’å‰Šé™¤ã™ã‚‹
     /// </summary>
-    /// <param name="removeWorkspaceGuid">íœ‚·‚éƒ[ƒNƒXƒy[ƒX‚ÌGuid</param>
+    /// <param name="removeWorkspaceGuid">å‰Šé™¤ã™ã‚‹ãƒ¯ãƒ¼ã‚¯ã‚¹ãƒšãƒ¼ã‚¹ã®Guid</param>
     public void SendWorkspaceRemove(Guid removeWorkspaceGuid) {
 
     }
 
     /// <summary>
-    /// ƒ[ƒ‹ƒh‚É‘¶İ‚·‚é‚·‚×‚Ä‚Ìƒ[ƒNƒXƒy[ƒX‚ğæ“¾‚·‚éB
+    /// ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«å­˜åœ¨ã™ã‚‹ã™ã¹ã¦ã®ãƒ¯ãƒ¼ã‚¯ã‚¹ãƒšãƒ¼ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
     /// </summary>
-    /// <returns>‘¶İ‚·‚éWorkspace \‘¢‘Ì”z—ñ(ƒ[ƒNƒXƒy[ƒX‚ª‘¶İ‚µ‚È‚¢ê‡‚Ínull)</returns>
+    /// <returns>å­˜åœ¨ã™ã‚‹Workspace æ§‹é€ ä½“é…åˆ—(ãƒ¯ãƒ¼ã‚¯ã‚¹ãƒšãƒ¼ã‚¹ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯null)</returns>
     public Workspace[]? GetWorkspaces() {
         return null;
     }
 
     /// <summary>
-    /// w’è‚µ‚½ƒvƒŒƒCƒ„[‚ªŠ—L‚·‚éƒ[ƒNƒXƒy[ƒX‚ğæ“¾‚·‚éB
+    /// æŒ‡å®šã—ãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ‰€æœ‰ã™ã‚‹ãƒ¯ãƒ¼ã‚¯ã‚¹ãƒšãƒ¼ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
     /// </summary>
-    /// <param name="wsOwnerGuid">ŒŸõ‚·‚éƒvƒŒƒCƒ„[‚ÌGuid</param>
-    /// <returns>ŒŸõŒ‹‰Ê‚Æ‚µ‚Ä‚ÌWorkspace \‘¢‘Ì”z—ñ(ƒ[ƒNƒXƒy[ƒX‚ª‘¶İ‚µ‚È‚¢AƒvƒŒƒCƒ„[‚ª‘¶İ‚µ‚È‚¢ê‡‚Ínull</returns>
+    /// <param name="wsOwnerGuid">æ¤œç´¢ã™ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Guid</param>
+    /// <returns>æ¤œç´¢çµæœã¨ã—ã¦ã®Workspace æ§‹é€ ä½“é…åˆ—(ãƒ¯ãƒ¼ã‚¯ã‚¹ãƒšãƒ¼ã‚¹ãŒå­˜åœ¨ã—ãªã„ã€ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯null</returns>
     public Workspace[]? GetWorkspacesOfPlayer(Guid wsOwnerGuid) {
         return null;
     }
 
     /// <summary>
-    /// ƒoƒbƒtƒ@‚ğ‘—M‚·‚éB
+    /// ãƒãƒƒãƒ•ã‚¡ã‚’é€ä¿¡ã™ã‚‹ã€‚
     /// </summary>
-    /// <param name="workspaceGuid">‘—M‚·‚éEditBuffer‚ª‘®‚·‚éWorkspace‚ÌGuid</param>
-    /// <param name="editBuffer">‘—M‚·‚éEditBuffer</param>
-    /// <param name="layer">EditBuffer‚Ì’†‚ÅXV‚ğ’Ê’m‚·‚éLayer</param>
+    /// <param name="workspaceGuid">é€ä¿¡ã™ã‚‹EditBufferãŒå±ã™ã‚‹Workspaceã®Guid</param>
+    /// <param name="editBuffer">é€ä¿¡ã™ã‚‹EditBuffer</param>
+    /// <param name="layer">EditBufferã®ä¸­ã§æ›´æ–°ã‚’é€šçŸ¥ã™ã‚‹Layer</param>
     public void SendEditBuffer(Guid workspaceGuid, EditBuffer editBuffer, BlockLayer layer) {
     
     }
 
     /// <summary>
-    /// ƒuƒƒbƒN’PˆÊ‚ÌWorkspace‚É”­¶‚µ‚½•ÏX‚ğ’Ê’m‚·‚éB
+    /// ãƒ–ãƒ­ãƒƒã‚¯å˜ä½ã®Workspaceã«ç™ºç”Ÿã—ãŸå¤‰æ›´ã‚’é€šçŸ¥ã™ã‚‹ã€‚
     /// </summary>
-    /// <param name="workspaceGuid">•ÏX‚ª”­¶‚µ‚½Workspace‚ÌGuid</param>
-    /// <param name="layer">•ÏX‚ª”­¶‚µ‚½EditBufferƒŒƒCƒ„[</param>
-    /// <param name="relativeX">EditBuffer‚Ì¶ã‚ğ‹N“_‚Æ‚µ‚½•ÏX“_‚Ì‘Š‘ÎÀ•WX</param>
-    /// <param name="relativeY">EditBuffer‚Ì¶ã‚ğ‹N“_‚Æ‚µ‚½•ÏX“_‚Ì‘Š‘ÎÀ•WY</param>
-    /// <param name="blockID">•ÏXæ‚ÌƒuƒƒbƒNID</param>
+    /// <param name="workspaceGuid">å¤‰æ›´ãŒç™ºç”Ÿã—ãŸWorkspaceã®Guid</param>
+    /// <param name="layer">å¤‰æ›´ãŒç™ºç”Ÿã—ãŸEditBufferãƒ¬ã‚¤ãƒ¤ãƒ¼</param>
+    /// <param name="relativeX">EditBufferã®å·¦ä¸Šã‚’èµ·ç‚¹ã¨ã—ãŸå¤‰æ›´ç‚¹ã®ç›¸å¯¾åº§æ¨™X</param>
+    /// <param name="relativeY">EditBufferã®å·¦ä¸Šã‚’èµ·ç‚¹ã¨ã—ãŸå¤‰æ›´ç‚¹ã®ç›¸å¯¾åº§æ¨™Y</param>
+    /// <param name="blockID">å¤‰æ›´å…ˆã®ãƒ–ãƒ­ãƒƒã‚¯ID</param>
     public void SendEditBufferBlockChange(Guid workspaceGuid, BlockLayer layer, int relativeX, int relativeY, int blockID) {
     
     }
 
     /// <summary>
-    /// è“®‚Åƒoƒbƒtƒ@‚ÌXVó‹µ‚ğæ“¾‚·‚éB
+    /// æ‰‹å‹•ã§ãƒãƒƒãƒ•ã‚¡ã®æ›´æ–°çŠ¶æ³ã‚’å–å¾—ã™ã‚‹ã€‚
     /// </summary>
-    /// <param name="workspaceGuid">•ÏX‚ğæ“¾‚·‚éWorkspace‚ÌGuid</param>
-    /// <param name="layer">•ÏX‚ğæ“¾‚·‚éWorkspace‚ÌƒŒƒCƒ„[</param>
+    /// <param name="workspaceGuid">å¤‰æ›´ã‚’å–å¾—ã™ã‚‹Workspaceã®Guid</param>
+    /// <param name="layer">å¤‰æ›´ã‚’å–å¾—ã™ã‚‹Workspaceã®ãƒ¬ã‚¤ãƒ¤ãƒ¼</param>
     /// <returns></returns>
-    public int[][] GetEditBufferManual(Guid workspaceGuid, BlockLayer layer) {
+    public int[][]? GetEditBufferManual(Guid workspaceGuid, BlockLayer layer) {
         return null;
     }
 }

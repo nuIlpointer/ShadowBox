@@ -74,7 +74,7 @@ public class LayerManager : MonoBehaviour
     };
 
 
-    public GameObject chunkFrame = new GameObject();
+    public GameObject chunkFrame;
     
 
 

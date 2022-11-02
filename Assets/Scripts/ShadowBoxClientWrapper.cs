@@ -49,7 +49,6 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     private NetworkConnection connection;
     private bool active = false;
     void Start() {
-        this.driver = NetworkDriver.Create();
         // TODO さっさとやれ
     }
 
@@ -86,14 +85,23 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     public bool SendChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
         // まだ作り途中ですよ
         if (this.connection.IsCreated) {
+            this.driver.ScheduleUpdate().Complete();
+            if (!this.connection.IsCreated) {
+                return false;
+            }
             string sendDataTemp = "";
             foreach (int[] chunkRow in chunkData)
                 for (int i = 0; i < chunkRow.Length; i++)
                     sendDataTemp += chunkRow[i] + (i == chunkRow.Length - 1 ? "\n" : ",");
-            if ((this.driver.BeginSend(this.connection, out DataStreamWriter dsw) >= 0)) {
-                dsw.WriteFixedString4096(new FixedString4096Bytes(sendDataTemp));
+            
+            
+            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+            if (writer >= 0) {
+                dsw.WriteFixedString4096(new FixedString4096Bytes("SCH," + sendDataTemp));
+                Debug.Log(new FixedString4096Bytes("Sending Data:\n" + sendDataTemp));
                 this.driver.EndSend(dsw);
-            }
+            } else return false;
+            return true;
         }
         return false;
     }
@@ -105,16 +113,20 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="ipAddress">接続先IPアドレス。</param>
     /// <param name="port">接続先ポート番号。デフォルトは11781。</param>
     public void Connect(string ipAddress, int port) {
+
+        this.driver = NetworkDriver.Create();
         this.connectAddress = IPAddress.Parse(ipAddress);
-        endPoint = NetworkEndPoint.AnyIpv4;
-        using (NativeArray<byte> rawIpAddr = new NativeArray<byte>(this.connectAddress.GetAddressBytes().Length, Allocator.Temp)) {
-            endPoint.SetRawAddressBytes(rawIpAddr);
+        this.endPoint = NetworkEndPoint.AnyIpv4;
+        using (var rawIpAddr = new NativeArray<byte>(this.connectAddress.GetAddressBytes().Length, Allocator.TempJob)) {
+            rawIpAddr.CopyFrom(connectAddress.GetAddressBytes());
+            this.endPoint.SetRawAddressBytes(rawIpAddr);
         }
 
-        if (port < 1 || port > 65535) port = 11781;
         endPoint.Port = (ushort)port;
         this.connectPort = port;
         this.connection = this.driver.Connect(endPoint);
+        active = true;
+        Debug.Log("Connect to " + endPoint);
     }
 
     /// <summary>

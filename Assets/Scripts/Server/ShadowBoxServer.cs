@@ -6,6 +6,7 @@ using System.Text;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
+using UnityEngine.Assertions;
 using System.IO;
 
 public class ShadowBoxServer : MonoBehaviour {
@@ -29,7 +30,7 @@ public class ShadowBoxServer : MonoBehaviour {
     private NativeList<NetworkConnection> connectionList;
     private Dictionary<Guid, PlayerData> userList;
     private Dictionary<BlockLayer, int[][][]> layerCache;
-
+    private bool active = false;
     // Start is called before the first frame update
     void Start() {
 
@@ -65,35 +66,69 @@ public class ShadowBoxServer : MonoBehaviour {
     public void OnDestroy() {
         this.driver.Dispose();
         if(this.connectionList.IsCreated) {
-
             this.connectionList.Dispose();
         }
     }
 
     public bool StartServer(int port) {
+        this.driver = NetworkDriver.Create();
         var endpoint = NetworkEndPoint.AnyIpv4;
         endpoint.Port = (ushort)port;
-
+        Debug.Log("Trying to bind port " + port);
         if (this.driver.Bind(endpoint) != 0) {
             Debug.LogError("Failed to bind port " + port + ".");
             return false;
         } else this.driver.Listen();
-
         this.connectionList = new NativeList<NetworkConnection>(16, Allocator.Persistent);
         Debug.Log("Listen on " + port);
+        active = true;
         return true;
     }
 
     // Update is called once per frame
     void Update() {
+        if(active) {
+            this.driver.ScheduleUpdate().Complete();
 
+            for (int i = 0; i < this.connectionList.Length; i++) {
+                if (!this.connectionList[i].IsCreated) { //破棄されたコネクションを削除
+                    this.connectionList.RemoveAtSwapBack(i);
+                    i--;
+                }
+            }
+
+            NetworkConnection connection;
+            while ((connection = this.driver.Accept()) != default(NetworkConnection)) {
+                this.connectionList.Add(connection);
+            }
+
+            DataStreamReader stream;
+            for (int i = 0; i < this.connectionList.Length; i++) {
+                //コネクションが作成されているかどうか
+                Assert.IsTrue(this.connectionList[i].IsCreated);
+                
+                NetworkEvent.Type cmd;
+                while ((cmd = this.driver.PopEventForConnection(this.connectionList[i], out stream)) != NetworkEvent.Type.Empty) {
+                    if (cmd == NetworkEvent.Type.Data) {
+                        //データを受信したとき
+                        var receivedData = ("" + stream.ReadFixedString4096());
+                        if(receivedData.StartsWith("SCH")) {
+                            Debug.Log("Received Chunk Data: \n" + receivedData.Replace("SCH,", ""));
+                        }
+                    } else if (cmd == NetworkEvent.Type.Disconnect) {
+                        Debug.Log("Disconnected.");
+                        this.connectionList[i].Disconnect(driver);
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>
     /// 内部サーバー(127.0.0.1:11781)を作成する
     /// </summary>
     public void CreateInternalServer() {
-
+        StartServer(11781);
     }
 
     /// <summary>

@@ -97,7 +97,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
             
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
-                dsw.WriteFixedString4096(new FixedString4096Bytes("SCH," + sendDataTemp));
+                dsw.WriteFixedString4096(new FixedString4096Bytes("SCH," + layerID + "," + chunkID + "," + sendDataTemp));
                 Debug.Log(new FixedString4096Bytes("Sending Data:\n" + sendDataTemp));
                 this.driver.EndSend(dsw);
             } else return false;

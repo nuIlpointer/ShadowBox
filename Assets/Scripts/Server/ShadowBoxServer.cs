@@ -33,21 +33,15 @@ public class ShadowBoxServer : MonoBehaviour {
     private bool active = false;
     // Start is called before the first frame update
     void Start() {
-
-
         // 以下デバッグ 
          /*
 
         //仮で適当なintのArrayを生成する
         int[][] arr = {
             new int[] {1, 2, 3, 4, 5},
-
             new int[] {1, 2, 3, 4, 5},
-
             new int[] {1, 2, 3, 4, 5},
-
             new int[] {1, 2, 3, 4, 5},
-
             new int[] {1, 2, 3, 4, 5},
         };
 
@@ -68,6 +62,14 @@ public class ShadowBoxServer : MonoBehaviour {
         if(this.connectionList.IsCreated) {
             this.connectionList.Dispose();
         }
+    }
+
+    /// <summary>
+    /// StartServer()が実行済か確認する
+    /// </summary>
+    /// <returns>実行済かどうかの bool 値</returns>
+    public bool IsActive() {
+        return active;
     }
 
     public bool StartServer(int port) {
@@ -112,8 +114,9 @@ public class ShadowBoxServer : MonoBehaviour {
                     if (cmd == NetworkEvent.Type.Data) {
                         //データを受信したとき
                         var receivedData = ("" + stream.ReadFixedString4096());
-                        if(receivedData.StartsWith("SCH")) {
-                            Debug.Log("Received Chunk Data: \n" + receivedData.Replace("SCH,", ""));
+                        if(receivedData.StartsWith("SCH")) { //チャンクを受信したとき
+                            receivedData = receivedData.Replace("SCH,", "");
+                            Debug.Log("Received Chunk Data: \n" + receivedData);
                         }
                     } else if (cmd == NetworkEvent.Type.Disconnect) {
                         Debug.Log("Disconnected.");

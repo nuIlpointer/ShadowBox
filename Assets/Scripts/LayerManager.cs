@@ -44,6 +44,7 @@ public class LayerManager : MonoBehaviour
     public bool transparency = false;
     private bool started = false;
 
+    
 
     int[,] testcase1 = new int[,]{
         { 5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5 },

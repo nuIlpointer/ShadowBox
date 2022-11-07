@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.Assertions;
-using System.IO;
 
 public class ShadowBoxServer : MonoBehaviour {
     public enum BlockLayer {
@@ -18,12 +18,13 @@ public class ShadowBoxServer : MonoBehaviour {
     }
 
     public struct PlayerData {
-        string name;
-        int skinType;
-        Guid playerID;
-        float playerX;
-        float playerY;
-        BlockLayer playerLayer;
+        public string name;
+        public int skinType;
+        public Guid playerID;
+        public float playerX;
+        public float playerY;
+        public BlockLayer playerLayer;
+        public override string ToString() => $"{name},{skinType},{playerID.ToString()},{playerX},{playerY},{playerLayer}";
     }
 
     private NetworkDriver driver;
@@ -33,25 +34,26 @@ public class ShadowBoxServer : MonoBehaviour {
     private bool active = false;
     // Start is called before the first frame update
     void Start() {
+        userList = new Dictionary<Guid, PlayerData>();
         // 以下デバッグ 
-         /*
+        /*
 
-        //仮で適当なintのArrayを生成する
-        int[][] arr = {
-            new int[] {1, 2, 3, 4, 5},
-            new int[] {1, 2, 3, 4, 5},
-            new int[] {1, 2, 3, 4, 5},
-            new int[] {1, 2, 3, 4, 5},
-            new int[] {1, 2, 3, 4, 5},
-        };
+       //仮で適当なintのArrayを生成する
+       int[][] arr = {
+           new int[] {1, 2, 3, 4, 5},
+           new int[] {1, 2, 3, 4, 5},
+           new int[] {1, 2, 3, 4, 5},
+           new int[] {1, 2, 3, 4, 5},
+           new int[] {1, 2, 3, 4, 5},
+       };
 
-        //チャンクライターテスト
-        SaveChunk(BlockLayer.InsideBlock, 0, arr);
+       //チャンクライターテスト
+       SaveChunk(BlockLayer.InsideBlock, 0, arr);
 
-        //チャンクリーダーテスト
-        foreach (int[] larr in LoadChunk(BlockLayer.InsideBlock, 0))
-            Debug.Log(string.Join(",", larr));
-        // */
+       //チャンクリーダーテスト
+       foreach (int[] larr in LoadChunk(BlockLayer.InsideBlock, 0))
+           Debug.Log(string.Join(",", larr));
+       // */
     }
 
     /// <summary>
@@ -59,7 +61,7 @@ public class ShadowBoxServer : MonoBehaviour {
     /// </summary>
     public void OnDestroy() {
         this.driver.Dispose();
-        if(this.connectionList.IsCreated) {
+        if (this.connectionList.IsCreated) {
             this.connectionList.Dispose();
         }
     }
@@ -89,7 +91,7 @@ public class ShadowBoxServer : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if(active) {
+        if (active) {
             this.driver.ScheduleUpdate().Complete();
 
             for (int i = 0; i < this.connectionList.Length; i++) {
@@ -108,15 +110,29 @@ public class ShadowBoxServer : MonoBehaviour {
             for (int i = 0; i < this.connectionList.Length; i++) {
                 //コネクションが作成されているかどうか
                 Assert.IsTrue(this.connectionList[i].IsCreated);
-                
+
                 NetworkEvent.Type cmd;
                 while ((cmd = this.driver.PopEventForConnection(this.connectionList[i], out stream)) != NetworkEvent.Type.Empty) {
                     if (cmd == NetworkEvent.Type.Data) {
                         //データを受信したとき
-                        var receivedData = ("" + stream.ReadFixedString4096());
-                        if(receivedData.StartsWith("SCH")) { //チャンクを受信したとき
+                        String receivedData = ("" + stream.ReadFixedString4096());
+                        if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
                             receivedData = receivedData.Replace("SCH,", "");
                             Debug.Log("Received Chunk Data: \n" + receivedData);
+                        }
+
+                        if (receivedData.StartsWith("SPD")) { //プレイヤーデータを受信したとき
+                            var dataArr = receivedData.Split(',');
+                            PlayerData newPlayer;
+                            newPlayer.name = dataArr[1];
+                            newPlayer.skinType = Int32.Parse(dataArr[2]);
+                            newPlayer.playerID = Guid.Parse(dataArr[3]);
+                            newPlayer.playerX = float.Parse(dataArr[4]);
+                            newPlayer.playerY = float.Parse(dataArr[5]);
+                            newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[6]);
+                            userList[Guid.Parse(dataArr[3])] = newPlayer;
+
+                            Debug.Log("ADD USER DATA: " + userList[Guid.Parse(dataArr[3])].ToString());
                         }
                     } else if (cmd == NetworkEvent.Type.Disconnect) {
                         Debug.Log("Disconnected.");
@@ -141,12 +157,12 @@ public class ShadowBoxServer : MonoBehaviour {
     /// <param name="chunkID">チャンクのID</param>
     /// <param name="chunkData">保存するデータ</param>
     void SaveChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
-        if(!Directory.Exists("./worlddata/")) {
+        if (!Directory.Exists("./worlddata/")) {
             Directory.CreateDirectory("./worlddata");
         }
         string fileName = "./worlddata/" + layerID + ".chunk" + chunkID + ".dat";
         using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
-            foreach(int[] row in chunkData)
+            foreach (int[] row in chunkData)
                 writer.WriteLine(string.Join(",", row));
         }
     }
@@ -160,7 +176,7 @@ public class ShadowBoxServer : MonoBehaviour {
     /// <returns></returns>
     int[][]? LoadChunk(BlockLayer layerID, int chunkId) {
         string fileName = "./worlddata/" + layerID + ".chunk" + chunkId + ".dat";
-        if(File.Exists(fileName)) {
+        if (File.Exists(fileName)) {
             List<int[]> tempList = new List<int[]>();
             using (var reader = new StreamReader(fileName, Encoding.UTF8)) {
                 while (0 <= reader.Peek())

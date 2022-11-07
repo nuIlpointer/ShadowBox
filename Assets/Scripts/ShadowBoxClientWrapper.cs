@@ -1,8 +1,8 @@
-using UnityEngine;
-using Unity.Networking.Transport;
-using System.Net;
 using System;
+using System.Net;
 using Unity.Collections;
+using Unity.Networking.Transport;
+using UnityEngine;
 
 public class ShadowBoxClientWrapper : MonoBehaviour {
     public enum BlockLayer {
@@ -13,12 +13,13 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     public struct PlayerData {
-        string name;
-        int skinType;
-        Guid playerID;
-        float playerX;
-        float playerY;
-        BlockLayer playerLayer;
+        public string name;
+        public int skinType;
+        public Guid playerID;
+        public float playerX;
+        public float playerY;
+        public BlockLayer playerLayer;
+        public override string ToString() => $"{name},{skinType},{playerID.ToString("N")},{playerX},{playerY},{playerLayer}";
     }
 
     public struct EditBuffer {
@@ -83,7 +84,6 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="chunkData">送信するチャンク情報</param>
     /// <returns>送信に成功したか</returns>
     public bool SendChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
-        // まだ作り途中ですよ
         if (this.connection.IsCreated) {
             this.driver.ScheduleUpdate().Complete();
             if (!this.connection.IsCreated) {
@@ -93,8 +93,8 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
             foreach (int[] chunkRow in chunkData)
                 for (int i = 0; i < chunkRow.Length; i++)
                     sendDataTemp += chunkRow[i] + (i == chunkRow.Length - 1 ? "\n" : ",");
-            
-            
+
+
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes("SCH," + layerID + "," + chunkID + "," + sendDataTemp));
@@ -135,8 +135,22 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="name">他人に表示される名前</param>
     /// <param name="skinID">他人から表示される見た目(いるか？これ)</param>
     /// <returns>サーバーに登録されたPlayerData</returns>
-    public PlayerData SetPlayerData(string name, int skinID) {
-        return new PlayerData { };
+    public PlayerData SetPlayerData(string name, int skinID, float playerX, float playerY, BlockLayer blockLayer) {
+        PlayerData newPlayer;
+        newPlayer.name = name;
+        newPlayer.skinType = skinID;
+        newPlayer.playerID = Guid.NewGuid();
+        newPlayer.playerX = playerX;
+        newPlayer.playerY = playerY;
+        newPlayer.playerLayer = blockLayer;
+
+        var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+        if (writer >= 0) {
+            dsw.WriteFixedString4096(new FixedString4096Bytes("SPD," + newPlayer));
+            Debug.Log(new FixedString4096Bytes("Sending Data:\n" + newPlayer));
+            this.driver.EndSend(dsw);
+        }
+        return newPlayer;
     }
 
 #nullable enable
@@ -217,19 +231,19 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="editBuffer">送信するEditBuffer</param>
     /// <param name="layer">EditBufferの中で更新を通知するLayer</param>
     public void SendEditBuffer(Guid workspaceGuid, EditBuffer editBuffer, BlockLayer layer) {
-    
+
     }
 
     /// <summary>
     /// ブロック単位のWorkspaceに発生した変更を通知する。
-    /// </summary>
+    /// </summary>00
     /// <param name="workspaceGuid">変更が発生したWorkspaceのGuid</param>
     /// <param name="layer">変更が発生したEditBufferレイヤー</param>
     /// <param name="relativeX">EditBufferの左上を起点とした変更点の相対座標X</param>
     /// <param name="relativeY">EditBufferの左上を起点とした変更点の相対座標Y</param>
     /// <param name="blockID">変更先のブロックID</param>
     public void SendEditBufferBlockChange(Guid workspaceGuid, BlockLayer layer, int relativeX, int relativeY, int blockID) {
-    
+
     }
 
     /// <summary>

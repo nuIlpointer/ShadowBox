@@ -42,6 +42,7 @@ public class SBoxTest : MonoBehaviour {
             }
             time = 0;
             if (client.GetComponent<ShadowBoxClientWrapper>().SendChunk(ShadowBoxClientWrapper.BlockLayer.InsideWall, 0, testarr)) Debug.Log("送信成功");
+            client.GetComponent<ShadowBoxClientWrapper>().SetPlayerData("UNKO", 3, 10.2f, 123.4f, ShadowBoxClientWrapper.BlockLayer.OutsideWall);
         }
     }
 }

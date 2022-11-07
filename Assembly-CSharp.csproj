@@ -48,6 +48,7 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\ShadowBoxClientWrapper.cs" />
+     <Compile Include="Assets\Scripts\SBoxTest.cs" />
      <Compile Include="Assets\Scripts\Server\ShadowBoxServer.cs" />
  <Reference Include="UnityEngine">
  <HintPath>C:/Unity/2020.3.8f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>

@@ -197,6 +197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ae20884834297e449eca762eb3dbf16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layerName: InsideWall
   makeTest: 1
   insTestCase: 1
   transparency: 0
@@ -245,7 +246,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ae20884834297e449eca762eb3dbf16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  makeTest: 0
+  layerName: OutsideWall
+  makeTest: 1
   insTestCase: 1
   transparency: 0
   chunkFrame: {fileID: 1621712934}
@@ -281,8 +283,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b17fecea128353a48814e71153b88e74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pos: {x: 0, y: 0, z: -1}
-  wl: {fileID: 1724355517}
 --- !u!65 &1055920140
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -563,7 +563,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ae20884834297e449eca762eb3dbf16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  makeTest: 0
+  layerName: OutsideBlock
+  makeTest: 1
   insTestCase: 1
   transparency: 0
   chunkFrame: {fileID: 1926622003}
@@ -737,7 +738,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ae20884834297e449eca762eb3dbf16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  makeTest: 0
+  layerName: InsideBlock
+  makeTest: 1
   insTestCase: 1
   transparency: 0
   chunkFrame: {fileID: 1075138319}

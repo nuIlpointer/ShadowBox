@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 public class WorldLoader : MonoBehaviour
@@ -21,7 +18,7 @@ public class WorldLoader : MonoBehaviour
     public InitialProcess ip;
     public ShadowBoxClientWrapper wrapper;
     int lastMakePoint = -1;
-    
+
 
     public bool autoSetCompnents = false;
 
@@ -31,23 +28,31 @@ public class WorldLoader : MonoBehaviour
     private bool started = false;
 
     private bool[] liveChunk;
+
+
     // Start is called before the first frame update
     void Start()
     {
-        if (autoSetCompnents) {
+        if (autoSetCompnents)
+        {
             wrapper = gameObject.GetComponent<ShadowBoxClientWrapper>();
             ip = gameObject.GetComponent<InitialProcess>();
             layers[1] = transform.Find("LayerInsideWall").GetComponent<LayerManager>();
             layers[2] = transform.Find("LayerInsideBlock").GetComponent<LayerManager>();
             layers[3] = transform.Find("LayerOutsideWall").GetComponent<LayerManager>();
             layers[4] = transform.Find("LayerOutsideBlock").GetComponent<LayerManager>();
-            
+
         }
+
         cNumX = ip.chunksNumX;
         cNumY = ip.chunksNumY;
         cSize = ip.chunkSize;
 
         liveChunk = new bool[9];
+        
+        
+        lastLoad = new int[]{-1,-1,-1,-1,-1,-1,-1,-1,-1 };
+        
 
         started = true;
     }
@@ -62,8 +67,63 @@ public class WorldLoader : MonoBehaviour
     /// <summary>
     ///指定位置周辺のチャンクを生成
     /// </summary>
-    /// <param name="pos">基準座標を指定</param>
-    public void LoadChunks(Vector2 pos)
+    /// <param name="pos">基準座標を指定(vector3)</param>
+    public void LoadChunks(Vector3 pos)
+    {
+        if (!started) { Start(); }
+
+        int chunkNumber = PosToChunkNum((int)pos.x, (int)pos.y);
+        loaded[0] = chunkNumber;
+
+        bool up = false, lo = false, ri = false, le = false;
+
+        if ((loaded[1] = chunkNumber + cNumX) >= cNumX * cNumY) { loaded[1] = -1; } else { up = true; }
+        if ((loaded[2] = chunkNumber - cNumX) < 0)              { loaded[2] = -1; } else { lo = true; }
+        if ((loaded[3] = chunkNumber + 1) % cNumX == 0)         { loaded[3] = -1; } else { ri = true; }
+        if ((loaded[4] = chunkNumber - 1) % cNumX == cNumX - 1) { loaded[4] = -1; } else { le = true; }
+
+        if (up && ri) { loaded[5] = loaded[1] + 1; } else { loaded[5] = -1; }
+        if (lo && ri) { loaded[6] = loaded[2] + 1; } else { loaded[6] = -1; }
+        if (up && ri) { loaded[7] = loaded[2] - 1; } else { loaded[7] = -1; }
+        if (up && ri) { loaded[8] = loaded[1] - 1; } else { loaded[8] = -1; }
+
+        //ロード被り判定
+        for(int i = 0; i < 9; i++){
+            if (checkLoaded(loaded[i])){
+                loaded[i] = -1;
+            }
+        }
+
+        //死んだチャンクを検出
+        for(int i = 0; i < 9; i++) {
+            if(lastLoad[i] != -1) {
+                if (checkDie(lastLoad[i])) {
+                    for (int j = 1; j <= 4; j++) {
+                        layers[j].RemoveChunk(lastLoad[i]);
+                        Debug.Log(layers[j].name + "> 消去　チャンクナンバー:" + lastLoad[i]);
+                    }
+                }
+            }
+        }
+
+
+        lastLoad = loaded;
+
+        for(int i = 0; i < 9; i++){
+            if(loaded[i] != -1)
+            {
+                for(int j = 1; j <= 4; j++)
+                {
+                    Debug.Log(layers[j].name + "> 生成　チャンクナンバー:" + loaded[i]);
+                    layers[j].MakeChunk(loaded[i]);
+                }
+            }
+        }
+
+
+
+    }
+    /*public void LoadChunks(Vector2 pos)
     {
 
         if (!started) { Start(); }
@@ -73,39 +133,39 @@ public class WorldLoader : MonoBehaviour
 
         //Debug.LogWarning(layers[1] + " " + layers[2] + " " + layers[3] + " " + layers[4]);
         int chunkNumber = ((int)pos.x / cSize) + cNumX * ((int)pos.y / cSize);
-        loaded[0] = chunkNumber;
+        loading[0] = chunkNumber;
         Debug.Log("number:"+chunkNumber);
         if(chunkNumber != lastMakePoint) {
             for (int i = 1; i <= 4; i++) {
                 layers[i].MakeChunk(chunkNumber);
                 Debug.LogWarning(i);
                 bool up = false, lo = false, le = false, ri = false;
-                if((loaded[1] = chunkNumber - cNumX) >= 0) {
-                    if (!checkLoaded(loaded[1])) { layers[i].MakeChunk(loaded[1]); } 
+                if((loading[1] = chunkNumber - cNumX) >= 0) {
+                    if (!checkLoaded(loading[1])) { layers[i].MakeChunk(loading[1]); } 
                     up = true; 
                 }
-                if((loaded[2] = chunkNumber + cNumX) < cNumX * cNumY) {
-                    if (!checkLoaded(loaded[2])) { layers[i].MakeChunk(loaded[2]); }
+                if((loading[2] = chunkNumber + cNumX) < cNumX * cNumY) {
+                    if (!checkLoaded(loading[2])) { layers[i].MakeChunk(loading[2]); }
                     lo = true; 
                 }
-                if((loaded[3] = chunkNumber - 1) / cNumX != cNumX - 1)  {
-                    if (!checkLoaded(loaded[3])) { layers[i].MakeChunk(loaded[3]); }
+                if((loading[3] = chunkNumber - 1) / cNumX != cNumX - 1)  {
+                    if (!checkLoaded(loading[3])) { layers[i].MakeChunk(loading[3]); }
                     ri = true;
                 }
-                if((loaded[4] = chunkNumber + 1) / cNumX != 0) {
-                    if (!checkLoaded(loaded[4])) { layers[i].MakeChunk(loaded[4]); }
+                if((loading[4] = chunkNumber + 1) / cNumX != 0) {
+                    if (!checkLoaded(loading[4])) { layers[i].MakeChunk(loading[4]); }
                     le = true;
                 }
-                if(!checkLoaded((loaded[5] = chunkNumber - cNumX + 1)) && up && ri) layers[i].MakeChunk(loaded[5]); 
-                if(!checkLoaded((loaded[6] = chunkNumber + cNumX + 1)) && lo && ri) layers[i].MakeChunk(loaded[6]); 
-                if(!checkLoaded((loaded[7] = chunkNumber + cNumX - 1)) && lo && le) layers[i].MakeChunk(loaded[7]);
-                if(!checkLoaded((loaded[8] = chunkNumber - cNumX - 1)) && up && le) layers[i].MakeChunk(loaded[8]);
+                if(!checkLoaded((loading[5] = chunkNumber - cNumX + 1)) && up && ri) layers[i].MakeChunk(loading[5]); 
+                if(!checkLoaded((loading[6] = chunkNumber + cNumX + 1)) && lo && ri) layers[i].MakeChunk(loading[6]); 
+                if(!checkLoaded((loading[7] = chunkNumber + cNumX - 1)) && lo && le) layers[i].MakeChunk(loading[7]);
+                if(!checkLoaded((loading[8] = chunkNumber - cNumX - 1)) && up && le) layers[i].MakeChunk(loading[8]);
 
                 for(int j = 0; j < 9; j++){
                     bool diedChunk = false;
                     for(int k = 0; k < 9; k++){
-                        if(lastLoad[j] == loaded[k]){
-                            diedChunk = true;
+                        if(lastLoad[j] == loading[k]){
+                            diedChunk = true; Debug.Log("loaded:"+lastLoad[i]);
                         }
                     }
                     if (diedChunk){
@@ -120,17 +180,24 @@ public class WorldLoader : MonoBehaviour
             }
         }
     }
-
+    */
     public bool checkLoaded(int cn)
     {
-        for(int i = 0; i < 9; i++)
+        for (int i = 0; i < 9; i++)
         {
-            if(lastLoad[i] == cn)
+            if (lastLoad[i] == cn)
             {
                 return true;
-            } 
+            }
         }
         return false;
+    }
+
+    public bool checkDie(int cn) {
+        for(int i = 0; i < 9; i++) {
+            if(loaded[i] == cn) { return false; }
+        }
+        return true;
     }
 
     /// <summary>
@@ -140,8 +207,9 @@ public class WorldLoader : MonoBehaviour
     /// <param name="layer"></param>
     /// <param name="chunkNumber"></param>
     /// <returns></returns>
-    public bool ChunkUpdate(int[][] blocks, int layer, int chunkNumber) {
-        
+    public bool ChunkUpdate(int[][] blocks, int layer, int chunkNumber)
+    {
+
         return true;
     }
 
@@ -154,8 +222,9 @@ public class WorldLoader : MonoBehaviour
     /// <returns></returns>
     public int PosToChunkNum(int x, int y)
     {
-        if (!started) {
-            Start(); 
+        if (!started)
+        {
+            Start();
         }
         int ChunkNum = (x / cSize) + cNumX * (y / cSize);
         return ChunkNum;

@@ -9,6 +9,10 @@ public class LayerManager : MonoBehaviour
     /// <summary>
     /// ブロックIDリスト
     /// </summary>
+    /// 
+
+    public String layerName;
+
     public enum BLOCK_ID {
         unknown     = -1,
         air         = 0,
@@ -79,7 +83,6 @@ public class LayerManager : MonoBehaviour
     
 
 
-
     // Start is called before the first frame update
 
 
@@ -126,44 +129,68 @@ public class LayerManager : MonoBehaviour
     /// 指定チャンク内のブロックを生成[テスト版]
     /// </summary>
     /// <param name="chankNumber">チャンク番号</param>
-    public void MakeChunk(int chunkNumber) {
+    /*public void MakeChunk(int chunkNumber)
+    {
+        if (!started) { Start(); }
+
+
+        if (makeTest)
+        {
+            Debug.Log(layerName + " > チャンクを生成:" + chunkNumber);
+        }
+
+        chunkFrame = Instantiate(chunkFrame);
+        chunkFrame.transform.parent = transform;
+        chunkFrame.name = "chunk" + chunkNumber
+
+
+    }*/
+    public void MakeChunk(int chunkNumber)
+    {
         //テスト用ログ
-        if (!started) {
+        if (!started)
+        {
             Start();
         }
 
-        if (makeTest) {
+        if (makeTest)
+        {
             //Debug.Log(this.gameObject.name + " seisei:"+ chunkNumber + " " + );
         }
+        Debug.LogWarning(name + " > "+chunkNumber + "  " + chunks.Length);
+        chunks[chunkNumber].blocks[0, 0] = chunkNumber;//テスト用
 
-        chunks[chunkNumber].blocks[0,0] = chunkNumber;//テスト用
 
 
-
-        chunkFrame =  Instantiate(chunkFrame);
+        chunkFrame = Instantiate(chunkFrame);
         chunkFrame.transform.parent = transform;
-        chunkFrame.name = "chunk"+chunkNumber;
+        chunkFrame.name = "chunk" + chunkNumber;
         Transform frame = chunkFrame.transform;
 
         Vector2Int posBase = new Vector2Int(chunkNumber % cNumX * cSize, chunkNumber / cNumX * cSize);
         Vector3Int pos = new Vector3Int(0, 0, 0);
         chunkFrame.transform.localPosition = new Vector3(posBase.x, posBase.y, 0);
 
-        if (makeTest) {
+        if (makeTest)
+        {
             Debug.Log(this.gameObject.name + " seisei:" + chunkNumber + "   " + chunkFrame.name + " " + chunkFrame.transform.position.x + " " + chunkFrame.transform.position.y);
         }
 
-       
-        foreach (int id in Enum.GetValues(typeof(BLOCK_ID))) {
+
+        foreach (int id in Enum.GetValues(typeof(BLOCK_ID)))
+        {
             //Debug.Log(" id:"+Enum.GetName(typeof(BLOCK_ID), id));
 
             //ブロックプレハブ取得
-            block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID),id));
+            block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));
             if (block == null) { block = (GameObject)Resources.Load("Blocks/unknown"); }
 
-            for (int px = 0; px < cSize; px++) {
-                for (int py = 0; py < cSize; py++) {
-                    if(chunks[chunkNumber].blocks[py,px] == id && id != 0) {
+            for (int px = 0; px < cSize; px++)
+            {
+                for (int py = 0; py < cSize; py++)
+                {
+                    if (chunks[chunkNumber].blocks[py, px] == id && id != 0)
+                    {
                         pos.x = posBase.x + px;
                         pos.y = posBase.y + py;
                         block = Instantiate(block, frame);

@@ -84,8 +84,8 @@ public class WorldLoader : MonoBehaviour
 
         if (up && ri) { loaded[5] = loaded[1] + 1; } else { loaded[5] = -1; }
         if (lo && ri) { loaded[6] = loaded[2] + 1; } else { loaded[6] = -1; }
-        if (up && ri) { loaded[7] = loaded[2] - 1; } else { loaded[7] = -1; }
-        if (up && ri) { loaded[8] = loaded[1] - 1; } else { loaded[8] = -1; }
+        if (lo && le) { loaded[7] = loaded[2] - 1; } else { loaded[7] = -1; }
+        if (up && le) { loaded[8] = loaded[1] - 1; } else { loaded[8] = -1; }
 
         //ƒ[ƒh”í‚è”»’è
         for(int i = 0; i < 9; i++){
@@ -123,6 +123,7 @@ public class WorldLoader : MonoBehaviour
 
 
     }
+    
     /*public void LoadChunks(Vector2 pos)
     {
 
@@ -181,6 +182,7 @@ public class WorldLoader : MonoBehaviour
         }
     }
     */
+    
     public bool checkLoaded(int cn)
     {
         for (int i = 0; i < 9; i++)

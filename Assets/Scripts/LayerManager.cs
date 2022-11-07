@@ -78,7 +78,7 @@ public class LayerManager : MonoBehaviour
         { 5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5 }
     };
 
-
+    public GameObject CHUNK_FRAME;
     public GameObject chunkFrame;
     
 
@@ -113,7 +113,9 @@ public class LayerManager : MonoBehaviour
             }
         }
         //chunks初期化ここまで
-        
+
+        CHUNK_FRAME = new GameObject();
+        Destroy(CHUNK_FRAME);
 
         started = true;
     }
@@ -155,15 +157,15 @@ public class LayerManager : MonoBehaviour
 
         if (makeTest)
         {
-            //Debug.Log(this.gameObject.name + " seisei:"+ chunkNumber + " " + );
+            //Debug.Log(this.gameObject.name + " > seisei:"+ chunkNumber + " ");
         }
         Debug.LogWarning(name + " > "+chunkNumber + "  " + chunks.Length);
         chunks[chunkNumber].blocks[0, 0] = chunkNumber;//テスト用
 
 
 
-        chunkFrame = Instantiate(chunkFrame);
-        chunkFrame.transform.parent = transform;
+        chunkFrame = Instantiate(CHUNK_FRAME);
+        chunkFrame.transform.parent = this.transform;
         chunkFrame.name = "chunk" + chunkNumber;
         Transform frame = chunkFrame.transform;
 
@@ -173,7 +175,7 @@ public class LayerManager : MonoBehaviour
 
         if (makeTest)
         {
-            Debug.Log(this.gameObject.name + " seisei:" + chunkNumber + "   " + chunkFrame.name + " " + chunkFrame.transform.position.x + " " + chunkFrame.transform.position.y);
+            Debug.Log(this.gameObject.name + " > seisei:" + chunkNumber + "   " + chunkFrame.name + " pos:" + chunkFrame.transform.position.x + " , " + chunkFrame.transform.position.y);
         }
 
 

@@ -19,7 +19,7 @@ public class generaTester : MonoBehaviour
 
         //layers[0] = gameObject.AddComponent<LayerManager>();
         wl = GetComponent<WorldLoader>();
-        wl.LoadChunks(new Vector2((float)30.0,(float)10.0));
+        wl.LoadChunks(new Vector2((float)30.0,(float)10.0));//chunkNumber 1(¶‚©‚ç2”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
         /*int cNumX = 4;
         int cNumY = 2;
         int cSize = 25;

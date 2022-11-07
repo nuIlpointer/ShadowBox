@@ -201,6 +201,7 @@ MonoBehaviour:
   makeTest: 1
   insTestCase: 1
   transparency: 0
+  CHUNK_FRAME: {fileID: 0}
   chunkFrame: {fileID: 684850218}
 --- !u!1 &933180727
 GameObject:
@@ -250,6 +251,7 @@ MonoBehaviour:
   makeTest: 1
   insTestCase: 1
   transparency: 0
+  CHUNK_FRAME: {fileID: 0}
   chunkFrame: {fileID: 1621712934}
 --- !u!1 &1055920138
 GameObject:
@@ -517,7 +519,7 @@ MonoBehaviour:
   - {fileID: 1996666299}
   - {fileID: 814373629}
   ip: {fileID: 1724355513}
-  wrapper: {fileID: 0}
+  wrapper: {fileID: 1724355514}
   autoSetCompnents: 0
 --- !u!1 &1839662134
 GameObject:
@@ -567,6 +569,7 @@ MonoBehaviour:
   makeTest: 1
   insTestCase: 1
   transparency: 0
+  CHUNK_FRAME: {fileID: 1926622003}
   chunkFrame: {fileID: 1926622003}
 --- !u!1 &1906975256
 GameObject:
@@ -742,4 +745,5 @@ MonoBehaviour:
   makeTest: 1
   insTestCase: 1
   transparency: 0
+  CHUNK_FRAME: {fileID: 0}
   chunkFrame: {fileID: 1075138319}

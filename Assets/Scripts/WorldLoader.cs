@@ -85,7 +85,7 @@ public class WorldLoader : MonoBehaviour
         if ((loaded[1] = chunkNumber + cNumX) >= cNumX * cNumY) { loaded[1] = -1; } else { up = true; }
         if ((loaded[2] = chunkNumber - cNumX) < 0)              { loaded[2] = -1; } else { lo = true; }
         if ((loaded[3] = chunkNumber + 1) % cNumX == 0)         { loaded[3] = -1; } else { ri = true; }
-        if ((loaded[4] = chunkNumber - 1) % cNumX == cNumX - 1) { loaded[4] = -1; } else { le = true; }
+        if ((loaded[4] = chunkNumber - 1) % cNumX == cNumX - 1 || chunkNumber == 0) { loaded[4] = -1; } else { le = true; }
 
         if (up && ri) { loaded[5] = loaded[1] + 1; } else { loaded[5] = -1; }
         if (lo && ri) { loaded[6] = loaded[2] + 1; } else { loaded[6] = -1; }
@@ -93,7 +93,7 @@ public class WorldLoader : MonoBehaviour
         if (up && le) { loaded[8] = loaded[1] - 1; } else { loaded[8] = -1; }
         
         for(int i = 0; i < 9; i++) {
-            liveChunk[i] = loaded[i];//Debug.LogWarning($"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<{loaded[i]}>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            liveChunk[i] = loaded[i];Debug.LogWarning($"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<{loaded[i]}>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         }
 
 
@@ -101,9 +101,10 @@ public class WorldLoader : MonoBehaviour
         for (int i = 0; i < 9; i++) {
             if (lastLoad[i] != -1) {
                 if (checkDie(lastLoad[i])) {
+                    Debug.Log("消去　チャンクナンバー:" + lastLoad[i]);
                     for (int j = 1; j <= 4; j++) {
                         layers[j].RemoveChunk(lastLoad[i]);
-                        //Debug.Log(layers[j].name + "> 消去　チャンクナンバー:" + lastLoad[i]);
+                        
                     }
                 }
             }
@@ -113,6 +114,7 @@ public class WorldLoader : MonoBehaviour
         //ロード被り判定
         for(int i = 0; i < 9; i++){
             if (checkLoaded(loaded[i])){
+                Debug.Log("被り　チャンクナンバー："+loaded[i]);
                 loaded[i] = -1;
             }
         }
@@ -121,14 +123,15 @@ public class WorldLoader : MonoBehaviour
         
 
         for(int i = 0; i < 9; i++) {
-            lastLoad[i] = loaded[i];
+            lastLoad[i] = liveChunk[i];
         }
         
 
         for(int i = 0; i < 9; i++){
             if(loaded[i] != -1){
-                for(int j = 1; j <= 4; j++){
-                    //Debug.Log(layers[j].name + "> 生成　チャンクナンバー:" + loaded[i]);
+                Debug.Log("生成　チャンクナンバー:" + loaded[i]);
+                for (int j = 1; j <= 4; j++){
+                    
                     layers[j].MakeChunk(loaded[i]);
                 }
             }
@@ -193,14 +196,12 @@ public class WorldLoader : MonoBehaviour
     /// <returns></returns>
     public bool ChunkUpdate(int[][] blocks, int layerNumber, int chunkNumber)
     {
-        if (!started) { Start();Debug.Log("強制スタート" ) ; }
-        
-        Debug.Log($"{layers[1]} {layers[2]} {layers[3]} {layers[4]} {layerNumber}");
-        layers[1].MakeChunk(0);
+        if (!started) { Start();}
+        //Debug.Log($"{layers[1]} {layers[2]} {layers[3]} {layers[4]} {layerNumber}");
 
         layers[layerNumber].UpdateChunk(blocks, chunkNumber);
         
-        //Debug.Log(checkLive(chunkNumber));
+        Debug.Log($"checkLive({chunkNumber}):"+checkLive(chunkNumber));
         if (checkLive(chunkNumber)) {
             layers[layerNumber].RemoveChunk(chunkNumber);
             layers[layerNumber].MakeChunk(chunkNumber);

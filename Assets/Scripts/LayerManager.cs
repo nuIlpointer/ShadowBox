@@ -216,6 +216,7 @@ public class LayerManager : MonoBehaviour
     public void RemoveChunk(int chunkNumber) {
 
         try {
+            Debug.Log(name + " > ƒŠƒ€[ƒuF"+ chunkNumber);
             Destroy(chunkFrame[chunkNumber]);
             chunkFrame[chunkNumber] = Instantiate(CHUNK_FRAME);
             chunkFrame[chunkNumber].transform.parent = this.gameObject.transform;
@@ -238,6 +239,5 @@ public class LayerManager : MonoBehaviour
     public void UpdateChunk(int[][] blocks, int chunkNumber) {
         if (!started) Start();
         chunks[chunkNumber].blocks = blocks;
-
     }
 }   

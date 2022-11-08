@@ -75,11 +75,12 @@ public class generaTester : MonoBehaviour
         */
         
         for (int i = 0; i < 4; i++) {
+            Debug.Log("generaTester > グラウンド入れる　chunkNumber : " + i);
             for (int j = 1; j <= 4; j++) {
-                Debug.Log(i + " " + j);
                 wl.ChunkUpdate(ground, j, i);
             }
         }
+        Debug.Log("generaTester > ロードチャンク　chunkNumber : " + 0);
         wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 
 

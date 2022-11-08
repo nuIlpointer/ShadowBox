@@ -9,6 +9,34 @@ public class generaTester : MonoBehaviour
     LayerManager[] layers;
     public int chunkNumber = 3;
     // Start is called before the first frame update
+
+    int[][] testcase1 = {
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,2,2,2,2,2,2,2,2,2,2,2,2,2,2,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,2,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,2,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,2,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,2,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,2,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,2,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,2,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,2,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 },
+        new int[] { 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5 }
+        };
     void Start()
     {
         GameObject block;
@@ -20,25 +48,21 @@ public class generaTester : MonoBehaviour
         //layers[0] = gameObject.AddComponent<LayerManager>();
         wl = GetComponent<WorldLoader>();
         wl.LoadChunks(new Vector2((float)30.0,(float)10.0));//chunkNumber 1(¶‚©‚ç2”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
-        /*int cNumX = 4;
-        int cNumY = 2;
-        int cSize = 25;
-        int i = 0;
-        layers[i].MakeChunk(chunkNumber);
-        bool up = false, lo = false, le = false, ri = false;
-        if (chunkNumber - cNumX >= 0) { layers[i].MakeChunk(chunkNumber - cNumX); up = true; }
-        if (chunkNumber + cNumX < cNumX * cNumY) { layers[i].MakeChunk(chunkNumber + cNumX); lo = true; }
-        if ((chunkNumber + 1) / cNumX != 0) { layers[i].MakeChunk(chunkNumber + 1); ri = true; }
-        if ((chunkNumber - 1) / cNumX != cNumX - 1) { layers[i].MakeChunk(chunkNumber - 1); le = true; }
-        if (up && ri) { layers[i].MakeChunk(chunkNumber - cNumX + 1); }
-        if (lo && ri) { layers[i].MakeChunk(chunkNumber + cNumX + 1); }
-        if (lo && le) { layers[i].MakeChunk(chunkNumber + cNumX - 1); }
-        if (up && le) { layers[i].MakeChunk(chunkNumber - cNumX - 1); }*/
+        wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(¶‚©‚ç3”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
+
+
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.K)) {
+            wl.ChunkUpdate(testcase1, 4, 0);
+
+        }
+        if (Input.GetKeyDown(KeyCode.L)) {
+            wl.LoadChunks(new Vector2((float)30.0, (float)10.0));//chunkNumber 1(¶‚©‚ç2”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
+        }
     }
 }

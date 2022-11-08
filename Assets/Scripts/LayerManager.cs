@@ -22,15 +22,18 @@ public class LayerManager : MonoBehaviour
         cube_blue   = 4,
         cube_black  = 5,
 
-        glass_0     = 10
+        grass_0     = 10
     }
 
 
     struct Chunk {
         public int[][] blocks;
+        bool live;
+        
     }
+
     Chunk[] chunks;
-    int[][] blocks;
+    
     GameObject block;
     InitialProcess ip;
     int cNumX, cNumY, cSize;
@@ -48,7 +51,7 @@ public class LayerManager : MonoBehaviour
     public bool transparency = false;
     private bool started = false;
 
-    
+    int[][] blocks;
 
     int[][] testcase1 = {
         new int[] { 5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5 },
@@ -79,7 +82,7 @@ public class LayerManager : MonoBehaviour
     };
 
     public GameObject CHUNK_FRAME;
-    public GameObject chunkFrame;
+    public GameObject[] chunkFrame;
 
     
     
@@ -90,42 +93,49 @@ public class LayerManager : MonoBehaviour
 
     void Start()
     {
-        ip = GetComponentInParent<InitialProcess>();
-        blocks =  new int[ip.chunkSize][];
-        for(int i = 0; i < ip.chunkSize; i++) {
-            blocks[i] = new int[ip.chunkSize];
-        }
-
-
-        //blocks初期化
-        for(int i = 0; i < ip.chunkSize; i++) {
-            for(int j = 0; j < ip.chunkSize; j++) {
-                blocks[i][j] = 0;
+        if (!started) {
+            ip = GetComponentInParent<InitialProcess>();
+            blocks = new int[ip.chunkSize][];
+            for (int i = 0; i < ip.chunkSize; i++) {
+                blocks[i] = new int[ip.chunkSize];
             }
-        }
-        
-        //chunks初期化
-        cNumX = ip.chunksNumX;
-        cNumY = ip.chunksNumY;
-        cSize = ip.chunkSize;
 
-        chunks = new Chunk[cNumX * cNumY];
-        
-        for(int i = 0; i < chunks.Length; i++) {
-            if (!insTestCase) {
-                chunks[i].blocks = blocks;
+
+            //blocks初期化
+            for (int i = 0; i < ip.chunkSize; i++) {
+                for (int j = 0; j < ip.chunkSize; j++) {
+                    blocks[i][j] = 0;
+                }
             }
-            else {
-                chunks[i].blocks = testcase1;
+
+            //chunks初期化
+            cNumX = ip.chunksNumX;
+            cNumY = ip.chunksNumY;
+            cSize = ip.chunkSize;
+
+            chunks = new Chunk[cNumX * cNumY];
+            chunkFrame = new GameObject[chunks.Length];
+
+
+            for (int i = 0; i < chunks.Length; i++) {
+                if (!insTestCase) chunks[i].blocks = blocks;
+                else chunks[i].blocks = testcase1;
+
+                chunkFrame[i] = Instantiate(CHUNK_FRAME);
+                chunkFrame[i].transform.parent = this.gameObject.transform;
+                chunkFrame[i].name = "chunk" + i;
+
+                Vector2Int posBase = new Vector2Int(i % cNumX * cSize, i / cNumX * cSize);
+                chunkFrame[i].transform.localPosition = new Vector3(posBase.x, posBase.y, 0);
             }
+            //chunks初期化ここまで
+
+            //CHUNK_FRAME = new GameObject();
+
+
+
+            started = true;
         }
-        //chunks初期化ここまで
-
-        //CHUNK_FRAME = new GameObject();
-
-        
-
-        started = true;
     }
 
     // Update is called once per frame
@@ -167,28 +177,12 @@ public class LayerManager : MonoBehaviour
         {
             //Debug.Log(this.gameObject.name + " > seisei:"+ chunkNumber + " ");
         }
-        //Debug.Log(name + " > "+chunkNumber + "  " + chunks.Length);
-        //chunks[chunkNumber].blocks[0][0] = chunkNumber;//テスト用
-
-
-
-        chunkFrame = Instantiate(CHUNK_FRAME);
-        chunkFrame.transform.parent = this.gameObject.transform;
-        chunkFrame.name = "chunk" + chunkNumber;
         
-        
-
-        Vector2Int posBase = new Vector2Int(chunkNumber % cNumX * cSize, chunkNumber / cNumX * cSize);
         Vector3Int pos = new Vector3Int(0, 0, 0);
-        chunkFrame.transform.localPosition = new Vector3(posBase.x, posBase.y, 0);
-        Transform frame = chunkFrame.transform;
+        Transform frame = chunkFrame[chunkNumber].transform;
 
-        if (makeTest)
-        {
-            //Debug.Log(this.gameObject.name + " > frame seisei:" + chunkNumber + "   " + chunkFrame.name + " pos:" + chunkFrame.transform.position.x + " , " + chunkFrame.transform.position.y);
-        }
-
-
+        //if (makeTest)Debug.Log(this.gameObject.name + " > frame seisei:" + chunkNumber + "   " + chunkFrame.name + " pos:" + chunkFrame.transform.position.x + " , " + chunkFrame.transform.position.y);
+        
         foreach (int id in Enum.GetValues(typeof(BLOCK_ID)))
         {
             //Debug.Log(" id:"+Enum.GetName(typeof(BLOCK_ID), id));
@@ -220,10 +214,19 @@ public class LayerManager : MonoBehaviour
     /// </summary>
     /// <param name="chunkNumber"></param>
     public void RemoveChunk(int chunkNumber) {
+
         try {
-            Destroy(transform.Find("chunk" + chunkNumber).gameObject);
-        }catch(Exception e) {
-            //Debug.Log(e);
+            Destroy(chunkFrame[chunkNumber]);
+            chunkFrame[chunkNumber] = Instantiate(CHUNK_FRAME);
+            chunkFrame[chunkNumber].transform.parent = this.gameObject.transform;
+            chunkFrame[chunkNumber].name = "chunk" + chunkNumber;
+
+            Vector2Int posBase = new Vector2Int(chunkNumber % cNumX * cSize, chunkNumber / cNumX * cSize);
+            chunkFrame[chunkNumber].transform.localPosition = new Vector3(posBase.x, posBase.y, 0);
+
+        }
+        catch(Exception e) {
+            Debug.Log(e);
         }
     }
 
@@ -233,7 +236,8 @@ public class LayerManager : MonoBehaviour
     /// <param name="blocks"></param>
     /// <param name="chunkNumber"></param>
     public void UpdateChunk(int[][] blocks, int chunkNumber) {
+        if (!started) Start();
         chunks[chunkNumber].blocks = blocks;
+
     }
 }   
-

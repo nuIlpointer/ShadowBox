@@ -197,7 +197,6 @@ public class WorldLoader : MonoBehaviour
         
         Debug.Log($"{layers[1]} {layers[2]} {layers[3]} {layers[4]} {layerNumber}");
         layers[1].MakeChunk(0);
-        Debug.Log(blocks);
 
         layers[layerNumber].UpdateChunk(blocks, chunkNumber);
         

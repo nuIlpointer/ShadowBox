@@ -68,24 +68,19 @@ public class generaTester : MonoBehaviour
     void Start()
     {
         wl = GetComponent<WorldLoader>();
-        /*GameObject block;
-        block = (GameObject)Resources.Load("Blocks/cube_red");
-        if (block == null) {
-            Debug.LogError("NULL‚¾‚Ÿ‚Ÿ‚Ÿ‚Ÿ‚Ÿ‚Ÿ‚Ÿ‚Ÿ‚Ÿ‚Ÿ");
-        }
-
-
-        //layers[0] = gameObject.AddComponent<LayerManager>();
         
+        /*
         //wl.LoadChunks(new Vector2((float)30.0,(float)10.0));//chunkNumber 1(¶‚©‚ç2”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
         //wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(¶‚©‚ç3”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
         */
-        wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
+        
         for (int i = 0; i < 4; i++) {
             for (int j = 1; j <= 4; j++) {
+                Debug.Log(i + " " + j);
                 wl.ChunkUpdate(ground, j, i);
             }
         }
+        wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 
 
     }
@@ -93,16 +88,23 @@ public class generaTester : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /*if (Input.GetKeyDown(KeyCode.K)) {
+        if (Input.GetKeyDown(KeyCode.K)) {
+            Debug.Log("“ü—Í‚‹@‚Ä‚·‚Æ‚¯[‚·");
             wl.ChunkUpdate(testcase1, 4, 0);
 
         }
         if (Input.GetKeyDown(KeyCode.L)) {
+            Debug.Log("“ü—Í‚Œ@‚ë[‚Ç1");
             wl.LoadChunks(new Vector2((float)30.0, (float)10.0));//chunkNumber 1(¶‚©‚ç2”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
-        }*/
-        
+        }
+        if (Input.GetKeyDown(KeyCode.J)) {
+            Debug.Log("“ü—ÍJ@‚ë[‚Ç2");
+            wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(¶‚©‚ç3”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
+            wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(¶‚©‚ç3”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
+        }
 
-        wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
+
+        //wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 
     }
 }

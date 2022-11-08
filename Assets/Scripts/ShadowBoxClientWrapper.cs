@@ -159,15 +159,21 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// サーバーにプレイヤー情報を送信する。接続完了前に実行された場合、完了時に送信される。
     /// </summary>
     /// <param name="name">他人に表示される名前</param>
-    /// <param name="skinID">他人から表示される見た目(いるか？これ)</param>
-    /// <returns>サーバーに登録されたPlayerData</returns>
+    /// <param name="skinID">他人から表示される見た目</param>
+    /// <param name="playerX">スポーンするX座標</param>
+    /// <param name="playerY">スポーンするY座標</param>
+    /// <param name="blockLayer">スポーン先のBlockLayer</param>
+    /// <returns>サーバーに登録されるPlayerData</returns>
     public PlayerData SetPlayerData(string name, int skinID, float playerX, float playerY, BlockLayer blockLayer) {
+        // ラッパーに対応するPlayerDataを設定
         player.name = name;
         player.skinType = skinID;
         player.playerID = Guid.NewGuid();
         player.playerX = playerX;
         player.playerY = playerY;
         player.playerLayer = blockLayer;
+
+        //接続が完了している場合、即時送信する(完了していない場合は接続時に一括処理)
         if (active) {
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
@@ -262,7 +268,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
 
     /// <summary>
     /// ブロック単位のWorkspaceに発生した変更を通知する。
-    /// </summary>00
+    /// </summary>
     /// <param name="workspaceGuid">変更が発生したWorkspaceのGuid</param>
     /// <param name="layer">変更が発生したEditBufferレイヤー</param>
     /// <param name="relativeX">EditBufferの左上を起点とした変更点の相対座標X</param>

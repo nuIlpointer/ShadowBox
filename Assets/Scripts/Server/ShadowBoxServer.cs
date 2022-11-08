@@ -112,14 +112,17 @@ public class ShadowBoxServer : MonoBehaviour {
                     if (receivedData.StartsWith("SPD")) { //プレイヤーデータを受信したとき
                         var dataArr = receivedData.Split(',');
                         PlayerData newPlayer;
+                        // 受信したデータをPlayerDataに落としこむ
                         newPlayer.name = dataArr[1];
                         newPlayer.skinType = Int32.Parse(dataArr[2]);
                         newPlayer.playerID = Guid.Parse(dataArr[3]);
                         newPlayer.playerX = float.Parse(dataArr[4]);
                         newPlayer.playerY = float.Parse(dataArr[5]);
                         newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[6]);
-                        userList[Guid.Parse(dataArr[3])] = newPlayer;
-                        Debug.Log("[SERVER]Recieve new user data: " + userList[Guid.Parse(dataArr[3])].ToString());
+                        userList[newPlayer.playerID] = newPlayer;
+
+                        //デバッグ出力
+                        Debug.Log("[SERVER]Recieve new user data: " + userList[newPlayer.playerID].ToString());
                     }
 
                 } else if (cmd == NetworkEvent.Type.Disconnect) {

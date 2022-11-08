@@ -15,11 +15,31 @@ public class SBoxTest : MonoBehaviour {
     bool ready = false;
 
     int[][] testarr = {
-        new int[] {1, 2, 3, 4, 5},
-        new int[] {1, 2, 3, 4, 5},
-        new int[] {1, 2, 3, 4, 5},
-        new int[] {1, 2, 3, 4, 5},
-        new int[] {1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5},
+        new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5}
     };
 
     // Start is called before the first frame update
@@ -27,22 +47,19 @@ public class SBoxTest : MonoBehaviour {
         client = GameObject.Find("Client");
         server = GameObject.Find("Server");
         server.GetComponent<ShadowBoxServer>().CreateInternalServer();
-        ready = true;
+        client.GetComponent<ShadowBoxClientWrapper>().Connect("127.0.0.1", 11781);
     }
 
     // Update is called once per frame
     void Update() {
-
+        if(server.GetComponent<ShadowBoxServer>().IsActive() && !ready) {
+            client.GetComponent<ShadowBoxClientWrapper>().SetPlayerData("UNKO", 3, 10.2f, 123.4f, ShadowBoxClientWrapper.BlockLayer.OutsideWall);
+            ready = true;
+        }
         time += Time.deltaTime;
         if(time > 1.5) {
-            if (ready) {
-
-                client.GetComponent<ShadowBoxClientWrapper>().Connect("127.0.0.1", 11781);
-                ready = false;
-            }
             time = 0;
-            if (client.GetComponent<ShadowBoxClientWrapper>().SendChunk(ShadowBoxClientWrapper.BlockLayer.InsideWall, 0, testarr)) Debug.Log("送信成功");
-            client.GetComponent<ShadowBoxClientWrapper>().SetPlayerData("UNKO", 3, 10.2f, 123.4f, ShadowBoxClientWrapper.BlockLayer.OutsideWall);
+            client.GetComponent<ShadowBoxClientWrapper>().SendChunk(ShadowBoxClientWrapper.BlockLayer.OutsideWall, 32, testarr);
         }
     }
 }

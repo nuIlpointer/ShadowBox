@@ -35,25 +35,6 @@ public class ShadowBoxServer : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         userList = new Dictionary<Guid, PlayerData>();
-        // 以下デバッグ 
-        /*
-
-       //仮で適当なintのArrayを生成する
-       int[][] arr = {
-           new int[] {1, 2, 3, 4, 5},
-           new int[] {1, 2, 3, 4, 5},
-           new int[] {1, 2, 3, 4, 5},
-           new int[] {1, 2, 3, 4, 5},
-           new int[] {1, 2, 3, 4, 5},
-       };
-
-       //チャンクライターテスト
-       SaveChunk(BlockLayer.InsideBlock, 0, arr);
-
-       //チャンクリーダーテスト
-       foreach (int[] larr in LoadChunk(BlockLayer.InsideBlock, 0))
-           Debug.Log(string.Join(",", larr));
-       // */
     }
 
     /// <summary>
@@ -76,68 +57,74 @@ public class ShadowBoxServer : MonoBehaviour {
 
     public bool StartServer(int port) {
         this.driver = NetworkDriver.Create();
+        this.connectionList = new NativeList<NetworkConnection>(16, Allocator.Persistent);
         var endpoint = NetworkEndPoint.AnyIpv4;
         endpoint.Port = (ushort)port;
-        Debug.Log("Trying to bind port " + port);
         if (this.driver.Bind(endpoint) != 0) {
-            Debug.LogError("Failed to bind port " + port + ".");
+            Debug.LogError("[SERVER]Failed to bind port " + port + ".");
             return false;
         } else this.driver.Listen();
-        this.connectionList = new NativeList<NetworkConnection>(16, Allocator.Persistent);
-        Debug.Log("Listen on " + port);
+        Debug.Log("[SERVER]Listen on " + port);
         active = true;
         return true;
     }
 
     // Update is called once per frame
     void Update() {
-        if (active) {
-            this.driver.ScheduleUpdate().Complete();
+        this.driver.ScheduleUpdate().Complete();
 
-            for (int i = 0; i < this.connectionList.Length; i++) {
-                if (!this.connectionList[i].IsCreated) { //破棄されたコネクションを削除
-                    this.connectionList.RemoveAtSwapBack(i);
-                    i--;
-                }
+        for (int i = 0; i < this.connectionList.Length; i++) {
+            if (!this.connectionList[i].IsCreated) { //破棄されたコネクションを削除
+                this.connectionList.RemoveAtSwapBack(i);
+                i--;
             }
+        }
 
-            NetworkConnection connection;
-            while ((connection = this.driver.Accept()) != default(NetworkConnection)) {
-                this.connectionList.Add(connection);
-            }
+        NetworkConnection connection;
+        while ((connection = this.driver.Accept()) != default(NetworkConnection)) {
+            this.connectionList.Add(connection);
+        }
 
-            DataStreamReader stream;
-            for (int i = 0; i < this.connectionList.Length; i++) {
-                //コネクションが作成されているかどうか
-                Assert.IsTrue(this.connectionList[i].IsCreated);
+        DataStreamReader stream;
+        for (int i = 0; i < this.connectionList.Length; i++) {
+            //コネクションが作成されているかどうか
+            Assert.IsTrue(this.connectionList[i].IsCreated);
 
-                NetworkEvent.Type cmd;
-                while ((cmd = this.driver.PopEventForConnection(this.connectionList[i], out stream)) != NetworkEvent.Type.Empty) {
-                    if (cmd == NetworkEvent.Type.Data) {
-                        //データを受信したとき
-                        String receivedData = ("" + stream.ReadFixedString4096());
-                        if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
-                            receivedData = receivedData.Replace("SCH,", "");
-                            Debug.Log("Received Chunk Data: \n" + receivedData);
+            NetworkEvent.Type cmd;
+            while ((cmd = this.driver.PopEventForConnection(this.connectionList[i], out stream)) != NetworkEvent.Type.Empty) {
+                if (cmd == NetworkEvent.Type.Data) {
+                    //データを受信したとき
+                    String receivedData = ("" + stream.ReadFixedString4096());
+                    if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
+                        receivedData = receivedData.Replace("SCH,", "");
+                        Debug.Log("[SERVER]Receive chunk data: \n" + receivedData);
+                        BlockLayer layerID = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[0]);
+                        int chunkID = Int32.Parse(receivedData.Split(',')[1]);
+                        receivedData = receivedData.Replace($"{layerID},{chunkID},", "");
+                        List<int[]> tempArr = new List<int[]>();
+                        foreach (string line in receivedData.Split('\n')) {
+                            if (line != "")
+                                tempArr.Add(Array.ConvertAll(line.Split(','), int.Parse));
                         }
-
-                        if (receivedData.StartsWith("SPD")) { //プレイヤーデータを受信したとき
-                            var dataArr = receivedData.Split(',');
-                            PlayerData newPlayer;
-                            newPlayer.name = dataArr[1];
-                            newPlayer.skinType = Int32.Parse(dataArr[2]);
-                            newPlayer.playerID = Guid.Parse(dataArr[3]);
-                            newPlayer.playerX = float.Parse(dataArr[4]);
-                            newPlayer.playerY = float.Parse(dataArr[5]);
-                            newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[6]);
-                            userList[Guid.Parse(dataArr[3])] = newPlayer;
-
-                            Debug.Log("ADD USER DATA: " + userList[Guid.Parse(dataArr[3])].ToString());
-                        }
-                    } else if (cmd == NetworkEvent.Type.Disconnect) {
-                        Debug.Log("Disconnected.");
-                        this.connectionList[i].Disconnect(driver);
+                        SaveChunk(layerID, chunkID, tempArr.ToArray());
                     }
+
+                    if (receivedData.StartsWith("SPD")) { //プレイヤーデータを受信したとき
+                        var dataArr = receivedData.Split(',');
+                        PlayerData newPlayer;
+                        newPlayer.name = dataArr[1];
+                        newPlayer.skinType = Int32.Parse(dataArr[2]);
+                        newPlayer.playerID = Guid.Parse(dataArr[3]);
+                        newPlayer.playerX = float.Parse(dataArr[4]);
+                        newPlayer.playerY = float.Parse(dataArr[5]);
+                        newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[6]);
+                        userList[Guid.Parse(dataArr[3])] = newPlayer;
+                        Debug.Log("[SERVER]Recieve new user data: " + userList[Guid.Parse(dataArr[3])].ToString());
+                    }
+
+                } else if (cmd == NetworkEvent.Type.Disconnect) {
+                    Debug.Log("[SERVER]Disconnected.");
+                    this.connectionList[i].Disconnect(driver);
                 }
             }
         }

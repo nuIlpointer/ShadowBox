@@ -49,6 +49,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     private NetworkEndPoint endPoint;
     private NetworkConnection connection;
     private bool active = false;
+    private PlayerData player;
     void Start() {
         // TODO さっさとやれ
     }
@@ -56,6 +57,31 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         // TODO さっさとやれ
+        this.driver.ScheduleUpdate().Complete();
+
+        if (!this.connection.IsCreated)
+            return;
+
+        DataStreamReader stream;
+        NetworkEvent.Type cmd;
+        while ((cmd = this.connection.PopEvent(this.driver, out stream)) != NetworkEvent.Type.Empty) {
+            if (cmd == NetworkEvent.Type.Connect) {
+                Debug.Log("[WRAPPER]Success to connect.");
+                active = true;
+                if (!player.Equals(default(PlayerData))) {
+                    var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+                    if (writer >= 0) {
+                        dsw.WriteFixedString4096(new FixedString4096Bytes("SPD," + player));
+                        Debug.Log(new FixedString4096Bytes("[WRAPPER]Sending user data:\n" + player));
+                        this.driver.EndSend(dsw);
+                    }
+                }
+            } else if (cmd == NetworkEvent.Type.Data) {
+            } else if (cmd == NetworkEvent.Type.Disconnect) {
+                Debug.Log("[WRAPPER]Disconnect.");
+                this.connection = default(NetworkConnection);
+            }
+        }
     }
 
     /// <summary>
@@ -98,7 +124,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes("SCH," + layerID + "," + chunkID + "," + sendDataTemp));
-                Debug.Log(new FixedString4096Bytes("Sending Data:\n" + sendDataTemp));
+                Debug.Log("[WRAPPER]Sending chunk data:\n" + sendDataTemp);
                 this.driver.EndSend(dsw);
             } else return false;
             return true;
@@ -126,31 +152,31 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         this.connectPort = port;
         this.connection = this.driver.Connect(endPoint);
         active = true;
-        Debug.Log("Connect to " + endPoint);
+        Debug.Log("[WRAPPER]Connect to " + endPoint);
     }
 
     /// <summary>
-    /// サーバーにプレイヤー情報を送信する。
+    /// サーバーにプレイヤー情報を送信する。接続完了前に実行された場合、完了時に送信される。
     /// </summary>
     /// <param name="name">他人に表示される名前</param>
     /// <param name="skinID">他人から表示される見た目(いるか？これ)</param>
     /// <returns>サーバーに登録されたPlayerData</returns>
     public PlayerData SetPlayerData(string name, int skinID, float playerX, float playerY, BlockLayer blockLayer) {
-        PlayerData newPlayer;
-        newPlayer.name = name;
-        newPlayer.skinType = skinID;
-        newPlayer.playerID = Guid.NewGuid();
-        newPlayer.playerX = playerX;
-        newPlayer.playerY = playerY;
-        newPlayer.playerLayer = blockLayer;
-
-        var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
-        if (writer >= 0) {
-            dsw.WriteFixedString4096(new FixedString4096Bytes("SPD," + newPlayer));
-            Debug.Log(new FixedString4096Bytes("Sending Data:\n" + newPlayer));
-            this.driver.EndSend(dsw);
+        player.name = name;
+        player.skinType = skinID;
+        player.playerID = Guid.NewGuid();
+        player.playerX = playerX;
+        player.playerY = playerY;
+        player.playerLayer = blockLayer;
+        if (active) {
+            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+            if (writer >= 0) {
+                dsw.WriteFixedString4096(new FixedString4096Bytes("SPD," + player));
+                Debug.Log(new FixedString4096Bytes("[WRAPPER]Sending user data:\n" + player));
+                this.driver.EndSend(dsw);
+            }
         }
-        return newPlayer;
+        return player;
     }
 
 #nullable enable

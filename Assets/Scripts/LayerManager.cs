@@ -157,18 +157,18 @@ public class LayerManager : MonoBehaviour
     }*/
     public void MakeChunk(int chunkNumber)
     {
-        //テスト用ログ
         if (!started)
         {
             Start();
         }
 
+        //テスト用ログ
         if (makeTest)
         {
             //Debug.Log(this.gameObject.name + " > seisei:"+ chunkNumber + " ");
         }
         //Debug.Log(name + " > "+chunkNumber + "  " + chunks.Length);
-        chunks[chunkNumber].blocks[0][0] = chunkNumber;//テスト用
+        //chunks[chunkNumber].blocks[0][0] = chunkNumber;//テスト用
 
 
 

@@ -198,8 +198,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerName: InsideWall
-  makeTest: 1
-  insTestCase: 1
+  makeTest: 0
+  insTestCase: 0
   transparency: 0
   CHUNK_FRAME: {fileID: 684850218}
   chunkFrame: {fileID: 684850218}
@@ -248,8 +248,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerName: OutsideWall
-  makeTest: 1
-  insTestCase: 1
+  makeTest: 0
+  insTestCase: 0
   transparency: 0
   CHUNK_FRAME: {fileID: 1621712934}
   chunkFrame: {fileID: 1621712934}
@@ -520,7 +520,7 @@ MonoBehaviour:
   - {fileID: 814373629}
   ip: {fileID: 1724355513}
   wrapper: {fileID: 1724355514}
-  autoSetCompnents: 0
+  autoSetCompnents: 1
 --- !u!1 &1839662134
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,8 +566,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerName: OutsideBlock
-  makeTest: 1
-  insTestCase: 1
+  makeTest: 0
+  insTestCase: 0
   transparency: 0
   CHUNK_FRAME: {fileID: 1926622003}
   chunkFrame: {fileID: 1926622003}
@@ -742,8 +742,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerName: InsideBlock
-  makeTest: 1
-  insTestCase: 1
+  makeTest: 0
+  insTestCase: 0
   transparency: 0
   CHUNK_FRAME: {fileID: 1075138319}
   chunkFrame: {fileID: 1075138319}

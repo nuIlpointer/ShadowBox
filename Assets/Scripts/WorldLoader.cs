@@ -191,13 +191,20 @@ public class WorldLoader : MonoBehaviour
     /// <param name="layer">レイヤーを指定します[1:LayerInsideWall 2:LayerInsideBlock 3:LayerOutsideWall 4:LayerOutsideBlock]</param>
     /// <param name="chunkNumber">チャンクナンバーを指定します</param>
     /// <returns></returns>
-    public bool ChunkUpdate(int[][] blocks, int layer, int chunkNumber)
+    public bool ChunkUpdate(int[][] blocks, int layerNumber, int chunkNumber)
     {
-        layers[layer].UpdateChunk(blocks, chunkNumber);
+        if (!started) { Start();Debug.Log("強制スタート" ) ; }
+        
+        Debug.Log($"{layers[1]} {layers[2]} {layers[3]} {layers[4]} {layerNumber}");
+        layers[1].MakeChunk(0);
+        Debug.Log(blocks);
+
+        layers[layerNumber].UpdateChunk(blocks, chunkNumber);
+        
         //Debug.Log(checkLive(chunkNumber));
         if (checkLive(chunkNumber)) {
-            layers[layer].RemoveChunk(chunkNumber);
-            layers[layer].MakeChunk(chunkNumber);
+            layers[layerNumber].RemoveChunk(chunkNumber);
+            layers[layerNumber].MakeChunk(chunkNumber);
         }
         return true;
     }

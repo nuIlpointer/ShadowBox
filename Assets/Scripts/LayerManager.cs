@@ -156,7 +156,7 @@ public class LayerManager : MonoBehaviour
 
         if (makeTest)
         {
-            Debug.Log(layerName + " > チャンクを生成:" + chunkNumber);
+            //Debug.Log(layerName + " > チャンクを生成:" + chunkNumber);
         }
 
         chunkFrame = Instantiate(chunkFrame);
@@ -216,7 +216,7 @@ public class LayerManager : MonoBehaviour
     public void RemoveChunk(int chunkNumber) {
 
         try {
-            Debug.Log(name + " > リムーブ："+ chunkNumber);
+            //Debug.Log(name + " > リムーブ："+ chunkNumber);
             Destroy(chunkFrame[chunkNumber]);
             chunkFrame[chunkNumber] = Instantiate(CHUNK_FRAME);
             chunkFrame[chunkNumber].transform.parent = this.gameObject.transform;
@@ -227,7 +227,7 @@ public class LayerManager : MonoBehaviour
 
         }
         catch(Exception e) {
-            Debug.Log(e);
+            //Debug.Log(e);
         }
     }
 
@@ -239,5 +239,14 @@ public class LayerManager : MonoBehaviour
     public void UpdateChunk(int[][] blocks, int chunkNumber) {
         if (!started) Start();
         chunks[chunkNumber].blocks = blocks;
+    }
+
+    public bool checkAir(int cn, int x, int y) {
+        if(chunks[cn].blocks[y][x] == 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }   

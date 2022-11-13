@@ -61,10 +61,10 @@ public class WorldLoader : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    /*void Update()
     {
 
-    }
+    }*/
 
 
     /// <summary>
@@ -101,7 +101,7 @@ public class WorldLoader : MonoBehaviour
         for (int i = 0; i < 9; i++) {
             if (lastLoad[i] != -1) {
                 if (checkDie(lastLoad[i])) {
-                    Debug.Log("消去　チャンクナンバー:" + lastLoad[i]);
+                    //Debug.Log("消去　チャンクナンバー:" + lastLoad[i]);
                     for (int j = 1; j <= 4; j++) {
                         layers[j].RemoveChunk(lastLoad[i]);
                         
@@ -114,7 +114,7 @@ public class WorldLoader : MonoBehaviour
         //ロード被り判定
         for(int i = 0; i < 9; i++){
             if (checkLoaded(loaded[i])){
-                Debug.Log("被り　チャンクナンバー："+loaded[i]);
+                //Debug.Log("被り　チャンクナンバー："+loaded[i]);
                 loaded[i] = -1;
             }
         }
@@ -129,7 +129,7 @@ public class WorldLoader : MonoBehaviour
 
         for(int i = 0; i < 9; i++){
             if(loaded[i] != -1){
-                Debug.Log("生成　チャンクナンバー:" + loaded[i]);
+                //Debug.Log("生成　チャンクナンバー:" + loaded[i]);
                 for (int j = 1; j <= 4; j++){
                     
                     layers[j].MakeChunk(loaded[i]);
@@ -201,7 +201,7 @@ public class WorldLoader : MonoBehaviour
 
         layers[layerNumber].UpdateChunk(blocks, chunkNumber);
         
-        Debug.Log($"checkLive({chunkNumber}):"+checkLive(chunkNumber));
+        //Debug.Log($"checkLive({chunkNumber}):"+checkLive(chunkNumber));
         if (checkLive(chunkNumber)) {
             layers[layerNumber].RemoveChunk(chunkNumber);
             layers[layerNumber].MakeChunk(chunkNumber);
@@ -242,4 +242,17 @@ public class WorldLoader : MonoBehaviour
     }
 
 
+    public bool CheckToFront(Vector3 pos) {
+        int cn = PosToChunkNum((int)pos.x, (int)pos.y);
+        int x = (int)pos.x % cSize;
+        int y = (int)pos.y % cSize;
+        return layers[3].checkAir(cn, x, y) && layers[4].checkAir(cn, x, y);
+    }
+
+    public bool CheckToBack(Vector3 pos) {
+        int cn = PosToChunkNum((int)pos.x, (int)pos.y);
+        int x = (int)pos.x % cSize;
+        int y = (int)pos.y % cSize;
+        return layers[1].checkAir(cn, x, y) && layers[2].checkAir(cn, x, y);
+    }
 }

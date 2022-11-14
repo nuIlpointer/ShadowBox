@@ -139,6 +139,24 @@ public class ShadowBoxServer : MonoBehaviour {
                         dsw.WriteFixedString4096(new FixedString4096Bytes(sendChunkStr));
                         this.driver.EndSend(dsw);
                     }
+
+                    //プレイヤー一覧の取得要求
+                    if (receivedData.StartsWith("RPL")) {
+                        var sendPListStr = "PDL,";
+                        foreach (PlayerData data in userList.Values)
+                            sendPListStr += data.ToString() + "\n";
+                        var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
+                        dsw.WriteFixedString4096(new FixedString4096Bytes(sendPListStr));
+                        this.driver.EndSend(dsw);
+                    }
+                    
+                    // プレイヤーのデータ
+                    if(receivedData.StartsWith("RPD")) {
+                        var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
+                        dsw.WriteFixedString4096(new FixedString4096Bytes($"PLD,{userList[Guid.Parse(receivedData.Replace("RPD,", ""))]}"));
+                        this.driver.EndSend(dsw);
+                    }
+
                 } else if (cmd == NetworkEvent.Type.Disconnect) {
                     Debug.Log("[SERVER]Disconnected.");
                     this.connectionList[i].Disconnect(driver);

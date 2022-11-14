@@ -59,7 +59,7 @@ public class SBoxTest : MonoBehaviour {
         time += Time.deltaTime;
         if(time > 1.5) {
             time = 0;
-            client.GetComponent<ShadowBoxClientWrapper>().SendChunk(ShadowBoxClientWrapper.BlockLayer.OutsideWall, 32, testarr);
+            client.GetComponent<ShadowBoxClientWrapper>().GetChunk(ShadowBoxClientWrapper.BlockLayer.OutsideWall, 32);
         }
     }
 }

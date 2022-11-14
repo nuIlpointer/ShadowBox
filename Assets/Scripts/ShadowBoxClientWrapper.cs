@@ -1,5 +1,7 @@
 using System;
 using System.Net;
+using System.Collections;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
@@ -77,6 +79,21 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     }
                 }
             } else if (cmd == NetworkEvent.Type.Data) {
+                String receivedData = ("" + stream.ReadFixedString4096());
+                if(receivedData.StartsWith("CKD")) {
+                    receivedData = receivedData.Replace("CKD,", "");
+                    var dataArr = receivedData.Split(',');
+                    var blockLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
+                    var chunkID = Int32.Parse(dataArr[1]);
+                    receivedData = receivedData.Replace($"{blockLayer},{chunkID},", "");
+                    List<int[]> chunkTemp = new List<int[]>();
+                    foreach (String line in receivedData.Split('\n'))
+                        if(line != "")
+                            chunkTemp.Add(Array.ConvertAll(line.Split(','), int.Parse));
+                    Debug.Log("[WRAPPER]Received chunk data:\n");
+                    foreach (int[] arrLine in chunkTemp.ToArray())
+                        Debug.Log(string.Join(",", arrLine));
+                }
             } else if (cmd == NetworkEvent.Type.Disconnect) {
                 Debug.Log("[WRAPPER]Disconnect.");
                 this.connection = default(NetworkConnection);
@@ -96,10 +113,20 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// </summary>
     /// <param name="layerID">要求するチャンクが存在するレイヤーのID</param>
     /// <param name="chunkID">要求するチャンク</param>
-    /// <returns>チャンク情報(int型2次元配列)</returns>
-    public int[][] GetChunk(BlockLayer layerID, int chunkID) {
-        // TODO さっさとやれ
-        return null;
+    /// <returns>送信に成功したかを示すbool値</returns>
+    public bool GetChunk(BlockLayer layerID, int chunkID) {
+        if (this.connection.IsCreated) {
+            this.driver.ScheduleUpdate().Complete();
+            if (!this.connection.IsCreated)
+                return false;
+            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+            if (writer >= 0) {
+                dsw.WriteFixedString4096(new FixedString4096Bytes($"RQC,{layerID},{chunkID}"));
+                Debug.Log("[WRAPPER]Requesting chunk data");
+                this.driver.EndSend(dsw);
+            } else return false;
+            return true;
+        } else return false;
     }
 
     /// <summary>
@@ -112,9 +139,8 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     public bool SendChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
         if (this.connection.IsCreated) {
             this.driver.ScheduleUpdate().Complete();
-            if (!this.connection.IsCreated) {
+            if (!this.connection.IsCreated)
                 return false;
-            }
             string sendDataTemp = "";
             foreach (int[] chunkRow in chunkData)
                 for (int i = 0; i < chunkRow.Length; i++)

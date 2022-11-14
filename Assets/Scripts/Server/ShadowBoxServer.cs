@@ -125,6 +125,20 @@ public class ShadowBoxServer : MonoBehaviour {
                         Debug.Log("[SERVER]Recieve new user data: " + userList[newPlayer.playerID].ToString());
                     }
 
+                    //送出
+                    if(receivedData.StartsWith("RQC")) { //チャンク要求を受け取った時
+                        receivedData = receivedData.Replace("RQC,", "");
+                        var dataArr = receivedData.Split(',');
+                        BlockLayer blockLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
+                        int chunkID = Int32.Parse(dataArr[1]);
+                        var sendChunkData = this.LoadChunk(blockLayer, chunkID);
+                        var sendChunkStr = $"CKD,{blockLayer},{chunkID},";
+                        foreach (int[] chunkLine in sendChunkData)
+                            sendChunkStr += string.Join(",", chunkLine) + "\n";
+                        var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
+                        dsw.WriteFixedString4096(new FixedString4096Bytes(sendChunkStr));
+                        this.driver.EndSend(dsw);
+                    }
                 } else if (cmd == NetworkEvent.Type.Disconnect) {
                     Debug.Log("[SERVER]Disconnected.");
                     this.connectionList[i].Disconnect(driver);

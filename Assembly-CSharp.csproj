@@ -64,8 +64,9 @@
     <Compile Include="Assets\Scripts\LayerManager.cs" />
     <Compile Include="Assets\Scripts\InitialProcess.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
-    <Compile Include="Assets\Scripts\generaTester.cs" />
     <Compile Include="Assets\Scripts\CameraManager.cs" />
+    <Compile Include="Assets\Scripts\generaTester.cs" />
+    <Compile Include="Assets\Scripts\GenericEntityManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

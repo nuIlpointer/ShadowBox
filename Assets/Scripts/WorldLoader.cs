@@ -93,7 +93,7 @@ public class WorldLoader : MonoBehaviour
         if (up && le) { loaded[8] = loaded[1] - 1; } else { loaded[8] = -1; }
         
         for(int i = 0; i < 9; i++) {
-            liveChunk[i] = loaded[i];Debug.LogWarning($"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<{loaded[i]}>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            liveChunk[i] = loaded[i];//Debug.LogWarning($"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<{loaded[i]}>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         }
 
 

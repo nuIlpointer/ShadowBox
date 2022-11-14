@@ -20,8 +20,8 @@ public class GenericEntityManager : MonoBehaviour
     }
 
 
-    Dictionary<Guid, GameObject> players;
-
+    public Dictionary<Guid, GameObject> players;
+    private Animator anim;
 
 
     // Start is called before the first frame update
@@ -68,12 +68,17 @@ public class GenericEntityManager : MonoBehaviour
     /// <returns></returns>
     public bool SyncPlayer(Guid id, Vector3 pos, int playerState) {
         if (!players.ContainsKey(id)) {
-            Debug.LogWarning($"Guid:{id}　のキャラクターが見つかりませんでした。");
+            Debug.LogWarning($"Guid:{id}　のプレイヤーが見つかりませんでした。");
             return false;
         }
         players[id].transform.position = pos;
+        anim = players[id].GetComponent<Animator>();
+        foreach(String stt in Enum.GetNames(typeof(skinState))) {
+            anim.SetBool(stt, false);
+        }
 
 
+        anim.SetBool(Enum.GetName(typeof(skinState), playerState), true);
         return true;
 
 

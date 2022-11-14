@@ -11,6 +11,11 @@ public class PlayerController : MonoBehaviour
     public Animator anim;
 
     /// <summary>
+    /// プレイヤーデータ送信レート
+    /// </summary>
+    public float syncTimeLate = (float)0.2;
+
+    /// <summary>
     /// 1秒あたりの移動量を記憶
     /// </summary>
     private Vector3 movedir = new Vector3(0,0,0);
@@ -105,6 +110,10 @@ public class PlayerController : MonoBehaviour
             worldLoader.LoadChunks(transform.position);
             loadCnt = 0;
         }
+
+
+
+
 
     }
 

@@ -1,7 +1,10 @@
 [Ll]ibrary/
 [Tt]emp/
 [Ll]ogs/
+<<<<<<< HEAD
 [Ll]ogs/*
+=======
+>>>>>>> 4b3bd6ede8d0c30e80392ab08ae217a6509f3f15
 obj/
 .vs/
 worlddata/*.dat

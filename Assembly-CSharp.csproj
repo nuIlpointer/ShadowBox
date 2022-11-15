@@ -57,8 +57,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\ShadowBoxClientWrapper.cs" />
+<<<<<<< HEAD
     <Compile Include="Assets\Scripts\SBoxTest.cs" />
     <Compile Include="Assets\Scripts\Server\ShadowBoxServer.cs" />
+=======
+    <Compile Include="Assets\Scripts\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\GenericEntityManager.cs" />
+    <Compile Include="Assets\Scripts\LayerIndicatorChange.cs" />
+    <Compile Include="Assets\Scripts\OPlayer.cs" />
+    <Compile Include="Assets\Scripts\WorldLoader.cs" />
+    <Compile Include="Assets\Scripts\LayerManager.cs" />
+    <Compile Include="Assets\Scripts\InitialProcess.cs" />
+    <Compile Include="Assets\Scripts\CameraController.cs" />
+    <Compile Include="Assets\Scripts\CameraManager.cs" />
+    <Compile Include="Assets\Scripts\generaTester.cs" />
+>>>>>>> 4b3bd6ede8d0c30e80392ab08ae217a6509f3f15
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

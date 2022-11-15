@@ -53,12 +53,12 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     private bool active = false;
     private PlayerData player;
     void Start() {
-        // TODO さっさとやれ
+        // TODO さっさと�?�?
     }
 
     // Update is called once per frame
     void Update() {
-        // TODO さっさとやれ
+        // TODO さっさと�?�?
         this.driver.ScheduleUpdate().Complete();
 
         if (!this.connection.IsCreated)
@@ -102,14 +102,14 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     /// <summary>
-    /// ドライバと接続情報の破棄を行う
+    /// ドライバと接続情報の破�?を行う
     /// </summary>
     public void OnDestroy() {
         this.driver.Dispose();
     }
 
     /// <summary>
-    /// 現在接続しているサーバーへチャンクデータを要求する
+    /// 現在接続して�?るサーバ�?�へチャンク�?ータを要求す�?
     /// </summary>
     /// <param name="layerID">要求するチャンクが存在するレイヤーのID</param>
     /// <param name="chunkID">要求するチャンク</param>
@@ -130,12 +130,12 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     /// <summary>
-    /// チャンクを現在接続しているサーバーに送信する
+    /// チャンクを現在接続して�?るサーバ�?�に送信する
     /// </summary>
     /// <param name="layerID">送信するチャンクが存在するレイヤーのID</param>
     /// <param name="chunkID">送信するチャンクの場所</param>
-    /// <param name="chunkData">送信するチャンク情報</param>
-    /// <returns>送信に成功したか</returns>
+    /// <param name="chunkData">送信するチャンク�?報</param>
+    /// <returns>送信に成功した�?</returns>
     public bool SendChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
         if (this.connection.IsCreated) {
             this.driver.ScheduleUpdate().Complete();
@@ -159,11 +159,11 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     /// <summary>
-    /// 接続先のポート/IPアドレスを指定し、接続する。
-    /// ポートが範囲外の時は自動的に「11781」。
+    /// 接続�?��?�ポ�?��?/IPアドレスを指定し、接続する�?
+    /// ポ�?�トが�?囲外�?�時�?�自動的に�?11781」�?
     /// </summary>
-    /// <param name="ipAddress">接続先IPアドレス。</param>
-    /// <param name="port">接続先ポート番号。デフォルトは11781。</param>
+    /// <param name="ipAddress">接続�??IPアドレス�?</param>
+    /// <param name="port">接続�?��?��?�ト番号。デフォルト�?�11781�?</param>
     public void Connect(string ipAddress, int port) {
 
         this.driver = NetworkDriver.Create();
@@ -182,16 +182,16 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     /// <summary>
-    /// サーバーにプレイヤー情報を送信する。接続完了前に実行された場合、完了時に送信される。
+    /// サーバ�?�にプレイヤー�?報を送信する。接続完�?前に実行された場合、完�?時に送信される�?
     /// </summary>
-    /// <param name="name">他人に表示される名前</param>
+    /// <param name="name">他人に表示される名�?</param>
     /// <param name="skinID">他人から表示される見た目</param>
-    /// <param name="playerX">スポーンするX座標</param>
-    /// <param name="playerY">スポーンするY座標</param>
-    /// <param name="blockLayer">スポーン先のBlockLayer</param>
-    /// <returns>サーバーに登録されるPlayerData</returns>
+    /// <param name="playerX">スポ�?�ンするX座�?</param>
+    /// <param name="playerY">スポ�?�ンするY座�?</param>
+    /// <param name="blockLayer">スポ�?�ン先�?�BlockLayer</param>
+    /// <returns>サーバ�?�に登録されるPlayerData</returns>
     public PlayerData SetPlayerData(string name, int skinID, float playerX, float playerY, BlockLayer blockLayer) {
-        // ラッパーに対応するPlayerDataを設定
+        // ラ�?パ�?�に対応するPlayerDataを設�?
         player.name = name;
         player.skinType = skinID;
         player.playerID = Guid.NewGuid();
@@ -199,7 +199,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         player.playerY = playerY;
         player.playerLayer = blockLayer;
 
-        //接続が完了している場合、即時送信する(完了していない場合は接続時に一括処理)
+        //接続が完�?して�?る�?�合、即時送信する(完�?して�?な�?場合�?�接続時に一括処�?)
         if (active) {
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
@@ -213,77 +213,77 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
 
 #nullable enable
     /// <summary>
-    /// 接続中のプレイヤーをすべて取得する。SetPlayerData()の未実行等で登録がない場合はnull。
+    /// 接続中のプレイヤーをすべて取得する。SetPlayerData()の未実行等で登録がな�?場合�?�null�?
     /// </summary>
-    /// <returns>接続中のプレイヤーが含まれる PlayerData 配列</returns>
+    /// <returns>接続中のプレイヤーが含まれる PlayerData 配�??</returns>
     public PlayerData[]? GetPlayers() {
         return null;
     }
 
     /// <summary>
-    /// プレイヤーの情報を取得する。指定したGuidのプレイヤーが存在しない場合はnull。
+    /// プレイヤーの�?報を取得する。指定したGuidのプレイヤーが存在しな�?場合�?�null�?
     /// </summary>
-    /// <param name="PlayerID">情報を取得するPlayerID。</param>
+    /// <param name="PlayerID">�?報を取得するPlayerID�?</param>
     /// <returns></returns>
     public PlayerData? GetPlayer(Guid PlayerID) {
         return null;
     }
     /// <summary>
-    /// プレイヤーの移動情報を送信する。
+    /// プレイヤーの移動情報を送信する�?
     /// </summary>
     /// <param name="layer">プレイヤーが存在するレイヤー</param>
-    /// <param name="x">プレイヤーのX座標</param>
-    /// <param name="y">プレイヤーのY座標</param>
+    /// <param name="x">プレイヤーのX座�?</param>
+    /// <param name="y">プレイヤーのY座�?</param>
     public void SendPlayerMove(BlockLayer layer, float x, float y) {
     }
 
     /// <summary>
-    /// ブロック単位の変更を送信する。
+    /// ブロ�?ク単位�?�変更を送信する�?
     /// </summary>
     /// <param name="layer">レイヤー番号</param>
-    /// <param name="x">ブロックのX座標</param>
-    /// <param name="y">ブロックのY座標</param>
-    /// <param name="blockID">変更された後のブロックID</param>
+    /// <param name="x">ブロ�?クのX座�?</param>
+    /// <param name="y">ブロ�?クのY座�?</param>
+    /// <param name="blockID">変更された後�?�ブロ�?クID</param>
     public void SendBlockChange(BlockLayer layer, int x, int y, int blockID) {
 
     }
 
     /// <summary>
-    /// ワークスペースの情報を送信する。存在するワークスペースの場合は上書きされる。
-    /// ワークスペース設定の変更もこのMethodを利用する。
+    /// ワークスペ�?�スの�?報を送信する。存在するワークスペ�?�スの場合�?�上書きされる�?
+    /// ワークスペ�?�ス設定�?�変更もこのMethodを利用する�?
     /// </summary>
-    /// <param name="workspace">送信するWorkspace 構造体配列</param>
+    /// <param name="workspace">送信するWorkspace 構�?体�?��??</param>
     public void SendWorkspace(Workspace workspace) {
 
     }
 
     /// <summary>
-    /// ワークスペースを削除する
+    /// ワークスペ�?�スを削除する
     /// </summary>
-    /// <param name="removeWorkspaceGuid">削除するワークスペースのGuid</param>
+    /// <param name="removeWorkspaceGuid">削除するワークスペ�?�スのGuid</param>
     public void SendWorkspaceRemove(Guid removeWorkspaceGuid) {
 
     }
 
     /// <summary>
-    /// ワールドに存在するすべてのワークスペースを取得する。
+    /// ワールドに存在するすべてのワークスペ�?�スを取得する�?
     /// </summary>
-    /// <returns>存在するWorkspace 構造体配列(ワークスペースが存在しない場合はnull)</returns>
+    /// <returns>存在するWorkspace 構�?体�?��??(ワークスペ�?�スが存在しな�?場合�?�null)</returns>
     public Workspace[]? GetWorkspaces() {
         return null;
     }
 
     /// <summary>
-    /// 指定したプレイヤーが所有するワークスペースを取得する。
+    /// �?定した�?�レイヤーが所有するワークスペ�?�スを取得する�?
     /// </summary>
     /// <param name="wsOwnerGuid">検索するプレイヤーのGuid</param>
-    /// <returns>検索結果としてのWorkspace 構造体配列(ワークスペースが存在しない、プレイヤーが存在しない場合はnull</returns>
+    /// <returns>検索結果としてのWorkspace 構�?体�?��??(ワークスペ�?�スが存在しな�?、�?�レイヤーが存在しな�?場合�?�null</returns>
     public Workspace[]? GetWorkspacesOfPlayer(Guid wsOwnerGuid) {
         return null;
     }
 
     /// <summary>
-    /// バッファを送信する。
+    /// バッファを送信する�?
     /// </summary>
     /// <param name="workspaceGuid">送信するEditBufferが属するWorkspaceのGuid</param>
     /// <param name="editBuffer">送信するEditBuffer</param>
@@ -293,19 +293,19 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     /// <summary>
-    /// ブロック単位のWorkspaceに発生した変更を通知する。
+    /// ブロ�?ク単位�?�Workspaceに発生した変更を通知する�?
     /// </summary>
     /// <param name="workspaceGuid">変更が発生したWorkspaceのGuid</param>
     /// <param name="layer">変更が発生したEditBufferレイヤー</param>
     /// <param name="relativeX">EditBufferの左上を起点とした変更点の相対座標X</param>
     /// <param name="relativeY">EditBufferの左上を起点とした変更点の相対座標Y</param>
-    /// <param name="blockID">変更先のブロックID</param>
+    /// <param name="blockID">変更先�?�ブロ�?クID</param>
     public void SendEditBufferBlockChange(Guid workspaceGuid, BlockLayer layer, int relativeX, int relativeY, int blockID) {
 
     }
 
     /// <summary>
-    /// 手動でバッファの更新状況を取得する。
+    /// 手動でバッファの更新状況を取得する�?
     /// </summary>
     /// <param name="workspaceGuid">変更を取得するWorkspaceのGuid</param>
     /// <param name="layer">変更を取得するWorkspaceのレイヤー</param>

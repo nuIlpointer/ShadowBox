@@ -57,6 +57,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\ShadowBoxClientWrapper.cs" />
+<<<<<<< HEAD
+<<<<<<< HEAD
+    <Compile Include="Assets\Scripts\SBoxTest.cs" />
+    <Compile Include="Assets\Scripts\Server\ShadowBoxServer.cs" />
+=======
+=======
+>>>>>>> MakeTerrain
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\GenericEntityManager.cs" />
     <Compile Include="Assets\Scripts\LayerIndicatorChange.cs" />
@@ -67,6 +74,10 @@
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\CameraManager.cs" />
     <Compile Include="Assets\Scripts\generaTester.cs" />
+<<<<<<< HEAD
+>>>>>>> 4b3bd6ede8d0c30e80392ab08ae217a6509f3f15
+=======
+>>>>>>> MakeTerrain
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

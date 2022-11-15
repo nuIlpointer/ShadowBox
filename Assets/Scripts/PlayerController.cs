@@ -179,12 +179,15 @@ public class PlayerController : MonoBehaviour
             float md = 0 - transform.position.z;
             controller.Move(new Vector3(0, 0, md));
             moveF = false;
+            GetComponent<SpriteRenderer>().sortingLayerName = "OutsideBlock";
         }
 
         if (moveB) {
             float md = (float)0.8 - transform.position.z;
             controller.Move(new Vector3(0, 0, md));
             moveB = false;
+
+            GetComponent<SpriteRenderer>().sortingLayerName = "InsideBlock";
         }
         //ˆÚ“®”½‰f
         controller.Move(movedir * Time.deltaTime);

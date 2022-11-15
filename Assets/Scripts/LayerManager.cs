@@ -22,9 +22,6 @@ public class LayerManager : MonoBehaviour
         cube_blue   = 4,
         cube_black  = 5,
 
-<<<<<<< Updated upstream
-        grass_0     = 10
-=======
         grass_0     = 10,
 
         brick       = 20,
@@ -32,7 +29,6 @@ public class LayerManager : MonoBehaviour
         door_0      = 30,
         door_1      = 31
 
->>>>>>> Stashed changes
     }
 
 
@@ -212,6 +208,7 @@ public class LayerManager : MonoBehaviour
                         block = Instantiate(block, frame);
                         block.transform.localPosition = pos;
                         block.name = px + "_" + py + "_" + Enum.GetName(typeof(BLOCK_ID), id);
+                        block.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
                         //block.transform.SetParent(this.gameObject.transform);
                     }
                 }

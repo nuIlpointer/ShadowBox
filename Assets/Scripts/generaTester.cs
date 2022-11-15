@@ -2,11 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-<<<<<<< Updated upstream
-
-=======
 using System;
->>>>>>> Stashed changes
 public class generaTester : MonoBehaviour
 {
     WorldLoader wl;
@@ -69,8 +65,6 @@ public class generaTester : MonoBehaviour
         new int[] { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     };
-<<<<<<< Updated upstream
-=======
 
     int[][] hut1 = {
         new int[] { 10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10},
@@ -131,7 +125,6 @@ public class generaTester : MonoBehaviour
     float synclate = 0;
 
     Guid id = new Guid();
->>>>>>> Stashed changes
     void Start()
     {
         wl = GetComponent<WorldLoader>();
@@ -147,11 +140,9 @@ public class generaTester : MonoBehaviour
                 wl.ChunkUpdate(ground, j, i);
             }
         }
-<<<<<<< Updated upstream
         Debug.Log("generaTester > ロードチャンク　chunkNumber : " + 0);
         wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 
-=======
 
         wl.ChunkUpdate(hut1, 1, 1);
         wl.ChunkUpdate(hut2, 3, 1);
@@ -159,7 +150,6 @@ public class generaTester : MonoBehaviour
         wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 
         em.AddPlayer(id, "mememe", 0);
->>>>>>> Stashed changes
 
     }
 
@@ -182,8 +172,6 @@ public class generaTester : MonoBehaviour
         }
 
 
-<<<<<<< Updated upstream
-=======
         synclate += Time.deltaTime;
         if (synclate > 0.2) {
             synclate = 0;
@@ -191,7 +179,6 @@ public class generaTester : MonoBehaviour
 
         }
 
->>>>>>> Stashed changes
         //wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 
     }

@@ -20,11 +20,7 @@ public class GenericEntityManager : MonoBehaviour
     }
 
 
-<<<<<<< Updated upstream
-    public Dictionary<Guid, GameObject> players;
-=======
     public Dictionary<Guid, GameObject> players = new Dictionary<Guid, GameObject>();
->>>>>>> Stashed changes
     private Animator anim;
 
 
@@ -51,13 +47,7 @@ public class GenericEntityManager : MonoBehaviour
     public bool AddPlayer(Guid id, String name, int skinID) {
 
         try {
-<<<<<<< Updated upstream
-            players.Add(id, Instantiate((GameObject)Resources.Load("Characters/" + Enum.GetName(typeof(skinName), skinID)), transform));
-            if (players[id] == null) {
-                Debug.LogWarning($"skinID:{skinID}　のキャラクターが見つかりませんでした。エラーマンが出動します");
-                players[id] = Instantiate((GameObject)Resources.Load("Characters/error_man"), transform);
-            }
-=======
+
             String sname = Enum.GetName(typeof(skinName), skinID);
             if(Enum.GetName(typeof(skinName), skinID) != null && Instantiate((GameObject)Resources.Load("Characters/" + sname)) != null) {
                 players.Add(id, Instantiate((GameObject)Resources.Load("Characters/" + sname), transform));
@@ -65,10 +55,9 @@ public class GenericEntityManager : MonoBehaviour
             }
             else {
                 Debug.LogWarning($"skinID:{skinID}　のキャラクターが見つかりませんでした。エラーマンが出動します");
-                players[id] = Instantiate((GameObject)Resources.Load("Characters/error_man"), transform);
+                players.Add(id, Instantiate((GameObject)Resources.Load("Characters/error_man"), transform));
             }
-            
->>>>>>> Stashed changes
+            players[id].transform.position = spawnPos;
         }catch(Exception e) {
             Debug.LogError("<<<AddPlayer エラー>>>\n" + e);
             return false;

@@ -22,7 +22,17 @@ public class LayerManager : MonoBehaviour
         cube_blue   = 4,
         cube_black  = 5,
 
+<<<<<<< Updated upstream
         grass_0     = 10
+=======
+        grass_0     = 10,
+
+        brick       = 20,
+
+        door_0      = 30,
+        door_1      = 31
+
+>>>>>>> Stashed changes
     }
 
 

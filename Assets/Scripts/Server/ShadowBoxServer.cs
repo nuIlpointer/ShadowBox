@@ -102,10 +102,9 @@ public class ShadowBoxServer : MonoBehaviour {
                         int chunkID = Int32.Parse(receivedData.Split(',')[1]);
                         receivedData = receivedData.Replace($"{layerID},{chunkID},", "");
                         List<int[]> tempArr = new List<int[]>();
-                        foreach (string line in receivedData.Split('\n')) {
+                        foreach (string line in receivedData.Split('\n'))
                             if (line != "")
                                 tempArr.Add(Array.ConvertAll(line.Split(','), int.Parse));
-                        }
                         SaveChunk(layerID, chunkID, tempArr.ToArray());
                     }
 
@@ -157,6 +156,26 @@ public class ShadowBoxServer : MonoBehaviour {
                         this.driver.EndSend(dsw);
                     }
 
+                    //プレイヤーの移動データ受信 
+                    if(receivedData.StartsWith("PMV")) {
+                        receivedData = receivedData.Replace("PMV,", "");
+                        var dataArr = receivedData.Split(',');
+                        PlayerData newPlayer;
+                        newPlayer.playerID = Guid.Parse(dataArr[0]);
+                        newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
+                        newPlayer.playerX = float.Parse(dataArr[2]);
+                        newPlayer.playerY = float.Parse(dataArr[3]);
+                        newPlayer.name = userList[newPlayer.playerID].name;
+                        newPlayer.skinType = userList[newPlayer.playerID].skinType;
+                        userList[newPlayer.playerID] = newPlayer;
+
+                        //全ユーザに移動情報を通知する
+                        foreach(NetworkConnection conn in connectionList) {
+                            var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                            dsw.WriteFixedString4096(new FixedString4096Bytes($"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY}"));
+                            this.driver.EndSend(dsw);
+                        }
+                    }
                 } else if (cmd == NetworkEvent.Type.Disconnect) {
                     Debug.Log("[SERVER]Disconnected.");
                     this.connectionList[i].Disconnect(driver);

@@ -234,7 +234,19 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="layer">プレイヤーが存在するレイヤー</param>
     /// <param name="x">プレイヤーのX座標</param>
     /// <param name="y">プレイヤーのY座標</param>
-    public void SendPlayerMove(BlockLayer layer, float x, float y) {
+    public bool SendPlayerMove(BlockLayer layer, float x, float y) {
+        if (this.connection.IsCreated) {
+            this.driver.ScheduleUpdate().Complete();
+            if (!this.connection.IsCreated)
+                return false;
+            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+            if (writer >= 0) {
+                dsw.WriteFixedString4096(new FixedString4096Bytes($"PMV,{player.playerID},{layer},{x},{y}"));
+                Debug.Log("[WRAPPER]Sending player move data");
+                this.driver.EndSend(dsw);
+            } else return false;
+            return true;
+        } else return false;
     }
 
     /// <summary>

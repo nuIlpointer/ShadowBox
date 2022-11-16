@@ -38,12 +38,12 @@ public class GenericEntityManager : MonoBehaviour
 
     
     /// <summary>
-    /// ‘¼ƒvƒŒƒCƒ„[‚ğ¶¬‚µ‚Ü‚·
+    /// ä»–ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç”Ÿæˆã—ã¾ã™
     /// </summary>
-    /// <param name="id">’Ç‰Á‚·‚éƒvƒŒƒCƒ„[‚ÌGuid</param>
-    /// <param name="name">“o˜^‚·‚éƒvƒŒƒCƒ„[–¼</param>
-    /// <param name="skinID">ƒvƒŒƒCƒ„[‚ÌŒ©‚½–Ú iskinName‚ğQÆj</param>
-    /// <returns>ƒvƒŒƒCƒ„[‚Ì¶¬‚É¬Œ÷‚µ‚½‚©</returns>
+    /// <param name="id">è¿½åŠ ã™ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Guid</param>
+    /// <param name="name">ç™»éŒ²ã™ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å</param>
+    /// <param name="skinID">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è¦‹ãŸç›® ï¼ˆskinNameã‚’å‚ç…§ï¼‰</param>
+    /// <returns>ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç”Ÿæˆã«æˆåŠŸã—ãŸã‹</returns>
     public bool AddPlayer(Guid id, String name, int skinID) {
 
         try {
@@ -54,27 +54,27 @@ public class GenericEntityManager : MonoBehaviour
                 
             }
             else {
-                Debug.LogWarning($"skinID:{skinID}@‚ÌƒLƒƒƒ‰ƒNƒ^[‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½BƒGƒ‰[ƒ}ƒ“‚ªo“®‚µ‚Ü‚·");
+                Debug.LogWarning($"skinID:{skinID}ã€€ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚ã‚¨ãƒ©ãƒ¼ãƒãƒ³ãŒå‡ºå‹•ã—ã¾ã™");
                 players.Add(id, Instantiate((GameObject)Resources.Load("Characters/error_man"), transform));
             }
             players[id].transform.position = spawnPos;
         }catch(Exception e) {
-            Debug.LogError("<<<AddPlayer ƒGƒ‰[>>>\n" + e);
+            Debug.LogError("<<<AddPlayer ã‚¨ãƒ©ãƒ¼>>>\n" + e);
             return false;
         }
         return true;
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[î•ñ‚ğXV‚µ‚Ü‚·
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±ã‚’æ›´æ–°ã—ã¾ã™
     /// </summary>
-    /// <param name="id">XV‚·‚éƒvƒŒƒCƒ„[‚ÌGuid</param>
-    /// <param name="pos">ƒvƒŒƒCƒ„[‚ÌˆÊ’uiƒ[ƒ‹ƒhÀ•Wj</param>
-    /// <param name="playerState">ƒvƒŒƒCƒ„[‚Ìó‘ÔiskinState‚ğQÆj</param>
+    /// <param name="id">æ›´æ–°ã™ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Guid</param>
+    /// <param name="pos">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ï¼ˆãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ï¼‰</param>
+    /// <param name="playerState">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®çŠ¶æ…‹ï¼ˆskinStateã‚’å‚ç…§ï¼‰</param>
     /// <returns></returns>
     public bool SyncPlayer(Guid id, Vector3 pos, int playerState) {
         if (!players.ContainsKey(id)) {
-            Debug.LogWarning($"Guid:{id}@‚ÌƒvƒŒƒCƒ„[‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B");
+            Debug.LogWarning($"Guid:{id}ã€€ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚");
             return false;
         }
         players[id].transform.position = pos;
@@ -82,9 +82,13 @@ public class GenericEntityManager : MonoBehaviour
         foreach(String stt in Enum.GetNames(typeof(skinState))) {
             anim.SetBool(stt, false);
         }
-
-
-        anim.SetBool(Enum.GetName(typeof(skinState), playerState), true);
+        String nm;
+        if(( nm = Enum.GetName(typeof(skinState), playerState)) != null) {
+            anim.SetBool(nm, true);
+        }
+        else {
+            Debug.Log("å¯¾è±¡ã®playerStateãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚");
+        }
         return true;
 
 

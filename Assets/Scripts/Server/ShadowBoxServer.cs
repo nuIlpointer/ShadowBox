@@ -76,7 +76,7 @@ public class ShadowBoxServer : MonoBehaviour {
         for (int i = 0; i < this.connectionList.Length; i++) {
             if (!this.connectionList[i].IsCreated) { //破棄されたコネクションを削除
                 this.connectionList.RemoveAtSwapBack(i);
-                i--;
+                i--; 
             }
         }
 
@@ -92,7 +92,9 @@ public class ShadowBoxServer : MonoBehaviour {
 
             NetworkEvent.Type cmd;
             while ((cmd = this.driver.PopEventForConnection(this.connectionList[i], out stream)) != NetworkEvent.Type.Empty) {
-                if (cmd == NetworkEvent.Type.Data) {
+                if (cmd == NetworkEvent.Type.Connect) {
+                    Debug.Log("[SERVER]User Connected.");
+                } else if (cmd == NetworkEvent.Type.Data) {
                     //データを受信したとき
                     String receivedData = ("" + stream.ReadFixedString4096());
                     if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
@@ -224,8 +226,19 @@ public class ShadowBoxServer : MonoBehaviour {
                     tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
                 return tempList.ToArray();
             }
-        } else return null;
+        } else {
+            var chunkData = LoadDefaultChunk();
+            SaveChunk(layerID, chunkId, chunkData);
+            return chunkData;
+        }
     }
 
-
+    int[][] LoadDefaultChunk() {
+        List<int[]> tempList = new List<int[]>();
+        using (var reader = new StreamReader("./default.dat", Encoding.UTF8)) {
+            while (0 <= reader.Peek())
+                tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
+            return tempList.ToArray();
+        }
+    }
 }

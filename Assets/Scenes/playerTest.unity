@@ -220,11 +220,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5439f9de592b7074f85ba4952d6c1eca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wrapper: {fileID: 0}
+  wrapper: {fileID: 1724355514}
   worldLoader: {fileID: 1724355517}
   controller: {fileID: 142052764}
   anim: {fileID: 142052763}
-  syncTimeLate: 0.2
+  playerName: test_kun
+  skinID: 0
+  syncTimeLate: 0.1
+  actState: 0
+  testUseWrapper: 0
+  gt: {fileID: 1724355516}
 --- !u!95 &142052763
 Animator:
   serializedVersion: 3
@@ -261,7 +266,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: -0.1, y: -0.1, z: 0}
+  m_Center: {x: -0.1, y: 0, z: 0}
 --- !u!1 &684850218
 GameObject:
   m_ObjectHideFlags: 0
@@ -337,6 +342,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerName: InsideWall
+  isWall: 1
   makeTest: 0
   insTestCase: 0
   transparency: 0
@@ -388,6 +394,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerName: OutsideWall
+  isWall: 1
   makeTest: 0
   insTestCase: 0
   transparency: 0
@@ -536,6 +543,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkNumber: 0
+  inLayer: 2
+  inPos: {x: 0, y: 0, z: 0}
+  actState: 0
   em: {fileID: 1784876089}
 --- !u!114 &1724355517
 MonoBehaviour:
@@ -647,6 +657,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerName: OutsideBlock
+  isWall: 0
   makeTest: 0
   insTestCase: 0
   transparency: 0
@@ -706,7 +717,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 80.3
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -765,7 +776,7 @@ MonoBehaviour:
   followTarget: {fileID: 142052759}
   follow: 1
   followingLevel: 3
-  cameraDist: -10
+  cameraDist: -20
   yCorrection: 3
 --- !u!1 &1926622003
 GameObject:
@@ -842,6 +853,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerName: InsideBlock
+  isWall: 0
   makeTest: 0
   insTestCase: 0
   transparency: 0

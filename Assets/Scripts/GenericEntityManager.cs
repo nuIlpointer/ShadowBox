@@ -12,9 +12,9 @@ public class GenericEntityManager : MonoBehaviour
         test_kun    = 1
     }
 
-    public enum skinState {
+    public enum ActState {
         standby     = 0,
-        run         = 1,
+        runR        = 1,
         jump        = 2,
         fall        = 3
     }
@@ -70,24 +70,31 @@ public class GenericEntityManager : MonoBehaviour
     /// </summary>
     /// <param name="id">更新するプレイヤーのGuid</param>
     /// <param name="pos">プレイヤーの位置（ワールド座標）</param>
-    /// <param name="playerState">プレイヤーの状態（skinStateを参照）</param>
+    /// <param name="actState">プレイヤーの状態（actStateを参照）</param>
     /// <returns></returns>
-    public bool SyncPlayer(Guid id, Vector3 pos, int playerState) {
+    public bool SyncPlayer(Guid id, Vector3 pos, int actState) {
         if (!players.ContainsKey(id)) {
             Debug.LogWarning($"Guid:{id}　のプレイヤーが見つかりませんでした。");
             return false;
         }
         players[id].transform.position = pos;
         anim = players[id].GetComponent<Animator>();
-        foreach(String stt in Enum.GetNames(typeof(skinState))) {
+        foreach(String stt in Enum.GetNames(typeof(ActState))) {
             anim.SetBool(stt, false);
         }
         String nm;
-        if(( nm = Enum.GetName(typeof(skinState), playerState)) != null) {
+        int astt = actState % 10;
+        if ((nm = Enum.GetName(typeof(ActState), astt)) != null) {
             anim.SetBool(nm, true);
         }
         else {
-            Debug.Log("対象のplayerStateが見つかりませんでした。");
+            Debug.Log("対象のactStateが見つかりませんでした。");
+        }
+        if(actState / 10 == 1) {
+            players[id].transform.localScale = new Vector3(-1,1,1);
+        }
+        else {
+            players[id].transform.localScale = new Vector3(1, 1, 1);
         }
         return true;
 

@@ -7,11 +7,12 @@ public class LayerManager : MonoBehaviour
 {
 
     /// <summary>
-    /// ƒuƒƒbƒNIDƒŠƒXƒg
+    /// ãƒ–ãƒ­ãƒƒã‚¯IDãƒªã‚¹ãƒˆ
     /// </summary>
     /// 
 
     public String layerName;
+    public bool isWall = false;
 
     public enum BLOCK_ID {
         unknown     = -1,
@@ -44,15 +45,15 @@ public class LayerManager : MonoBehaviour
     InitialProcess ip;
     int cNumX, cNumY, cSize;
     /// <summary>
-    /// ¶¬ƒ`ƒƒƒ“ƒN‚ğƒƒO‚É‹L˜^
+    /// ç”Ÿæˆãƒãƒ£ãƒ³ã‚¯ã‚’ãƒ­ã‚°ã«è¨˜éŒ²
     /// </summary>
     public bool makeTest = true;
     /// <summary>
-    /// ƒeƒXƒg—pƒuƒƒbƒN‚ğ‘}“ü
+    /// ãƒ†ã‚¹ãƒˆç”¨ãƒ–ãƒ­ãƒƒã‚¯ã‚’æŒ¿å…¥
     /// </summary>
     public bool insTestCase = true;
     /// <summary>
-    /// •\¦“§–¾‰»
+    /// è¡¨ç¤ºé€æ˜åŒ–
     /// </summary>
     public bool transparency = false;
     private bool started = false;
@@ -107,14 +108,14 @@ public class LayerManager : MonoBehaviour
             }
 
 
-            //blocks‰Šú‰»
+            //blocksåˆæœŸåŒ–
             for (int i = 0; i < ip.chunkSize; i++) {
                 for (int j = 0; j < ip.chunkSize; j++) {
                     blocks[i][j] = 0;
                 }
             }
 
-            //chunks‰Šú‰»
+            //chunksåˆæœŸåŒ–
             cNumX = ip.chunksNumX;
             cNumY = ip.chunksNumY;
             cSize = ip.chunkSize;
@@ -134,7 +135,7 @@ public class LayerManager : MonoBehaviour
                 Vector2Int posBase = new Vector2Int(i % cNumX * cSize, i / cNumX * cSize);
                 chunkFrame[i].transform.localPosition = new Vector3(posBase.x, posBase.y, 0);
             }
-            //chunks‰Šú‰»‚±‚±‚Ü‚Å
+            //chunksåˆæœŸåŒ–ã“ã“ã¾ã§
 
             //CHUNK_FRAME = new GameObject();
 
@@ -152,9 +153,9 @@ public class LayerManager : MonoBehaviour
 
 
     /// <summary>
-    /// w’èƒ`ƒƒƒ“ƒN“à‚ÌƒuƒƒbƒN‚ğ¶¬[ƒeƒXƒg”Å]
+    /// æŒ‡å®šãƒãƒ£ãƒ³ã‚¯å†…ã®ãƒ–ãƒ­ãƒƒã‚¯ã‚’ç”Ÿæˆ[ãƒ†ã‚¹ãƒˆç‰ˆ]
     /// </summary>
-    /// <param name="chankNumber">ƒ`ƒƒƒ“ƒN”Ô†</param>
+    /// <param name="chankNumber">ãƒãƒ£ãƒ³ã‚¯ç•ªå·</param>
     /*public void MakeChunk(int chunkNumber)
     {
         if (!started) { Start(); }
@@ -162,7 +163,7 @@ public class LayerManager : MonoBehaviour
 
         if (makeTest)
         {
-            //Debug.Log(layerName + " > ƒ`ƒƒƒ“ƒN‚ğ¶¬:" + chunkNumber);
+            //Debug.Log(layerName + " > ãƒãƒ£ãƒ³ã‚¯ã‚’ç”Ÿæˆ:" + chunkNumber);
         }
 
         chunkFrame = Instantiate(chunkFrame);
@@ -178,7 +179,7 @@ public class LayerManager : MonoBehaviour
             Start();
         }
 
-        //ƒeƒXƒg—pƒƒO
+        //ãƒ†ã‚¹ãƒˆç”¨ãƒ­ã‚°
         if (makeTest)
         {
             //Debug.Log(this.gameObject.name + " > seisei:"+ chunkNumber + " ");
@@ -188,12 +189,14 @@ public class LayerManager : MonoBehaviour
         Transform frame = chunkFrame[chunkNumber].transform;
 
         //if (makeTest)Debug.Log(this.gameObject.name + " > frame seisei:" + chunkNumber + "   " + chunkFrame.name + " pos:" + chunkFrame.transform.position.x + " , " + chunkFrame.transform.position.y);
-        
+
+        BoxCollider bcl;
+
         foreach (int id in Enum.GetValues(typeof(BLOCK_ID)))
         {
             //Debug.Log(" id:"+Enum.GetName(typeof(BLOCK_ID), id));
 
-            //ƒuƒƒbƒNƒvƒŒƒnƒuæ“¾
+            //ãƒ–ãƒ­ãƒƒã‚¯ãƒ—ãƒ¬ãƒãƒ–å–å¾—
             block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));
             if (block == null) { block = (GameObject)Resources.Load("Blocks/unknown"); }
 
@@ -209,6 +212,10 @@ public class LayerManager : MonoBehaviour
                         block.transform.localPosition = pos;
                         block.name = px + "_" + py + "_" + Enum.GetName(typeof(BLOCK_ID), id);
                         block.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
+                        if (isWall) {
+                            bcl = block.GetComponent<BoxCollider>();
+                            if (bcl != null) Destroy(bcl);
+                        }
                         //block.transform.SetParent(this.gameObject.transform);
                     }
                 }
@@ -217,13 +224,13 @@ public class LayerManager : MonoBehaviour
     }
 
     /// <summary>
-    /// w’èƒ`ƒƒƒ“ƒN“à‚ÌƒuƒƒbƒN‚ğÁ‹
+    /// æŒ‡å®šãƒãƒ£ãƒ³ã‚¯å†…ã®ãƒ–ãƒ­ãƒƒã‚¯ã‚’æ¶ˆå»
     /// </summary>
     /// <param name="chunkNumber"></param>
     public void RemoveChunk(int chunkNumber) {
 
         try {
-            //Debug.Log(name + " > ƒŠƒ€[ƒuF"+ chunkNumber);
+            //Debug.Log(name + " > ãƒªãƒ ãƒ¼ãƒ–ï¼š"+ chunkNumber);
             Destroy(chunkFrame[chunkNumber]);
             chunkFrame[chunkNumber] = Instantiate(CHUNK_FRAME);
             chunkFrame[chunkNumber].transform.parent = this.gameObject.transform;
@@ -239,7 +246,7 @@ public class LayerManager : MonoBehaviour
     }
 
     /// <summary>
-    /// w’èƒ`ƒƒƒ“ƒN‚Ì“à—e‚ğXV
+    /// æŒ‡å®šãƒãƒ£ãƒ³ã‚¯ã®å†…å®¹ã‚’æ›´æ–°
     /// </summary>
     /// <param name="blocks"></param>
     /// <param name="chunkNumber"></param>

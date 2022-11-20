@@ -143,7 +143,7 @@ public class PlayerController : MonoBehaviour
         syncCnt += Time.deltaTime;
         if(syncCnt > syncTimeLate) {
             if (testUseWrapper) {
-                wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, (float)2.0, (float)2.0);
+                //wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, (float)2.0, (float)2.0);
             }
             else {
                 gt.inLayer = inLayer;

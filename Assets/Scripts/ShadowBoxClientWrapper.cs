@@ -17,11 +17,12 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     public struct PlayerData {
         public string name;
         public int skinType;
+        public int actState;
         public Guid playerID;
         public float playerX;
         public float playerY;
         public BlockLayer playerLayer;
-        public override string ToString() => $"{name},{skinType},{playerID.ToString("N")},{playerX},{playerY},{playerLayer}";
+        public override string ToString() => $"{name},{skinType},{actState},{playerID.ToString("N")},{playerX},{playerY},{playerLayer}";
     }
 
     public struct EditBuffer {
@@ -45,6 +46,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         bool inEdit;
     }
 
+    private Dictionary<Guid, PlayerData> userList;
     private IPAddress connectAddress;
     private int connectPort;
     private NetworkDriver driver;
@@ -186,14 +188,16 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// </summary>
     /// <param name="name">他人に表示される名前</param>
     /// <param name="skinID">他人から表示される見た目</param>
+    /// <param name="actState">表示の詳細情報？</param>
     /// <param name="playerX">スポーンするX座標</param>
     /// <param name="playerY">スポーンするY座標</param>
     /// <param name="blockLayer">スポーン先のBlockLayer</param>
     /// <returns>サーバーに登録されるPlayerData</returns>
-    public PlayerData SetPlayerData(string name, int skinID, float playerX, float playerY, BlockLayer blockLayer) {
+    public PlayerData SetPlayerData(string name, int skinID, int actState, float playerX, float playerY, BlockLayer blockLayer) {
         // ラッパーに対応するPlayerDataを設定
         player.name = name;
         player.skinType = skinID;
+        player.actState = actState;
         player.playerID = Guid.NewGuid();
         player.playerX = playerX;
         player.playerY = playerY;
@@ -223,10 +227,10 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <summary>
     /// プレイヤーの情報を取得する。指定したGuidのプレイヤーが存在しない場合はnull。
     /// </summary>
-    /// <param name="PlayerID">情報を取得するPlayerID。</param>
+    /// <param name="playerID">情報を取得するPlayerID。</param>
     /// <returns></returns>
-    public PlayerData? GetPlayer(Guid PlayerID) {
-        return null;
+    public PlayerData? GetPlayer(Guid playerID) {
+        return userList.ContainsKey(playerID) ? userList[playerID] : null;
     }
     /// <summary>
     /// プレイヤーの移動情報を送信する。
@@ -234,14 +238,15 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="layer">プレイヤーが存在するレイヤー</param>
     /// <param name="x">プレイヤーのX座標</param>
     /// <param name="y">プレイヤーのY座標</param>
-    public bool SendPlayerMove(BlockLayer layer, float x, float y) {
+    /// <param name="actState">プレイヤーの詳細情報？</param>
+    public bool SendPlayerMove(BlockLayer layer, float x, float y, int actState) {
         if (this.connection.IsCreated) {
             this.driver.ScheduleUpdate().Complete();
             if (!this.connection.IsCreated)
                 return false;
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
-                dsw.WriteFixedString4096(new FixedString4096Bytes($"PMV,{player.playerID},{layer},{x},{y}"));
+                dsw.WriteFixedString4096(new FixedString4096Bytes($"PMV,{player.playerID},{layer},{x},{y},{actState}"));
                 Debug.Log("[WRAPPER]Sending player move data");
                 this.driver.EndSend(dsw);
             } else return false;

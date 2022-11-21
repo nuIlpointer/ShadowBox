@@ -20,11 +20,12 @@ public class ShadowBoxServer : MonoBehaviour {
     public struct PlayerData {
         public string name;
         public int skinType;
+        public int actState;
         public Guid playerID;
         public float playerX;
         public float playerY;
         public BlockLayer playerLayer;
-        public override string ToString() => $"{name},{skinType},{playerID.ToString()},{playerX},{playerY},{playerLayer}";
+        public override string ToString() => $"{name},{skinType},{actState},{playerID.ToString()},{playerX},{playerY},{playerLayer}";
     }
 
     private NetworkDriver driver;
@@ -116,10 +117,11 @@ public class ShadowBoxServer : MonoBehaviour {
                         // 受信したデータをPlayerDataに落としこむ
                         newPlayer.name = dataArr[1];
                         newPlayer.skinType = Int32.Parse(dataArr[2]);
-                        newPlayer.playerID = Guid.Parse(dataArr[3]);
-                        newPlayer.playerX = float.Parse(dataArr[4]);
-                        newPlayer.playerY = float.Parse(dataArr[5]);
-                        newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[6]);
+                        newPlayer.actState = Int32.Parse(dataArr[3])
+                        newPlayer.playerID = Guid.Parse(dataArr[4]);
+                        newPlayer.playerX = float.Parse(dataArr[5]);
+                        newPlayer.playerY = float.Parse(dataArr[6]);
+                        newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[7]);
                         userList[newPlayer.playerID] = newPlayer;
 
                         //デバッグ出力
@@ -128,6 +130,7 @@ public class ShadowBoxServer : MonoBehaviour {
 
                     //送出
                     if(receivedData.StartsWith("RQC")) { //チャンク要求を受け取った時
+                        Debug.Log("[SERVER]Recieve chunk request from client");
                         receivedData = receivedData.Replace("RQC,", "");
                         var dataArr = receivedData.Split(',');
                         BlockLayer blockLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
@@ -167,6 +170,7 @@ public class ShadowBoxServer : MonoBehaviour {
                         newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
                         newPlayer.playerX = float.Parse(dataArr[2]);
                         newPlayer.playerY = float.Parse(dataArr[3]);
+                        newPlayer.actState = Int32.Parse(dataArr[4]);
                         newPlayer.name = userList[newPlayer.playerID].name;
                         newPlayer.skinType = userList[newPlayer.playerID].skinType;
                         userList[newPlayer.playerID] = newPlayer;
@@ -174,7 +178,7 @@ public class ShadowBoxServer : MonoBehaviour {
                         //全ユーザに移動情報を通知する
                         foreach(NetworkConnection conn in connectionList) {
                             var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                            dsw.WriteFixedString4096(new FixedString4096Bytes($"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY}"));
+                            dsw.WriteFixedString4096(new FixedString4096Bytes($"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}"));
                             this.driver.EndSend(dsw);
                         }
                     }

@@ -129,9 +129,10 @@ public class generaTester : MonoBehaviour
     public GenericEntityManager em;
     float synclate = 0;
 
-    Guid id = new Guid();
+    Guid id;
     void Start()
     {
+        id = new Guid();
         inPos = new Vector3(0, 0, 0);
         wl = GetComponent<WorldLoader>();
         

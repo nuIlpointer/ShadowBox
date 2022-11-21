@@ -14,13 +14,26 @@ public class GenericEntityManager : MonoBehaviour
 
     public enum ActState {
         standby     = 0,
-        runR        = 1,
+        run         = 1,
         jump        = 2,
         fall        = 3
     }
 
+    public struct Player {
+        public GameObject sprite;
+        public Vector3 movement;
+        public float moveTime;
+        public float interval;
+        public Player(GameObject sprite, Vector3 movement, float moveTime, float interval) {
+            this.sprite = sprite;
+            this.movement = movement;
+            this.moveTime= moveTime;
+            this.interval = interval;
+        }
+    };
 
-    public Dictionary<Guid, GameObject> players = new Dictionary<Guid, GameObject>();
+    public Dictionary<Guid,Player> players;
+    
     private Animator anim;
 
 
@@ -31,9 +44,19 @@ public class GenericEntityManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+        //interval加算
+        foreach (Guid id in players.Keys) {
+            float t = players[id].interval;
+            t += Time.deltaTime;
+            players[id] = new Player(players[id].sprite, players[id].movement, players[id].moveTime ,t);
+        }
+
+        //移動
+        foreach (Guid id in players.Keys) {
+            players[id].sprite.transform.localPosition = players[id].sprite.transform.localPosition + (players[id].movement * (Time.deltaTime / players[id].moveTime));
+        }
     }
 
     
@@ -49,15 +72,13 @@ public class GenericEntityManager : MonoBehaviour
         try {
 
             String sname = Enum.GetName(typeof(skinName), skinID);
-            if(Enum.GetName(typeof(skinName), skinID) != null && Instantiate((GameObject)Resources.Load("Characters/" + sname)) != null) {
-                players.Add(id, Instantiate((GameObject)Resources.Load("Characters/" + sname), transform));
-                
+            if(Enum.GetName(typeof(skinName), skinID) != null /*&& Instantiate((GameObject)Resources.Load("Characters/" + sname)) != null*/) {
+                players.Add(id, new Player(Instantiate((GameObject)Resources.Load("Characters/" + sname), transform),spawnPos, (float)0.1, 0));
             }
             else {
                 Debug.LogWarning($"skinID:{skinID}　のキャラクターが見つかりませんでした。エラーマンが出動します");
-                players.Add(id, Instantiate((GameObject)Resources.Load("Characters/error_man"), transform));
+                players.Add(id, new Player(Instantiate((GameObject)Resources.Load("Characters/error_man"), transform), spawnPos,(float)0.1, 0));
             }
-            players[id].transform.position = spawnPos;
         }catch(Exception e) {
             Debug.LogError("<<<AddPlayer エラー>>>\n" + e);
             return false;
@@ -73,12 +94,18 @@ public class GenericEntityManager : MonoBehaviour
     /// <param name="actState">プレイヤーの状態（actStateを参照）</param>
     /// <returns></returns>
     public bool SyncPlayer(Guid id, Vector3 pos, int actState) {
+        //Guid検索
         if (!players.ContainsKey(id)) {
             Debug.LogWarning($"Guid:{id}　のプレイヤーが見つかりませんでした。");
             return false;
         }
-        players[id].transform.position = pos;
-        anim = players[id].GetComponent<Animator>();
+        
+        //移動量同期
+        Vector3 oldPos =  players[id].sprite.transform.position;
+        players[id] = new Player(players[id].sprite, pos - oldPos, players[id].interval, 0);
+
+        //アニメーション同期
+        anim = players[id].sprite.GetComponent<Animator>();
         foreach(String stt in Enum.GetNames(typeof(ActState))) {
             anim.SetBool(stt, false);
         }
@@ -91,10 +118,10 @@ public class GenericEntityManager : MonoBehaviour
             Debug.Log("対象のactStateが見つかりませんでした。");
         }
         if(actState / 10 == 1) {
-            players[id].transform.localScale = new Vector3(-1,1,1);
+            players[id].sprite.transform.localScale = new Vector3(-1,1,1);
         }
         else {
-            players[id].transform.localScale = new Vector3(1, 1, 1);
+            players[id].sprite.transform.localScale = new Vector3(1, 1, 1);
         }
         return true;
 

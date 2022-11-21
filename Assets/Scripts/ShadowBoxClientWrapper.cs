@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
+using System.Linq;
 
 public class ShadowBoxClientWrapper : MonoBehaviour {
     public enum BlockLayer {
@@ -44,6 +45,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         int y2;
         EditBuffer buffer;
         bool inEdit;
+        public override string ToString() => $"{name},{workspaceID.ToString("N")},{wsOwnerID.ToString("N")},!{string.Join(",", editablePlayerID)}!,{x1},{y1},{x2},{y2},{inEdit}";
     }
 
     private Dictionary<Guid, PlayerData> userList;
@@ -161,6 +163,24 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     /// <summary>
+    /// バッファの編集状況を送信する。
+    /// </summary>
+    /// <param name="workspaceId">バッファの変更を送信するワークスペースのID</param>
+    /// <param name="blockLayer">バッファの変更が発生したレイヤー</param>
+    /// <param name="bufferChunkData">変更後のチャンクデータ</param>
+    public void SendBuffer(Guid workspaceId, BlockLayer blockLayer, int[][] bufferChunkData) {
+        //TODO 実装する
+    }
+
+    /// <summary>
+    /// 送信済のバッファをチャンクデータに反映、全体送信をする
+    /// </summary>
+    /// <param name="workspaceId">変更を反映するワークスペースのID</param>
+    public void ApplyBuffer(Guid workspaceId) {
+    
+    }
+    
+    /// <summary>
     /// 接続先のポート/IPアドレスを指定し、接続する。
     /// ポートが範囲外の時は自動的に「11781」。
     /// </summary>
@@ -221,7 +241,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// </summary>
     /// <returns>接続中のプレイヤーが含まれる PlayerData 配列</returns>
     public PlayerData[]? GetPlayers() {
-        return null;
+        return userList.Values.ToArray();
     }
 
     /// <summary>
@@ -230,7 +250,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="playerID">情報を取得するPlayerID。</param>
     /// <returns></returns>
     public PlayerData? GetPlayer(Guid playerID) {
-        return userList.ContainsKey(playerID) ? userList[playerID] : null;
+        return userList.ContainsKey(playerID) ? userList[playerID] : new PlayerData();
     }
     /// <summary>
     /// プレイヤーの移動情報を送信する。
@@ -262,7 +282,16 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="y">ブロックのY座標</param>
     /// <param name="blockID">変更された後のブロックID</param>
     public void SendBlockChange(BlockLayer layer, int x, int y, int blockID) {
-
+        if (this.connection.IsCreated) {
+            this.driver.ScheduleUpdate().Complete();
+            if (!this.connection.IsCreated) return;
+            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+            if (writer >= 0) {
+                dsw.WriteFixedString4096(new FixedString4096Bytes($"SBC,{layer},{x},{y},{blockID}"));
+                Debug.Log("[WRAPPER]Sending block changing Data");
+                this.driver.EndSend(dsw);
+            }
+        }
     }
 
     /// <summary>

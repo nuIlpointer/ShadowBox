@@ -117,7 +117,7 @@ public class ShadowBoxServer : MonoBehaviour {
                         // 受信したデータをPlayerDataに落としこむ
                         newPlayer.name = dataArr[1];
                         newPlayer.skinType = Int32.Parse(dataArr[2]);
-                        newPlayer.actState = Int32.Parse(dataArr[3])
+                        newPlayer.actState = Int32.Parse(dataArr[3]);
                         newPlayer.playerID = Guid.Parse(dataArr[4]);
                         newPlayer.playerX = float.Parse(dataArr[5]);
                         newPlayer.playerY = float.Parse(dataArr[6]);

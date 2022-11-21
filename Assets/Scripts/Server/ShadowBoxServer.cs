@@ -221,7 +221,7 @@ public class ShadowBoxServer : MonoBehaviour {
     /// <param name="layerID">読み込むレイヤーのID</param>
     /// <param name="chunkId">読み込むチャンクのID</param>
     /// <returns></returns>
-    int[][]? LoadChunk(BlockLayer layerID, int chunkId) {
+    public int[][]? LoadChunk(BlockLayer layerID, int chunkId) {
         string fileName = "./worlddata/" + layerID + ".chunk" + chunkId + ".dat";
         if (File.Exists(fileName)) {
             List<int[]> tempList = new List<int[]>();

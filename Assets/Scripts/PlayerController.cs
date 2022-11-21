@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         
-        wrapper.SetPlayerData(playerName, skinID, transform.position.x,transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock) ;
+        wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x,transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock) ;
     }
 
     // Update is called once per frame

@@ -20,11 +20,12 @@ public class ShadowBoxServer : MonoBehaviour {
     public struct PlayerData {
         public string name;
         public int skinType;
+        public int actState;
         public Guid playerID;
         public float playerX;
         public float playerY;
         public BlockLayer playerLayer;
-        public override string ToString() => $"{name},{skinType},{playerID.ToString()},{playerX},{playerY},{playerLayer}";
+        public override string ToString() => $"{name},{skinType},{actState},{playerID.ToString()},{playerX},{playerY},{playerLayer}";
     }
 
     private NetworkDriver driver;
@@ -76,7 +77,7 @@ public class ShadowBoxServer : MonoBehaviour {
         for (int i = 0; i < this.connectionList.Length; i++) {
             if (!this.connectionList[i].IsCreated) { //破棄されたコネクションを削除
                 this.connectionList.RemoveAtSwapBack(i);
-                i--;
+                i--; 
             }
         }
 
@@ -92,7 +93,9 @@ public class ShadowBoxServer : MonoBehaviour {
 
             NetworkEvent.Type cmd;
             while ((cmd = this.driver.PopEventForConnection(this.connectionList[i], out stream)) != NetworkEvent.Type.Empty) {
-                if (cmd == NetworkEvent.Type.Data) {
+                if (cmd == NetworkEvent.Type.Connect) {
+                    Debug.Log("[SERVER]User Connected.");
+                } else if (cmd == NetworkEvent.Type.Data) {
                     //データを受信したとき
                     String receivedData = ("" + stream.ReadFixedString4096());
                     if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
@@ -102,10 +105,9 @@ public class ShadowBoxServer : MonoBehaviour {
                         int chunkID = Int32.Parse(receivedData.Split(',')[1]);
                         receivedData = receivedData.Replace($"{layerID},{chunkID},", "");
                         List<int[]> tempArr = new List<int[]>();
-                        foreach (string line in receivedData.Split('\n')) {
+                        foreach (string line in receivedData.Split('\n'))
                             if (line != "")
                                 tempArr.Add(Array.ConvertAll(line.Split(','), int.Parse));
-                        }
                         SaveChunk(layerID, chunkID, tempArr.ToArray());
                     }
 
@@ -115,10 +117,11 @@ public class ShadowBoxServer : MonoBehaviour {
                         // 受信したデータをPlayerDataに落としこむ
                         newPlayer.name = dataArr[1];
                         newPlayer.skinType = Int32.Parse(dataArr[2]);
-                        newPlayer.playerID = Guid.Parse(dataArr[3]);
-                        newPlayer.playerX = float.Parse(dataArr[4]);
-                        newPlayer.playerY = float.Parse(dataArr[5]);
-                        newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[6]);
+                        newPlayer.actState = Int32.Parse(dataArr[3]);
+                        newPlayer.playerID = Guid.Parse(dataArr[4]);
+                        newPlayer.playerX = float.Parse(dataArr[5]);
+                        newPlayer.playerY = float.Parse(dataArr[6]);
+                        newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[7]);
                         userList[newPlayer.playerID] = newPlayer;
 
                         //デバッグ出力
@@ -127,6 +130,7 @@ public class ShadowBoxServer : MonoBehaviour {
 
                     //送出
                     if(receivedData.StartsWith("RQC")) { //チャンク要求を受け取った時
+                        Debug.Log("[SERVER]Recieve chunk request from client");
                         receivedData = receivedData.Replace("RQC,", "");
                         var dataArr = receivedData.Split(',');
                         BlockLayer blockLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
@@ -157,6 +161,27 @@ public class ShadowBoxServer : MonoBehaviour {
                         this.driver.EndSend(dsw);
                     }
 
+                    //プレイヤーの移動データ受信 
+                    if(receivedData.StartsWith("PMV")) {
+                        receivedData = receivedData.Replace("PMV,", "");
+                        var dataArr = receivedData.Split(',');
+                        PlayerData newPlayer;
+                        newPlayer.playerID = Guid.Parse(dataArr[0]);
+                        newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
+                        newPlayer.playerX = float.Parse(dataArr[2]);
+                        newPlayer.playerY = float.Parse(dataArr[3]);
+                        newPlayer.actState = Int32.Parse(dataArr[4]);
+                        newPlayer.name = userList[newPlayer.playerID].name;
+                        newPlayer.skinType = userList[newPlayer.playerID].skinType;
+                        userList[newPlayer.playerID] = newPlayer;
+
+                        //全ユーザに移動情報を通知する
+                        foreach(NetworkConnection conn in connectionList) {
+                            var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                            dsw.WriteFixedString4096(new FixedString4096Bytes($"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}"));
+                            this.driver.EndSend(dsw);
+                        }
+                    }
                 } else if (cmd == NetworkEvent.Type.Disconnect) {
                     Debug.Log("[SERVER]Disconnected.");
                     this.connectionList[i].Disconnect(driver);
@@ -205,8 +230,19 @@ public class ShadowBoxServer : MonoBehaviour {
                     tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
                 return tempList.ToArray();
             }
-        } else return null;
+        } else {
+            var chunkData = LoadDefaultChunk();
+            SaveChunk(layerID, chunkId, chunkData);
+            return chunkData;
+        }
     }
 
-
+    int[][] LoadDefaultChunk() {
+        List<int[]> tempList = new List<int[]>();
+        using (var reader = new StreamReader("./default.dat", Encoding.UTF8)) {
+            while (0 <= reader.Peek())
+                tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
+            return tempList.ToArray();
+        }
+    }
 }

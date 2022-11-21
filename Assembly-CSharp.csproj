@@ -56,28 +56,20 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\PlayerPosition.cs" />
     <Compile Include="Assets\Scripts\ShadowBoxClientWrapper.cs" />
-<<<<<<< HEAD
-<<<<<<< HEAD
-    <Compile Include="Assets\Scripts\SBoxTest.cs" />
-    <Compile Include="Assets\Scripts\Server\ShadowBoxServer.cs" />
-=======
-=======
->>>>>>> MakeTerrain
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\GenericEntityManager.cs" />
     <Compile Include="Assets\Scripts\LayerIndicatorChange.cs" />
     <Compile Include="Assets\Scripts\OPlayer.cs" />
     <Compile Include="Assets\Scripts\WorldLoader.cs" />
+    <Compile Include="Assets\Scripts\SBoxTest.cs" />
     <Compile Include="Assets\Scripts\LayerManager.cs" />
     <Compile Include="Assets\Scripts\InitialProcess.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\CameraManager.cs" />
     <Compile Include="Assets\Scripts\generaTester.cs" />
-<<<<<<< HEAD
->>>>>>> 4b3bd6ede8d0c30e80392ab08ae217a6509f3f15
-=======
->>>>>>> MakeTerrain
+    <Compile Include="Assets\Scripts\Server\ShadowBoxServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

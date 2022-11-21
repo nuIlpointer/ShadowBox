@@ -12,19 +12,15 @@ public class GenericEntityManager : MonoBehaviour
         test_kun    = 1
     }
 
-    public enum skinState {
+    public enum ActState {
         standby     = 0,
-        run         = 1,
+        runR        = 1,
         jump        = 2,
         fall        = 3
     }
 
 
-<<<<<<< Updated upstream
-    public Dictionary<Guid, GameObject> players;
-=======
     public Dictionary<Guid, GameObject> players = new Dictionary<Guid, GameObject>();
->>>>>>> Stashed changes
     private Animator anim;
 
 
@@ -42,60 +38,64 @@ public class GenericEntityManager : MonoBehaviour
 
     
     /// <summary>
-    /// ‘¼ƒvƒŒƒCƒ„[‚ğ¶¬‚µ‚Ü‚·
+    /// ä»–ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç”Ÿæˆã—ã¾ã™
     /// </summary>
-    /// <param name="id">’Ç‰Á‚·‚éƒvƒŒƒCƒ„[‚ÌGuid</param>
-    /// <param name="name">“o˜^‚·‚éƒvƒŒƒCƒ„[–¼</param>
-    /// <param name="skinID">ƒvƒŒƒCƒ„[‚ÌŒ©‚½–Ú iskinName‚ğQÆj</param>
-    /// <returns>ƒvƒŒƒCƒ„[‚Ì¶¬‚É¬Œ÷‚µ‚½‚©</returns>
+    /// <param name="id">è¿½åŠ ã™ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Guid</param>
+    /// <param name="name">ç™»éŒ²ã™ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å</param>
+    /// <param name="skinID">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®è¦‹ãŸç›® ï¼ˆskinNameã‚’å‚ç…§ï¼‰</param>
+    /// <returns>ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ç”Ÿæˆã«æˆåŠŸã—ãŸã‹</returns>
     public bool AddPlayer(Guid id, String name, int skinID) {
 
         try {
-<<<<<<< Updated upstream
-            players.Add(id, Instantiate((GameObject)Resources.Load("Characters/" + Enum.GetName(typeof(skinName), skinID)), transform));
-            if (players[id] == null) {
-                Debug.LogWarning($"skinID:{skinID}@‚ÌƒLƒƒƒ‰ƒNƒ^[‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½BƒGƒ‰[ƒ}ƒ“‚ªo“®‚µ‚Ü‚·");
-                players[id] = Instantiate((GameObject)Resources.Load("Characters/error_man"), transform);
-            }
-=======
+
             String sname = Enum.GetName(typeof(skinName), skinID);
             if(Enum.GetName(typeof(skinName), skinID) != null && Instantiate((GameObject)Resources.Load("Characters/" + sname)) != null) {
                 players.Add(id, Instantiate((GameObject)Resources.Load("Characters/" + sname), transform));
                 
             }
             else {
-                Debug.LogWarning($"skinID:{skinID}@‚ÌƒLƒƒƒ‰ƒNƒ^[‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½BƒGƒ‰[ƒ}ƒ“‚ªo“®‚µ‚Ü‚·");
-                players[id] = Instantiate((GameObject)Resources.Load("Characters/error_man"), transform);
+                Debug.LogWarning($"skinID:{skinID}ã€€ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚ã‚¨ãƒ©ãƒ¼ãƒãƒ³ãŒå‡ºå‹•ã—ã¾ã™");
+                players.Add(id, Instantiate((GameObject)Resources.Load("Characters/error_man"), transform));
             }
-            
->>>>>>> Stashed changes
+            players[id].transform.position = spawnPos;
         }catch(Exception e) {
-            Debug.LogError("<<<AddPlayer ƒGƒ‰[>>>\n" + e);
+            Debug.LogError("<<<AddPlayer ã‚¨ãƒ©ãƒ¼>>>\n" + e);
             return false;
         }
         return true;
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[î•ñ‚ğXV‚µ‚Ü‚·
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±ã‚’æ›´æ–°ã—ã¾ã™
     /// </summary>
-    /// <param name="id">XV‚·‚éƒvƒŒƒCƒ„[‚ÌGuid</param>
-    /// <param name="pos">ƒvƒŒƒCƒ„[‚ÌˆÊ’uiƒ[ƒ‹ƒhÀ•Wj</param>
-    /// <param name="playerState">ƒvƒŒƒCƒ„[‚Ìó‘ÔiskinState‚ğQÆj</param>
+    /// <param name="id">æ›´æ–°ã™ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Guid</param>
+    /// <param name="pos">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ï¼ˆãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ï¼‰</param>
+    /// <param name="actState">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®çŠ¶æ…‹ï¼ˆactStateã‚’å‚ç…§ï¼‰</param>
     /// <returns></returns>
-    public bool SyncPlayer(Guid id, Vector3 pos, int playerState) {
+    public bool SyncPlayer(Guid id, Vector3 pos, int actState) {
         if (!players.ContainsKey(id)) {
-            Debug.LogWarning($"Guid:{id}@‚ÌƒvƒŒƒCƒ„[‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B");
+            Debug.LogWarning($"Guid:{id}ã€€ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚");
             return false;
         }
         players[id].transform.position = pos;
         anim = players[id].GetComponent<Animator>();
-        foreach(String stt in Enum.GetNames(typeof(skinState))) {
+        foreach(String stt in Enum.GetNames(typeof(ActState))) {
             anim.SetBool(stt, false);
         }
-
-
-        anim.SetBool(Enum.GetName(typeof(skinState), playerState), true);
+        String nm;
+        int astt = actState % 10;
+        if ((nm = Enum.GetName(typeof(ActState), astt)) != null) {
+            anim.SetBool(nm, true);
+        }
+        else {
+            Debug.Log("å¯¾è±¡ã®actStateãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚");
+        }
+        if(actState / 10 == 1) {
+            players[id].transform.localScale = new Vector3(-1,1,1);
+        }
+        else {
+            players[id].transform.localScale = new Vector3(1, 1, 1);
+        }
         return true;
 
 

@@ -2,16 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-<<<<<<< Updated upstream
-
-=======
 using System;
->>>>>>> Stashed changes
 public class generaTester : MonoBehaviour
 {
     WorldLoader wl;
     LayerManager[] layers;
     public int chunkNumber = 3;
+
+    //playertest
+    public int inLayer = 2;
+    public Vector3 inPos;
+    public int actState = 0;
     // Start is called before the first frame update
 
     int[][] testcase1 = {
@@ -69,8 +70,6 @@ public class generaTester : MonoBehaviour
         new int[] { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     };
-<<<<<<< Updated upstream
-=======
 
     int[][] hut1 = {
         new int[] { 10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10},
@@ -131,35 +130,32 @@ public class generaTester : MonoBehaviour
     float synclate = 0;
 
     Guid id = new Guid();
->>>>>>> Stashed changes
     void Start()
     {
+        inPos = new Vector3(0, 0, 0);
         wl = GetComponent<WorldLoader>();
         
         /*
-        //wl.LoadChunks(new Vector2((float)30.0,(float)10.0));//chunkNumber 1(¶‚©‚ç2”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
-        //wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(¶‚©‚ç3”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
+        //wl.LoadChunks(new Vector2((float)30.0,(float)10.0));//chunkNumber 1(å·¦ã‹ã‚‰2ç•ªç›®ä¸‹ã‹ã‚‰ï¼‘ç•ªç›®)
+        //wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(å·¦ã‹ã‚‰3ç•ªç›®ä¸‹ã‹ã‚‰ï¼‘ç•ªç›®)
         */
         
         for (int i = 0; i < 4; i++) {
-            Debug.Log("generaTester > ƒOƒ‰ƒEƒ“ƒh“ü‚ê‚é@chunkNumber : " + i);
+            Debug.Log("generaTester > ã‚°ãƒ©ã‚¦ãƒ³ãƒ‰å…¥ã‚Œã‚‹ã€€chunkNumber : " + i);
             for (int j = 1; j <= 4; j++) {
                 wl.ChunkUpdate(ground, j, i);
             }
         }
-<<<<<<< Updated upstream
-        Debug.Log("generaTester > ƒ[ƒhƒ`ƒƒƒ“ƒN@chunkNumber : " + 0);
+        Debug.Log("generaTester > ãƒ­ãƒ¼ãƒ‰ãƒãƒ£ãƒ³ã‚¯ã€€chunkNumber : " + 0);
         wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 
-=======
 
         wl.ChunkUpdate(hut1, 1, 1);
         wl.ChunkUpdate(hut2, 3, 1);
-        Debug.Log("generaTester > ƒ[ƒhƒ`ƒƒƒ“ƒN@chunkNumber : " + 0);
+        Debug.Log("generaTester > ãƒ­ãƒ¼ãƒ‰ãƒãƒ£ãƒ³ã‚¯ã€€chunkNumber : " + 0);
         wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 
         em.AddPlayer(id, "mememe", 0);
->>>>>>> Stashed changes
 
     }
 
@@ -167,31 +163,29 @@ public class generaTester : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.K)) {
-            Debug.Log("“ü—Í‚‹@‚Ä‚·‚Æ‚¯[‚·");
+            Debug.Log("å…¥åŠ›ï½‹ã€€ã¦ã™ã¨ã‘ãƒ¼ã™");
             wl.ChunkUpdate(testcase1, 4, 0);
 
         }
         if (Input.GetKeyDown(KeyCode.L)) {
-            Debug.Log("“ü—Í‚Œ@‚ë[‚Ç1");
-            wl.LoadChunks(new Vector2((float)30.0, (float)10.0));//chunkNumber 1(¶‚©‚ç2”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
+            Debug.Log("å…¥åŠ›ï½Œã€€ã‚ãƒ¼ã©1");
+            wl.LoadChunks(new Vector2((float)30.0, (float)10.0));//chunkNumber 1(å·¦ã‹ã‚‰2ç•ªç›®ä¸‹ã‹ã‚‰ï¼‘ç•ªç›®)
         }
         if (Input.GetKeyDown(KeyCode.J)) {
-            Debug.Log("“ü—ÍJ@‚ë[‚Ç2");
-            wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(¶‚©‚ç3”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
-            wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(¶‚©‚ç3”Ô–Ú‰º‚©‚ç‚P”Ô–Ú)
+            Debug.Log("å…¥åŠ›Jã€€ã‚ãƒ¼ã©2");
+            wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(å·¦ã‹ã‚‰3ç•ªç›®ä¸‹ã‹ã‚‰ï¼‘ç•ªç›®)
+            wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(å·¦ã‹ã‚‰3ç•ªç›®ä¸‹ã‹ã‚‰ï¼‘ç•ªç›®)
         }
 
 
-<<<<<<< Updated upstream
-=======
         synclate += Time.deltaTime;
-        if (synclate > 0.2) {
+        if (synclate > 0.01) {
             synclate = 0;
-            //em.
+            Debug.Log("kkkk");
+            em.SyncPlayer(id, new Vector3(inPos.x + 5, inPos.y, inPos.z), actState) ;
 
         }
 
->>>>>>> Stashed changes
         //wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 
     }

@@ -5,18 +5,25 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     
+
+
     public ShadowBoxClientWrapper wrapper;
     public WorldLoader worldLoader;
     public CharacterController controller;
     public Animator anim;
 
-    /// <summary>
-    /// ƒvƒŒƒCƒ„[ƒf[ƒ^‘—MƒŒ[ƒg
-    /// </summary>
-    public float syncTimeLate = (float)0.2;
+    public string playerName = "test kun";
+    public int skinID;
 
     /// <summary>
-    /// 1•b‚ ‚½‚è‚ÌˆÚ“®—Ê‚ğ‹L‰¯
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ‡ãƒ¼ã‚¿é€ä¿¡ãƒ¬ãƒ¼ãƒˆ
+    /// </summary>
+    public float syncTimeLate = (float)0.05;
+    float syncCnt = 0;
+    
+
+    /// <summary>
+    /// 1ç§’ã‚ãŸã‚Šã®ç§»å‹•é‡ã‚’è¨˜æ†¶
     /// </summary>
     private Vector3 movedir = new Vector3(0,0,0);
     
@@ -25,26 +32,34 @@ public class PlayerController : MonoBehaviour
     private float loadCnt = 0;
 
 
-    //ˆÚ“®§Œä“™
+    //ç§»å‹•åˆ¶å¾¡ç­‰
     private bool runR = false, runL = false, jump = false, moveB = false, moveF = false;
+    private int inLayer = 2;
 
-    //ƒŒƒCƒ„[ŠÇ—
+    //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼state
     /// <summary>
-    /// true:ƒAƒEƒgƒTƒCƒh@false:ƒCƒ“ƒTƒCƒh
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã«ã‚ˆã£ã¦å¤‰å‹•ã™ã‚‹å€¤ã§ã™ï¼ˆ 1ã®ä½{ 0:Standby 1:run 3:jump 4:fall } 10ã®ä½{ 0:å³ 1:å·¦} ï¼‰
     /// </summary>
-    private bool isOutside = true;
+    public int actState;
+
+
+
+    //test
+    public bool testUseWrapper = true;
+    public generaTester gt;
     
     // Start is called before the first frame update
     void Start()
     {
-
+        
+        wrapper.SetPlayerData(playerName, skinID, transform.position.x,transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock) ;
     }
 
     // Update is called once per frame
     void Update()
     {
-        //ˆÚ“®
-        //(ƒ~ƒX‚É‚æ‚èrunL‚ª‰EˆÚ“®ArunR‚ª¶ˆÚ“®‚É‚È‚Á‚Ä‚¢‚Ü‚·)
+        //ç§»å‹•
+        //(ãƒŸã‚¹ã«ã‚ˆã‚ŠrunLãŒå³ç§»å‹•ã€runRãŒå·¦ç§»å‹•ã«ãªã£ã¦ã„ã¾ã™)
         runR = false;
         runL = false;
 
@@ -55,7 +70,7 @@ public class PlayerController : MonoBehaviour
             runL = true;
         }
 
-        //ƒWƒƒƒ“ƒv
+        //ã‚¸ãƒ£ãƒ³ãƒ—
         if(Input.GetKey(KeyCode.Space)) {
             jumpCnt += Time.deltaTime;
             if(jumpCnt < 0.4 ) {
@@ -75,21 +90,33 @@ public class PlayerController : MonoBehaviour
             jumpCnt = 0;
         }
 
-        //ƒLƒƒƒ‰”½“]
+        //ã‚­ãƒ£ãƒ©åè»¢
         if(Input.GetKeyDown(KeyCode.D)) {
             transform.localScale = new Vector3(1, 1, 1);
+            //actStateã‚»ãƒƒãƒˆ
+            actState %= 10;
+            actState += 0;
         }
         if(Input.GetKeyDown(KeyCode.A)) {
             transform.localScale = new Vector3(-1, 1, 1);
+            //actStateã‚»ãƒƒãƒˆ
+            actState %= 10;
+            actState += 10;
         }
         if (Input.GetKeyUp(KeyCode.D) && Input.GetKey(KeyCode.A)) {
             transform.localScale = new Vector3(-1, 1, 1);
+            //actStateã‚»ãƒƒãƒˆ
+            actState %= 10;
+            actState += 10;
         }
         if (Input.GetKeyUp(KeyCode.A) && Input.GetKey(KeyCode.D)) {
             transform.localScale = new Vector3(1, 1, 1);
+            //actStateã‚»ãƒƒãƒˆ
+            actState %= 10;
+            actState += 0;
         }
 
-        //ƒŒƒCƒ„[ˆÚ“®
+        //ãƒ¬ã‚¤ãƒ¤ãƒ¼ç§»å‹•
         if (Input.GetKeyDown(KeyCode.W)) {
             if (worldLoader.CheckToBack(transform.position)) {
                 Debug.Log(worldLoader.CheckToBack(transform.position));
@@ -104,14 +131,28 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        //ƒ`ƒƒƒ“ƒNƒ[ƒfƒBƒ“ƒO
+        //ãƒãƒ£ãƒ³ã‚¯ãƒ­ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°
         loadCnt += Time.deltaTime;
         if(loadCnt > 0.5) {
             worldLoader.LoadChunks(transform.position);
             loadCnt = 0;
         }
 
+        //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ‡ãƒ¼ã‚¿é€ä¿¡
 
+        syncCnt += Time.deltaTime;
+        if(syncCnt > syncTimeLate) {
+            if (testUseWrapper) {
+                //wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, (float)2.0, (float)2.0);
+            }
+            else {
+                gt.inLayer = inLayer;
+                gt.inPos = transform.position;
+                gt.actState = actState;
+            }
+            
+            syncCnt = 0;
+        }
 
 
 
@@ -120,22 +161,37 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate() {
 
-        //ˆÚ“®
+        //ç§»å‹•
         if (runL) {
             if(movedir.x < 10) {
-                movedir.x += 20 * Time.deltaTime;//0.5•b‚©‚¯‚Ä•b‘¬10/s‚Ü‚Å‰Á‘¬
+                movedir.x += 20 * Time.deltaTime;//0.5ç§’ã‹ã‘ã¦ç§’é€Ÿ10/sã¾ã§åŠ é€Ÿ
                 anim.SetBool("run", true);
+
+                
             }
-            
+            //actStateã‚»ãƒƒãƒˆ
+            actState = actState / 10 * 10;
+            actState += 1;
+
         }
         if (runR) {
             if(movedir.x > -10) {
                 movedir.x -= 20 * Time.deltaTime;
-                anim.SetBool("run", true);
+                anim.SetBool("run", true); 
+                
+                
             }
+            //actStateã‚»ãƒƒãƒˆ
+            actState = actState / 10 * 10;
+            actState += 1;
         }
         if(((!runR && !runL)||(runR && runL)) && controller.isGrounded) {
             anim.SetBool("run", false);
+            
+            //actStateã‚»ãƒƒãƒˆ
+            actState = actState / 10 * 10;
+            actState += 0;
+            
             if (Mathf.Abs(movedir.x) < 2) {
                 movedir.x = 0;
             }
@@ -149,11 +205,15 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        //—‰º
+        //è½ä¸‹
         if (!controller.isGrounded) {
             fallCnt += Time.deltaTime;
             if(fallCnt > 0.1) {
                 anim.SetBool("fall", true);
+
+                //actStateã‚»ãƒƒãƒˆ
+                actState = actState / 10 * 10;
+                actState += 3;
             }
             
             if(movedir.y > -9.8) {
@@ -165,33 +225,45 @@ public class PlayerController : MonoBehaviour
             anim.SetBool("fall", false);
             movedir.y = 0;
         }
-        //ƒWƒƒƒ“ƒv
+        //ã‚¸ãƒ£ãƒ³ãƒ—
         if (jump) {
             anim.SetBool("jump", true);
+
+            //actStateã‚»ãƒƒãƒˆ
+            actState = actState / 10 * 10;
+            actState += 2;
+
             movedir.y = 9;
         }
         else {
             anim.SetBool("jump", false);
         }
 
-        //ƒŒƒCƒ„[ˆÚ“®
+        //ãƒ¬ã‚¤ãƒ¤ãƒ¼ç§»å‹•
         if (moveF) {
-            float md = 0 - transform.position.z;
+            float md = (float)0 - transform.position.z;
             controller.Move(new Vector3(0, 0, md));
             moveF = false;
+            GetComponent<SpriteRenderer>().sortingLayerName = "OutsideBlock";
+            inLayer = 4;
         }
 
         if (moveB) {
             float md = (float)0.8 - transform.position.z;
             controller.Move(new Vector3(0, 0, md));
             moveB = false;
+
+            GetComponent<SpriteRenderer>().sortingLayerName = "InsideBlock";
+            inLayer = 2;
         }
-        //ˆÚ“®”½‰f
+        //ç§»å‹•åæ˜ 
         controller.Move(movedir * Time.deltaTime);
 
         
 
     }
+
+
 
 
 }

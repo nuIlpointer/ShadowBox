@@ -109,20 +109,24 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     float playerX = float.Parse(dataArr[2]);
                     float playerY = float.Parse(dataArr[3]);
                     float actState = Int32.Parse(dataArr[4]);
+                    PlayerData newPlayer;
+                    newPlayer.playerID = playerId;
+                    newPlayer.playerX = playerX;
+                    newPlayer.playerY = playerY;
+                    newPlayer.playerLayer = playerLayer;
                     //そのプレイヤーが現在のローカルデータに存在するか確認し、なければ仮のプレイヤーとして情報を保持
                     //そのままだとまずいので、プレイヤーの一覧を自動的に要求する。
                     if (!userList.ContainsKey(playerId)) {
-                        PlayerData newPlayer;
                         newPlayer.name = "Player";
                         newPlayer.skinType = 0;
                         newPlayer.actState = 0;
-                        newPlayer.playerID = playerId;
-                        newPlayer.playerX = playerX;
-                        newPlayer.playerY = playerY;
-                        newPlayer.playerLayer = playerLayer;
-                        userList[playerId] = newPlayer;
-
+                    } else {
+                        newPlayer.name = userList[playerId].name;
+                        newPlayer.skinType = userList[playerId].skinType;
+                        newPlayer.actState = userList[playerId].actState;
                     }
+                    userList[playerId] = newPlayer;
+                    Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
                 }
 
                 if(receivedData.StartsWith("NPD")) { //新規のプレイヤーデータを受信したとき

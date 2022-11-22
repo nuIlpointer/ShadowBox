@@ -116,10 +116,13 @@ public class GenericEntityManager : MonoBehaviour
     /// プレイヤー情報を更新します
     /// </summary>
     /// <param name="id">更新するプレイヤーのGuid</param>
-    /// <param name="pos">プレイヤーの位置（ワールド座標）</param>
+    /// <param name="x">プレイヤーの位置（ワールド座標）</param>
+    /// 
+    /// <param name="y">プレイヤーの位置（ワールド座標）</param>
+    /// <param name="layer">プレイヤーのレイヤー[1:InsideWall 2:InsideBlock 3:OutsideWall 4:OutsideBlock]</param>
     /// <param name="actState">プレイヤーの状態（actStateを参照）</param>
     /// <returns></returns>
-    public bool SyncPlayer(Guid id, Vector3 pos, int actState) {
+    public bool SyncPlayer(Guid id, float x, float y, int layer, int actState) {
         if (!started) Start();
         //Guid検索
         UnityEngine.Debug.Log(id);
@@ -130,7 +133,7 @@ public class GenericEntityManager : MonoBehaviour
         
         //移動量同期
         Vector3 oldPos =  players[id].sprite.transform.position;
-        players[id] = new Player(players[id].sprite, pos - oldPos, players[id].interval, 0.1f);
+        players[id] = new Player(players[id].sprite, new Vector3(x,y,0) - oldPos, players[id].interval, 0.1f);
 
         //アニメーション同期
         anim = players[id].sprite.GetComponent<Animator>();

@@ -44,7 +44,7 @@ public class ShadowBoxClientTest : MonoBehaviour
     {
         client = GameObject.Find("Client");
         wrapper = client.GetComponent<ShadowBoxClientWrapper>();
-        wrapper.Connect("172.16.103.69", 11781);
+        wrapper.Connect("127.0.0.1", 11781);
     }
 
     // Update is called once per frame

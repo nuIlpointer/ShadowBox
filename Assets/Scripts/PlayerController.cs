@@ -43,6 +43,7 @@ public class PlayerController : MonoBehaviour
     public int actState;
 
 
+    bool started = false;
 
     //test
     public bool testUseWrapper = true;
@@ -51,6 +52,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if()
         wrapper = wrapperObject.GetComponent<ShadowBoxClientWrapper>();
         wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x,transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock) ;
     }

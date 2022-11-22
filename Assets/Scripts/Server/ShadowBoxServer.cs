@@ -31,7 +31,6 @@ public class ShadowBoxServer : MonoBehaviour {
     private NetworkDriver driver;
     private NativeList<NetworkConnection> connectionList;
     private Dictionary<Guid, PlayerData> userList;
-    private Dictionary<BlockLayer, int[][][]> layerCache;
     private bool active = false;
     // Start is called before the first frame update
     void Start() {

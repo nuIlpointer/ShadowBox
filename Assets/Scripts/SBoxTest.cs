@@ -52,7 +52,7 @@ public class SBoxTest : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if(server.GetComponent<ShadowBoxServer>().IsActive() && !ready) {
+        if(client.GetComponent<ShadowBoxClientWrapper>().IsConnectionActive() && !ready) {
             client.GetComponent<ShadowBoxClientWrapper>().SetPlayerData("TESTUSER", 3, 0, 10.2f, 123.4f, ShadowBoxClientWrapper.BlockLayer.OutsideWall);
             ready = true;
         }

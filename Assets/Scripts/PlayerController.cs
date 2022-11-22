@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    
 
 
+    public ShadowBoxServer Server;
     public ShadowBoxClientWrapper wrapper;
     public WorldLoader worldLoader;
     public CharacterController controller;

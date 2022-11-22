@@ -158,7 +158,7 @@ public class GenericEntityManager : MonoBehaviour
 
     }
 
-    bool OnPlayerDisconnect(Guid id)
+    private bool OnPlayerDisconnect(Guid id)
     {
         if (!started) Start();
         if (!players.ContainsKey(id))

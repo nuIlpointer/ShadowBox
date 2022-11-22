@@ -48,6 +48,8 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         public override string ToString() => $"{name},{workspaceID.ToString("N")},{wsOwnerID.ToString("N")},!{string.Join(",", editablePlayerID)}!,{x1},{y1},{x2},{y2},{inEdit}";
     }
 
+    public GameObject entityManagerObject;
+
     private Dictionary<Guid, PlayerData> userList;
     private IPAddress connectAddress;
     private int connectPort;
@@ -56,9 +58,12 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     private NetworkConnection connection;
     private bool active = false;
     private PlayerData player;
+    private GenericEntityManager entityManager;
+
     void Start() {
         // TODO さっさとやれ
         userList = new Dictionary<Guid, PlayerData>();
+        entityManager = entityManagerObject.GetComponent<GenericEntityManager>();
     }
 
     // Update is called once per frame
@@ -114,19 +119,24 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     newPlayer.playerX = playerX;
                     newPlayer.playerY = playerY;
                     newPlayer.playerLayer = playerLayer;
-                    //そのプレイヤーが現在のローカルデータに存在するか確認し、なければ仮のプレイヤーとして情報を保持
-                    //そのままだとまずいので、プレイヤーの一覧を自動的に要求する。
-                    if (!userList.ContainsKey(playerId)) {
-                        newPlayer.name = "Player";
-                        newPlayer.skinType = 0;
-                        newPlayer.actState = 0;
-                    } else {
-                        newPlayer.name = userList[playerId].name;
-                        newPlayer.skinType = userList[playerId].skinType;
-                        newPlayer.actState = userList[playerId].actState;
+                    if(!playerId.Equals(player.playerID)) {
+                        //そのプレイヤーが現在のローカルデータに存在するか確認し、なければ仮のプレイヤーとして情報を保持
+                        //そのままだとまずいので、プレイヤーの一覧を自動的に要求する。
+                        if (!userList.ContainsKey(playerId)) {
+                            newPlayer.name = "Player";
+                            newPlayer.skinType = 0;
+                            newPlayer.actState = 0;
+
+                        } else {
+                            newPlayer.name = userList[playerId].name;
+                            newPlayer.skinType = userList[playerId].skinType;
+                            newPlayer.actState = userList[playerId].actState;
+                        }
+                        userList[playerId] = newPlayer;
+                        Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
+                        entityManager.SyncPlayer(playerId, playerX, playerY, (int)playerLayer, actState);
                     }
-                    userList[playerId] = newPlayer;
-                    Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
+                    
                 }
 
                 if(receivedData.StartsWith("NPD")) { //新規のプレイヤーデータを受信したとき

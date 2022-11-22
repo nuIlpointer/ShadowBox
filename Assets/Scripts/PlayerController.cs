@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    
 
-
+    public GameObject wrapperObject;
+    public ShadowBoxServer Server;
     public ShadowBoxClientWrapper wrapper;
     public WorldLoader worldLoader;
     public CharacterController controller;
@@ -43,6 +43,7 @@ public class PlayerController : MonoBehaviour
     public int actState;
 
 
+    bool started = false;
 
     //test
     public bool testUseWrapper = true;
@@ -51,7 +52,8 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        if (!started) Start();
+        wrapper = wrapperObject.GetComponent<ShadowBoxClientWrapper>();
         wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x,transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock) ;
     }
 

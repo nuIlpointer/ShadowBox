@@ -8,6 +8,8 @@ using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.Assertions;
+using static InitialProcess;
+using static ShadowBoxClientWrapper;
 
 public class ShadowBoxServer : MonoBehaviour {
     public enum BlockLayer {
@@ -31,6 +33,7 @@ public class ShadowBoxServer : MonoBehaviour {
     private NetworkDriver driver;
     private NativeList<NetworkConnection> connectionList;
     private Dictionary<Guid, PlayerData> userList;
+    private Dictionary<int, Guid> guidConnectionList; 
     private bool active = false;
     // Start is called before the first frame update
     void Start() {
@@ -125,8 +128,11 @@ public class ShadowBoxServer : MonoBehaviour {
 
                         //デバッグ出力
                         Debug.Log("[SERVER]Recieve new user data: " + userList[newPlayer.playerID].ToString());
-                        //プレイヤー情報を周知する
+                        
+                        //当該プレイヤーとNetworkConnectionを紐づけする
+                        guidConnectionList[this.connectionList[i].InternalId] = newPlayer.playerID;
 
+                        //プレイヤー情報を周知する
                         foreach (NetworkConnection conn in connectionList) {
                             var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
                             dsw.WriteFixedString4096(new FixedString4096Bytes($"NPD,{newPlayer.ToString()}"));
@@ -193,7 +199,15 @@ public class ShadowBoxServer : MonoBehaviour {
                     }
                 } else if (cmd == NetworkEvent.Type.Disconnect) {
                     Debug.Log("[SERVER]Disconnected.");
+                    foreach (NetworkConnection conn in connectionList) { 
+                        if(guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != this.connectionList[i].InternalId) {
+                            var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                            dsw.WriteFixedString4096(new FixedString4096Bytes($"UDC,{guidConnectionList[this.connectionList[i].InternalId]}"));
+                            this.driver.EndSend(dsw);
+                        }
+                    }
                     this.connectionList[i].Disconnect(driver);
+
                 }
             }
         }
@@ -216,22 +230,39 @@ public class ShadowBoxServer : MonoBehaviour {
         if (!Directory.Exists("./worlddata/")) {
             Directory.CreateDirectory("./worlddata");
         }
-        string fileName = "./worlddata/" + layerID + ".chunk" + chunkID + ".dat";
+        string fileName = $"./workdata/{layerID}.chunk{chunkID}.dat";
         using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
             foreach (int[] row in chunkData)
                 writer.WriteLine(string.Join(",", row));
         }
     }
 
+    /// <summary>
+    /// チャンクのバッファーデータを保存する。tempだから削除部分も実装しないとな...
+    /// </summary>
+    /// <param name="workspaceID">ワークスペースのID</param>
+    /// <param name="layerID">レイヤーのID</param>
+    /// <param name="chunkID">チャンクのID</param>
+    /// <param name="chunkData">保存するデータ</param>
+    void SaveChunkBuffer(Guid workspaceID, BlockLayer layerID, int chunkID, int[][] chunkData) {
+        if (!Directory.Exists("./worlddata/")) {
+            Directory.CreateDirectory("./worlddata");
+        }
+        string fileName = $"./workdata/{workspaceID}.{layerID}.chunk{chunkID}.dat";
+        using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
+            foreach (int[] row in chunkData)
+                writer.WriteLine(string.Join(",", row));
+        }
+    }
 #nullable enable
     /// <summary>
     /// レイヤーデータをファイルから読み込む
     /// </summary>
     /// <param name="layerID">読み込むレイヤーのID</param>
-    /// <param name="chunkId">読み込むチャンクのID</param>
+    /// <param name="chunkID">読み込むチャンクのID</param>
     /// <returns></returns>
-    public int[][]? LoadChunk(BlockLayer layerID, int chunkId) {
-        string fileName = "./worlddata/" + layerID + ".chunk" + chunkId + ".dat";
+    public int[][]? LoadChunk(BlockLayer layerID, int chunkID) {
+        string fileName = $"./workdata/{layerID}.chunk{chunkID}.dat";
         if (File.Exists(fileName)) {
             List<int[]> tempList = new List<int[]>();
             using (var reader = new StreamReader(fileName, Encoding.UTF8)) {
@@ -241,7 +272,31 @@ public class ShadowBoxServer : MonoBehaviour {
             }
         } else {
             var chunkData = LoadDefaultChunk();
-            SaveChunk(layerID, chunkId, chunkData);
+            SaveChunk(layerID, chunkID, chunkData);
+            return chunkData;
+        }
+    }
+
+    /// <summary>
+    /// 保存されたチャンクのバッファを読み込む
+    /// </summary>
+    /// <param name="workspaceID"></param>
+    /// <param name="layerID"></param>
+    /// <param name="chunkID"></param>
+    /// <returns></returns>
+    public int[][]? LoadChunkBuffer(Guid workspaceID, BlockLayer layerID, int chunkID) {
+        string fileName = $"./workdata/{workspaceID}.{layerID}.chunk{chunkID}.dat";
+        if (File.Exists(fileName)) {
+            List<int[]> tempList = new List<int[]>();
+            using (var reader = new StreamReader(fileName, Encoding.UTF8)) {
+                while (0 <= reader.Peek())
+                    tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
+                return tempList.ToArray();
+            }
+        }
+        else {
+            var chunkData = LoadDefaultChunk();
+            SaveChunk(layerID, chunkID, chunkData);
             return chunkData;
         }
     }

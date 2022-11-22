@@ -135,6 +135,8 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                         userList[playerId] = newPlayer;
                         Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
                         entityManager.SyncPlayer(playerId, playerX, playerY, (int)playerLayer, actState);
+                    } else {
+                        Debug.Log("[WRAPPER]Player move event received but it's same as local player, so skipping it.");
                     }
                     
                 }
@@ -152,8 +154,39 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[6]);
                     Debug.Log("[WRAPPER]Received new player data\n" + newPlayer.ToString());
 
-                    //追加する
-                    userList[newPlayer.playerID] = newPlayer;
+                    if (newPlayer.playerID.Equals(player.playerID))
+                        Debug.Log("[WRAPPER]Received data is same as local player, skipping it.");
+                    else {
+                        //追加する
+                        userList[newPlayer.playerID] = newPlayer;
+
+                        entityManager.AddPlayer(newPlayer.playerID, newPlayer.name, newPlayer.skinType);
+                        entityManager.SyncPlayer(newPlayer.playerID, newPlayer.playerX, newPlayer.playerY, (int)newPlayer.playerLayer, newPlayer.actState);
+
+                    }
+                }
+
+                if (receivedData.StartsWith("PDL")) { //プレイヤー一覧を受信した場合
+                    receivedData = receivedData.Replace("PDL,", "");
+                    var dataArr = receivedData.Split('\n');
+                    foreach (string playerDataLine in dataArr) {
+                        PlayerData newPlayer;
+                        var pDataArr = playerDataLine.Split(',');
+                        newPlayer.name = pDataArr[0];
+                        newPlayer.skinType = Int32.Parse(pDataArr[1]);
+                        newPlayer.actState = Int32.Parse(pDataArr[2]);
+                        newPlayer.playerID = Guid.Parse(pDataArr[3]);
+                        newPlayer.playerX = float.Parse(pDataArr[4]);
+                        newPlayer.playerY = float.Parse(pDataArr[5]);
+                        newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), pDataArr[6]);
+                        userList[newPlayer.playerID] = newPlayer;
+                    }
+                    Debug.Log($"[WRAPPER]{dataArr.Length} players data received");
+                }
+
+                if(receivedData.StartsWith("UDC")) { //他のユーザーが切断したときの処理
+                    Debug.Log($"[WRAPPER]User {receivedData.Replace("UDC,", "")} has disconnected from server");
+                    entityManager.OnPlayerDisconnect(Guid.Parse(receivedData.Split(',')[1]));
                 }
             } else if (cmd == NetworkEvent.Type.Disconnect) {
                 Debug.Log("[WRAPPER]Disconnect.");

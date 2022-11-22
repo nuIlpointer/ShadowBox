@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if()
+        if (!started) Start();
         wrapper = wrapperObject.GetComponent<ShadowBoxClientWrapper>();
         wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x,transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock) ;
     }

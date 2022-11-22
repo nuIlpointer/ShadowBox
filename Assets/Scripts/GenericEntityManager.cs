@@ -117,7 +117,6 @@ public class GenericEntityManager : MonoBehaviour
     /// </summary>
     /// <param name="id">更新するプレイヤーのGuid</param>
     /// <param name="x">プレイヤーの位置（ワールド座標）</param>
-    /// 
     /// <param name="y">プレイヤーの位置（ワールド座標）</param>
     /// <param name="layer">プレイヤーのレイヤー[1:InsideWall 2:InsideBlock 3:OutsideWall 4:OutsideBlock]</param>
     /// <param name="actState">プレイヤーの状態（actStateを参照）</param>
@@ -157,5 +156,17 @@ public class GenericEntityManager : MonoBehaviour
         return true;
 
 
+    }
+
+    bool OnPlayerDisconnect(Guid id)
+    {
+        if (!started) Start();
+        if (!players.ContainsKey(id))
+        {
+            Debug.logWarning($"対象のGuid:{id} を持つプレイヤーが見つかりませんでした。");
+            return false;
+        }
+        players.Remove(id);
+        return true;
     }
 }

@@ -113,7 +113,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     BlockLayer playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
                     float playerX = float.Parse(dataArr[2]);
                     float playerY = float.Parse(dataArr[3]);
-                    float actState = Int32.Parse(dataArr[4]);
+                    int actState = Int32.Parse(dataArr[4]);
                     PlayerData newPlayer;
                     newPlayer.playerID = playerId;
                     newPlayer.playerX = playerX;

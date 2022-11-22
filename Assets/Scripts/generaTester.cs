@@ -185,8 +185,8 @@ public class generaTester : MonoBehaviour
         synclate += Time.deltaTime;
         if (synclate > 0.01) {
             synclate = 0;
-            UnityEngine.Debug.Log("kkkk");
-            em.SyncPlayer(id, new Vector3(inPos.x + 5, inPos.y, inPos.z), actState) ;
+            //UnityEngine.Debug.Log("kkkk");
+            em.SyncPlayer(id, inPos.x + 5, inPos.y, 2, actState);
 
         }
 

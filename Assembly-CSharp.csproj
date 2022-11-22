@@ -284,6 +284,7 @@
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.8f1/Editor/Data/Managed/UnityEngine/UnityEditor.UnityConnectModule.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Collections.LowLevel.ILSupport">
+<<<<<<< HEAD
  <HintPath>C:/Users/nuilp/Documents/GitHub/ShadowBox/Library/PackageCache/com.unity.collections@1.2.4/Unity.Collections.LowLevel.ILSupport/Unity.Collections.LowLevel.ILSupport.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Burst.Unsafe">
@@ -300,6 +301,24 @@
  </Reference>
  <Reference Include="Unity.Burst.Cecil.Rocks">
  <HintPath>C:/Users/nuilp/Documents/GitHub/ShadowBox/Library/PackageCache/com.unity.burst@1.6.6/Unity.Burst.CodeGen/Unity.Burst.Cecil.Rocks.dll</HintPath>
+=======
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/PackageCache/com.unity.collections@1.2.4/Unity.Collections.LowLevel.ILSupport/Unity.Collections.LowLevel.ILSupport.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Burst.Unsafe">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/PackageCache/com.unity.burst@1.6.6/Unity.Burst.Unsafe.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Burst.Cecil.Mdb">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/PackageCache/com.unity.burst@1.6.6/Unity.Burst.CodeGen/Unity.Burst.Cecil.Mdb.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Burst.Cecil.Pdb">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/PackageCache/com.unity.burst@1.6.6/Unity.Burst.CodeGen/Unity.Burst.Cecil.Pdb.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Burst.Cecil">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/PackageCache/com.unity.burst@1.6.6/Unity.Burst.CodeGen/Unity.Burst.Cecil.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Burst.Cecil.Rocks">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/PackageCache/com.unity.burst@1.6.6/Unity.Burst.CodeGen/Unity.Burst.Cecil.Rocks.dll</HintPath>
+>>>>>>> b65740ca320136d05e754196838d3ede1e04834b
  </Reference>
  <Reference Include="netstandard">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.8f1/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll</HintPath>
@@ -647,6 +666,7 @@
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.8f1/Editor/Data/NetStandard/compat/2.0.0/shims/netfx/System.Xml.Serialization.dll</HintPath>
  </Reference>
  <Reference Include="Unity.2D.Animation.Editor">
+<<<<<<< HEAD
  <HintPath>C:/Users/nuilp/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.Animation.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.InternalAPIEngineBridge.001">
@@ -747,6 +767,108 @@
  </Reference>
  <Reference Include="Unity.2D.SpriteShape.Runtime">
  <HintPath>C:/Users/nuilp/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.SpriteShape.Runtime.dll</HintPath>
+=======
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.Animation.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.InternalAPIEngineBridge.001">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.InternalAPIEngineBridge.001.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.VSCode.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.PixelPerfect">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.PixelPerfect.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.Tilemap.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.Tilemap.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="PsdPlugin">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/PsdPlugin.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.TextMeshPro.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.VisualStudio.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.VisualStudio.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Timeline">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.TextMeshPro">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Burst.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.Burst.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.IK.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.IK.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.Path.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.Path.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Networking.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.Networking.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.UI">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Rider.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.Psdimporter.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.Psdimporter.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.UI">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.Sprite.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.InternalAPIEditorBridge.001">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.InternalAPIEditorBridge.001.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Networking.Transport">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.Networking.Transport.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Mathematics">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.Mathematics.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.IK.Runtime">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.IK.Runtime.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Burst">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.Burst.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.Animation.Triangle.Runtime">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.Animation.Triangle.Runtime.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.Animation.Runtime">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.Animation.Runtime.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.PixelPerfect.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.PixelPerfect.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Timeline.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Mathematics.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.Mathematics.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.Common.Runtime">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.Common.Runtime.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.SpriteShape.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.SpriteShape.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.Collections">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.Collections.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.Common.Editor">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.Common.Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="Unity.2D.SpriteShape.Runtime">
+ <HintPath>C:/Users/a2210/Documents/GitHub/ShadowBox/Library/ScriptAssemblies/Unity.2D.SpriteShape.Runtime.dll</HintPath>
+>>>>>>> b65740ca320136d05e754196838d3ede1e04834b
  </Reference>
   </ItemGroup>
   <ItemGroup>

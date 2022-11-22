@@ -4,11 +4,11 @@ public class WorldLoader : MonoBehaviour
 
 
 {
-    //      ƒtƒ@ƒCƒ‹–¼
+    //      ãƒ•ã‚¡ã‚¤ãƒ«å
     private Vector2 loadChunkPos;
     private string[] blockIDList;
     /// <summary>
-    /// ŠeƒŒƒCƒ„[‚ÌQÆ‚ğŠi”[@“Y‚¦š‚Íenum blockLayer‚Æ‘µ‚¦‚éˆ×1~4(0‚ÍŒ‡”Ô)
+    /// å„ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‚ç…§ã‚’æ ¼ç´ã€€æ·»ãˆå­—ã¯enum blockLayerã¨æƒãˆã‚‹ç‚º1~4(0ã¯æ¬ ç•ª)
     /// </summary>
     public LayerManager[] layers = new LayerManager[5];
 
@@ -68,17 +68,17 @@ public class WorldLoader : MonoBehaviour
 
 
     /// <summary>
-    ///w’èˆÊ’uü•Ó‚Ìƒ`ƒƒƒ“ƒN‚ğ¶¬
+    ///æŒ‡å®šä½ç½®å‘¨è¾ºã®ãƒãƒ£ãƒ³ã‚¯ã‚’ç”Ÿæˆ
     /// </summary>
-    /// <param name="pos">Šî€À•W‚ğw’è(vector3)</param>
+    /// <param name="pos">åŸºæº–åº§æ¨™ã‚’æŒ‡å®š(vector3)</param>
     public void LoadChunks(Vector3 pos)
     {
-        //Debug.LogWarning("ƒ[[[[ƒ‹ƒhƒbƒbƒbEƒƒH[[[[[ƒhƒbƒbƒbII");
+        //UnityEngine.Debug.LogWarning("ãƒ¯ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ«ãƒ‰ãƒƒãƒƒãƒƒãƒ»ãƒ­ã‚©ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ‰ãƒƒãƒƒãƒƒï¼ï¼");
         if (!started) { Start(); }
 
         int chunkNumber = PosToChunkNum((int)pos.x, (int)pos.y);
         loaded[0] = chunkNumber;
-        //Debug.LogWarning(chunkNumber);
+        //UnityEngine.Debug.LogWarning(chunkNumber);
 
         bool up = false, lo = false, ri = false, le = false;
 
@@ -93,15 +93,15 @@ public class WorldLoader : MonoBehaviour
         if (up && le) { loaded[8] = loaded[1] - 1; } else { loaded[8] = -1; }
         
         for(int i = 0; i < 9; i++) {
-            liveChunk[i] = loaded[i];//Debug.LogWarning($"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<{loaded[i]}>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            liveChunk[i] = loaded[i];//UnityEngine.Debug.LogWarning($"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<{loaded[i]}>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         }
 
 
-        //€‚ñ‚¾ƒ`ƒƒƒ“ƒN‚ğŒŸo
+        //æ­»ã‚“ã ãƒãƒ£ãƒ³ã‚¯ã‚’æ¤œå‡º
         for (int i = 0; i < 9; i++) {
             if (lastLoad[i] != -1) {
                 if (checkDie(lastLoad[i])) {
-                    //Debug.Log("Á‹@ƒ`ƒƒƒ“ƒNƒiƒ“ƒo[:" + lastLoad[i]);
+                    //UnityEngine.Debug.Log("æ¶ˆå»ã€€ãƒãƒ£ãƒ³ã‚¯ãƒŠãƒ³ãƒãƒ¼:" + lastLoad[i]);
                     for (int j = 1; j <= 4; j++) {
                         layers[j].RemoveChunk(lastLoad[i]);
                         
@@ -110,16 +110,16 @@ public class WorldLoader : MonoBehaviour
             }
         }
 
-        //Debug.Log($"{loaded[0]} {loaded[1]} {loaded[2]} {loaded[3]} {loaded[4]} {loaded[5]} {loaded[6]} {loaded[7]} {loaded[8]} ");
-        //ƒ[ƒh”í‚è”»’è
+        //UnityEngine.Debug.Log($"{loaded[0]} {loaded[1]} {loaded[2]} {loaded[3]} {loaded[4]} {loaded[5]} {loaded[6]} {loaded[7]} {loaded[8]} ");
+        //ãƒ­ãƒ¼ãƒ‰è¢«ã‚Šåˆ¤å®š
         for(int i = 0; i < 9; i++){
             if (checkLoaded(loaded[i])){
-                //Debug.Log("”í‚è@ƒ`ƒƒƒ“ƒNƒiƒ“ƒo[F"+loaded[i]);
+                //UnityEngine.Debug.Log("è¢«ã‚Šã€€ãƒãƒ£ãƒ³ã‚¯ãƒŠãƒ³ãƒãƒ¼ï¼š"+loaded[i]);
                 loaded[i] = -1;
             }
         }
 
-        //Debug.Log($"{loaded[0]} {loaded[1]} {loaded[2]} {loaded[3]} {loaded[4]} {loaded[5]} {loaded[6]} {loaded[7]} {loaded[8]} ");
+        //UnityEngine.Debug.Log($"{loaded[0]} {loaded[1]} {loaded[2]} {loaded[3]} {loaded[4]} {loaded[5]} {loaded[6]} {loaded[7]} {loaded[8]} ");
         
 
         for(int i = 0; i < 9; i++) {
@@ -129,7 +129,7 @@ public class WorldLoader : MonoBehaviour
 
         for(int i = 0; i < 9; i++){
             if(loaded[i] != -1){
-                //Debug.Log("¶¬@ƒ`ƒƒƒ“ƒNƒiƒ“ƒo[:" + loaded[i]);
+                //UnityEngine.Debug.Log("ç”Ÿæˆã€€ãƒãƒ£ãƒ³ã‚¯ãƒŠãƒ³ãƒãƒ¼:" + loaded[i]);
                 for (int j = 1; j <= 4; j++){
                     
                     layers[j].MakeChunk(loaded[i]);
@@ -143,7 +143,7 @@ public class WorldLoader : MonoBehaviour
     
     
     /// <summary>
-    /// ˆ——p
+    /// å‡¦ç†ç”¨
     /// </summary>
     /// <param name="cn"></param>
     /// <returns></returns>
@@ -160,7 +160,7 @@ public class WorldLoader : MonoBehaviour
     }
 
     /// <summary>
-    /// ˆ——p
+    /// å‡¦ç†ç”¨
     /// </summary>
     /// <param name="cn"></param>
     /// <returns></returns>
@@ -172,13 +172,13 @@ public class WorldLoader : MonoBehaviour
     }
 
     /// <summary>
-    /// ˆ——p
+    /// å‡¦ç†ç”¨
     /// </summary>
     /// <param name="cn"></param>
     /// <returns></returns>
     private bool checkLive(int cn) {
         for (int i = 0; i < 9; i++) {
-            //Debug.Log(liveChunk[i]);
+            //UnityEngine.Debug.Log(liveChunk[i]);
             if (liveChunk[i] == cn) {
                 return true;
             }
@@ -188,20 +188,20 @@ public class WorldLoader : MonoBehaviour
 
 
     /// <summary>
-    /// ƒ`ƒƒƒ“ƒN‚ğXV‚µ‚Ü‚·iÀ‘•’†j
+    /// ãƒãƒ£ãƒ³ã‚¯ã‚’æ›´æ–°ã—ã¾ã™ï¼ˆå®Ÿè£…ä¸­ï¼‰
     /// </summary>
-    /// <param name="blocks">ƒ`ƒƒƒ“ƒN‚Ì“à—e‚ğƒuƒƒbƒNid‚Ì2ŸŒ³”z—ñ(ƒWƒƒƒO)‚Å“n‚µ‚Ü‚·</param>
-    /// <param name="layer">ƒŒƒCƒ„[‚ğw’è‚µ‚Ü‚·[1:LayerInsideWall 2:LayerInsideBlock 3:LayerOutsideWall 4:LayerOutsideBlock]</param>
-    /// <param name="chunkNumber">ƒ`ƒƒƒ“ƒNƒiƒ“ƒo[‚ğw’è‚µ‚Ü‚·</param>
+    /// <param name="blocks">ãƒãƒ£ãƒ³ã‚¯ã®å†…å®¹ã‚’ãƒ–ãƒ­ãƒƒã‚¯idã®2æ¬¡å…ƒé…åˆ—(ã‚¸ãƒ£ã‚°)ã§æ¸¡ã—ã¾ã™</param>
+    /// <param name="layer">ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’æŒ‡å®šã—ã¾ã™[1:LayerInsideWall 2:LayerInsideBlock 3:LayerOutsideWall 4:LayerOutsideBlock]</param>
+    /// <param name="chunkNumber">ãƒãƒ£ãƒ³ã‚¯ãƒŠãƒ³ãƒãƒ¼ã‚’æŒ‡å®šã—ã¾ã™</param>
     /// <returns></returns>
     public bool ChunkUpdate(int[][] blocks, int layerNumber, int chunkNumber)
     {
         if (!started) { Start();}
-        //Debug.Log($"{layers[1]} {layers[2]} {layers[3]} {layers[4]} {layerNumber}");
+        //UnityEngine.Debug.Log($"{layers[1]} {layers[2]} {layers[3]} {layers[4]} {layerNumber}");
 
         layers[layerNumber].UpdateChunk(blocks, chunkNumber);
         
-        //Debug.Log($"checkLive({chunkNumber}):"+checkLive(chunkNumber));
+        //UnityEngine.Debug.Log($"checkLive({chunkNumber}):"+checkLive(chunkNumber));
         if (checkLive(chunkNumber)) {
             layers[layerNumber].RemoveChunk(chunkNumber);
             layers[layerNumber].MakeChunk(chunkNumber);
@@ -211,7 +211,7 @@ public class WorldLoader : MonoBehaviour
 
 
     /// <summary>
-    /// ƒ[ƒ‹ƒhÀ•W‚ğƒ`ƒƒƒ“ƒNƒiƒ“ƒo[‚É•ÏŠ·‚µ‚Ä•Ô‚µ‚Ü‚·
+    /// ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’ãƒãƒ£ãƒ³ã‚¯ãƒŠãƒ³ãƒãƒ¼ã«å¤‰æ›ã—ã¦è¿”ã—ã¾ã™
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
@@ -228,7 +228,7 @@ public class WorldLoader : MonoBehaviour
 
 
     /// <summary>
-    /// ƒ`ƒƒƒ“ƒN‚ÌŠî“_‚Ìƒ[ƒ‹ƒhÀ•W‚ğ•Ô‚µ‚Ü‚·@ƒ`ƒƒƒ“ƒN¶‰º‚ªn“_‚Æ‚È‚è‚Ü‚·
+    /// ãƒãƒ£ãƒ³ã‚¯ã®åŸºç‚¹ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’è¿”ã—ã¾ã™ã€€ãƒãƒ£ãƒ³ã‚¯å·¦ä¸‹ãŒå§‹ç‚¹ã¨ãªã‚Šã¾ã™
     /// </summary>
     /// <param name="ChunkNumber"></param>
     /// <returns>pos[2]{x,y}</returns>

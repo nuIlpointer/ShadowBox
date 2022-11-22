@@ -31,7 +31,6 @@ public class ShadowBoxServer : MonoBehaviour {
     private NetworkDriver driver;
     private NativeList<NetworkConnection> connectionList;
     private Dictionary<Guid, PlayerData> userList;
-    private Dictionary<BlockLayer, int[][][]> layerCache;
     private bool active = false;
     // Start is called before the first frame update
     void Start() {
@@ -126,6 +125,13 @@ public class ShadowBoxServer : MonoBehaviour {
 
                         //デバッグ出力
                         Debug.Log("[SERVER]Recieve new user data: " + userList[newPlayer.playerID].ToString());
+                        //プレイヤー情報を周知する
+
+                        foreach (NetworkConnection conn in connectionList) {
+                            var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                            dsw.WriteFixedString4096(new FixedString4096Bytes($"NPD,{newPlayer.ToString()}"));
+                            this.driver.EndSend(dsw);
+                        }
                     }
 
                     //送出
@@ -174,6 +180,9 @@ public class ShadowBoxServer : MonoBehaviour {
                         newPlayer.name = userList[newPlayer.playerID].name;
                         newPlayer.skinType = userList[newPlayer.playerID].skinType;
                         userList[newPlayer.playerID] = newPlayer;
+
+                        //仮 ログ出力
+                        Debug.Log($"[SERVER]Player {userList[newPlayer.playerID].name} moving to {newPlayer.playerX}, {newPlayer.playerY}");
 
                         //全ユーザに移動情報を通知する
                         foreach(NetworkConnection conn in connectionList) {

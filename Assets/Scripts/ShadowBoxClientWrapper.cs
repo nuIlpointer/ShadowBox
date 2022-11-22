@@ -2,10 +2,10 @@ using System;
 using System.Net;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
-using System.Linq;
 
 public class ShadowBoxClientWrapper : MonoBehaviour {
     public enum BlockLayer {
@@ -58,6 +58,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     private PlayerData player;
     void Start() {
         // TODO さっさとやれ
+        userList = new Dictionary<Guid, PlayerData>();
     }
 
     // Update is called once per frame
@@ -84,7 +85,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                 }
             } else if (cmd == NetworkEvent.Type.Data) {
                 String receivedData = ("" + stream.ReadFixedString4096());
-                if(receivedData.StartsWith("CKD")) {
+                if (receivedData.StartsWith("CKD")) { //チャンクデータを受信したときの処理
                     receivedData = receivedData.Replace("CKD,", "");
                     var dataArr = receivedData.Split(',');
                     var blockLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
@@ -92,11 +93,57 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     receivedData = receivedData.Replace($"{blockLayer},{chunkID},", "");
                     List<int[]> chunkTemp = new List<int[]>();
                     foreach (String line in receivedData.Split('\n'))
-                        if(line != "")
+                        if (line != "")
                             chunkTemp.Add(Array.ConvertAll(line.Split(','), int.Parse));
-                    Debug.Log("[WRAPPER]Received chunk data:\n");
+                    var chunkStr = "";
                     foreach (int[] arrLine in chunkTemp.ToArray())
-                        Debug.Log(string.Join(",", arrLine));
+                        chunkStr += string.Join(",", arrLine) + "\n";
+
+                    Debug.Log("[WRAPPER]Received chunk data:\n" + chunkStr);
+                }
+                if(receivedData.StartsWith("PLM")) { //プレイヤーの移動情報を受信したときの処理
+                    receivedData = receivedData.Replace("PLM,", "");
+                    var dataArr = receivedData.Split(',');
+                    Guid playerId = Guid.Parse(dataArr[0]);
+                    BlockLayer playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
+                    float playerX = float.Parse(dataArr[2]);
+                    float playerY = float.Parse(dataArr[3]);
+                    float actState = Int32.Parse(dataArr[4]);
+                    PlayerData newPlayer;
+                    newPlayer.playerID = playerId;
+                    newPlayer.playerX = playerX;
+                    newPlayer.playerY = playerY;
+                    newPlayer.playerLayer = playerLayer;
+                    //そのプレイヤーが現在のローカルデータに存在するか確認し、なければ仮のプレイヤーとして情報を保持
+                    //そのままだとまずいので、プレイヤーの一覧を自動的に要求する。
+                    if (!userList.ContainsKey(playerId)) {
+                        newPlayer.name = "Player";
+                        newPlayer.skinType = 0;
+                        newPlayer.actState = 0;
+                    } else {
+                        newPlayer.name = userList[playerId].name;
+                        newPlayer.skinType = userList[playerId].skinType;
+                        newPlayer.actState = userList[playerId].actState;
+                    }
+                    userList[playerId] = newPlayer;
+                    Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
+                }
+
+                if(receivedData.StartsWith("NPD")) { //新規のプレイヤーデータを受信したとき
+                    receivedData = receivedData.Replace("NPD,", "");
+                    var dataArr = receivedData.Split(',');
+                    PlayerData newPlayer;
+                    newPlayer.name = dataArr[0];
+                    newPlayer.skinType = Int32.Parse(dataArr[1]);
+                    newPlayer.actState = Int32.Parse(dataArr[2]);
+                    newPlayer.playerID = Guid.Parse(dataArr[3]);
+                    newPlayer.playerX = float.Parse(dataArr[4]);
+                    newPlayer.playerY = float.Parse(dataArr[5]);
+                    newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[6]);
+                    Debug.Log("[WRAPPER]Received new player data\n" + newPlayer.ToString());
+
+                    //追加する
+                    userList[newPlayer.playerID] = newPlayer;
                 }
             } else if (cmd == NetworkEvent.Type.Disconnect) {
                 Debug.Log("[WRAPPER]Disconnect.");
@@ -148,7 +195,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
             string sendDataTemp = "";
             foreach (int[] chunkRow in chunkData)
                 for (int i = 0; i < chunkRow.Length; i++)
-                    sendDataTemp += chunkRow[i] + (i == chunkRow.Length - 1 ? "\n" : ",");
+                    sendDataTemp += chunkRow[i] + (i == chunkRow.Length - 1 ? "\n" : ","); //ここもstring.Joinに統一したほうがよさげ？
 
 
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
@@ -170,6 +217,22 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="bufferChunkData">変更後のチャンクデータ</param>
     public void SendBuffer(Guid workspaceId, BlockLayer blockLayer, int[][] bufferChunkData) {
         //TODO 実装する
+        if (this.connection.IsCreated) {
+            this.driver.ScheduleUpdate().Complete();
+            if (!this.connection.IsCreated)
+                return;
+            string sendDataTemp = "";
+            foreach (int[] bufferRow in bufferChunkData)
+                sendDataTemp += string.Join(",", bufferRow) + "\n";
+
+            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+            if(writer >= 0) {
+                dsw.WriteFixedString4096(new FixedString4096Bytes($"SBF,{workspaceId.ToString("N")},{blockLayer},{sendDataTemp}"));
+                Debug.Log("[WRAPPER]Sending buffer data:\n" + sendDataTemp);
+                this.driver.EndSend(dsw);
+            }
+
+        }
     }
 
     /// <summary>
@@ -177,9 +240,19 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// </summary>
     /// <param name="workspaceId">変更を反映するワークスペースのID</param>
     public void ApplyBuffer(Guid workspaceId) {
-    
+        if(this.connection.IsCreated) {
+            this.driver.ScheduleUpdate().Complete();
+            if (!this.connection.IsCreated)
+                return;
+            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+            if(writer >= 0) {
+                dsw.WriteFixedString4096(new FixedString4096Bytes($"BRQ,{workspaceId.ToString("N")}"));
+                Debug.Log("[WRAPPER]Requesting applying buffer data to chunk data");
+                this.driver.EndSend(dsw);
+            }
+        }
     }
-    
+
     /// <summary>
     /// 接続先のポート/IPアドレスを指定し、接続する。
     /// ポートが範囲外の時は自動的に「11781」。
@@ -187,7 +260,6 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="ipAddress">接続先IPアドレス。</param>
     /// <param name="port">接続先ポート番号。デフォルトは11781。</param>
     public void Connect(string ipAddress, int port) {
-
         this.driver = NetworkDriver.Create();
         this.connectAddress = IPAddress.Parse(ipAddress);
         this.endPoint = NetworkEndPoint.AnyIpv4;
@@ -317,6 +389,14 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <returns>存在するWorkspace 構造体配列(ワークスペースが存在しない場合はnull)</returns>
     public Workspace[]? GetWorkspaces() {
         return null;
+    }
+
+    /// <summary>
+    /// 接続が有効か確認する。
+    /// </summary>
+    /// <returns>接続が有効かどうかを示す bool 値</returns>
+    public bool IsConnectionActive() {
+        return active;
     }
 
     /// <summary>

@@ -10,7 +10,7 @@ public class ShadowBoxServerTest : MonoBehaviour
     void Start()
     {
         serverObj = GameObject.Find("Server");
-        serverObj.GetComponent<ShadowBoxServer>();
+        server = serverObj.GetComponent<ShadowBoxServer>();
         server.CreateInternalServer(); //ローカルでサーバーを立てる
     }
 

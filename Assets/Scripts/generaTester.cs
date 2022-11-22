@@ -129,10 +129,13 @@ public class generaTester : MonoBehaviour
     public GenericEntityManager em;
     float synclate = 0;
 
-    Guid id;
+    int f = 0;
+
+    Guid id = Guid.NewGuid();
     void Start()
     {
-        id = new Guid();
+        //id = Guid.NewGuid() ;
+        UnityEngine.Debug.Log(id);
         inPos = new Vector3(0, 0, 0);
         wl = GetComponent<WorldLoader>();
         
@@ -142,38 +145,38 @@ public class generaTester : MonoBehaviour
         */
         
         for (int i = 0; i < 4; i++) {
-            Debug.Log("generaTester > グラウンド入れる　chunkNumber : " + i);
+            UnityEngine.Debug.Log("generaTester > グラウンド入れる　chunkNumber : " + i);
             for (int j = 1; j <= 4; j++) {
                 wl.ChunkUpdate(ground, j, i);
             }
         }
-        Debug.Log("generaTester > ロードチャンク　chunkNumber : " + 0);
+        UnityEngine.Debug.Log("generaTester > ロードチャンク　chunkNumber : " + 0);
         wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 
 
         wl.ChunkUpdate(hut1, 1, 1);
         wl.ChunkUpdate(hut2, 3, 1);
-        Debug.Log("generaTester > ロードチャンク　chunkNumber : " + 0);
+        UnityEngine.Debug.Log("generaTester > ロードチャンク　chunkNumber : " + 0);
         wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 
         em.AddPlayer(id, "mememe", 0);
-
+        Debug.LogError("");
     }
 
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.K)) {
-            Debug.Log("入力ｋ　てすとけーす");
+            UnityEngine.Debug.Log("入力ｋ　てすとけーす");
             wl.ChunkUpdate(testcase1, 4, 0);
 
         }
         if (Input.GetKeyDown(KeyCode.L)) {
-            Debug.Log("入力ｌ　ろーど1");
+            UnityEngine.Debug.Log("入力ｌ　ろーど1");
             wl.LoadChunks(new Vector2((float)30.0, (float)10.0));//chunkNumber 1(左から2番目下から１番目)
         }
         if (Input.GetKeyDown(KeyCode.J)) {
-            Debug.Log("入力J　ろーど2");
+            UnityEngine.Debug.Log("入力J　ろーど2");
             wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(左から3番目下から１番目)
             wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(左から3番目下から１番目)
         }
@@ -182,7 +185,7 @@ public class generaTester : MonoBehaviour
         synclate += Time.deltaTime;
         if (synclate > 0.01) {
             synclate = 0;
-            Debug.Log("kkkk");
+            UnityEngine.Debug.Log("kkkk");
             em.SyncPlayer(id, new Vector3(inPos.x + 5, inPos.y, inPos.z), actState) ;
 
         }

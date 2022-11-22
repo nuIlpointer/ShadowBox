@@ -119,13 +119,13 @@ public class PlayerController : MonoBehaviour
         //レイヤー移動
         if (Input.GetKeyDown(KeyCode.W)) {
             if (worldLoader.CheckToBack(transform.position)) {
-                Debug.Log(worldLoader.CheckToBack(transform.position));
+                UnityEngine.Debug.Log(worldLoader.CheckToBack(transform.position));
                 moveB = true;
             }
         }
         if (Input.GetKeyDown(KeyCode.S)) {
             if (worldLoader.CheckToFront(transform.position)) {
-                Debug.Log(worldLoader.CheckToFront(transform.position));
+                UnityEngine.Debug.Log(worldLoader.CheckToFront(transform.position));
                 moveF = true;
             }
         }

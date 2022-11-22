@@ -58,6 +58,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     private PlayerData player;
     void Start() {
         // TODO さっさとやれ
+        userList = new Dictionary<Guid, PlayerData>();
     }
 
     // Update is called once per frame
@@ -94,9 +95,11 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     foreach (String line in receivedData.Split('\n'))
                         if (line != "")
                             chunkTemp.Add(Array.ConvertAll(line.Split(','), int.Parse));
-                    Debug.Log("[WRAPPER]Received chunk data:\n");
+                    var chunkStr = "";
                     foreach (int[] arrLine in chunkTemp.ToArray())
-                        Debug.Log(string.Join(",", arrLine));
+                        chunkStr += string.Join(",", arrLine) + "\n";
+
+                    Debug.Log("[WRAPPER]Received chunk data:\n" + chunkStr);
                 }
                 if(receivedData.StartsWith("PLM")) { //プレイヤーの移動情報を受信したときの処理
                     receivedData = receivedData.Replace("PLM,", "");
@@ -118,7 +121,25 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                         newPlayer.playerY = playerY;
                         newPlayer.playerLayer = playerLayer;
                         userList[playerId] = newPlayer;
+
                     }
+                }
+
+                if(receivedData.StartsWith("NPD")) { //新規のプレイヤーデータを受信したとき
+                    receivedData = receivedData.Replace("NPD,", "");
+                    var dataArr = receivedData.Split(',');
+                    PlayerData newPlayer;
+                    newPlayer.name = dataArr[0];
+                    newPlayer.skinType = Int32.Parse(dataArr[1]);
+                    newPlayer.actState = Int32.Parse(dataArr[2]);
+                    newPlayer.playerID = Guid.Parse(dataArr[3]);
+                    newPlayer.playerX = float.Parse(dataArr[4]);
+                    newPlayer.playerY = float.Parse(dataArr[5]);
+                    newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[6]);
+                    Debug.Log("[WRAPPER]Received new player data\n" + newPlayer.ToString());
+
+                    //追加する
+                    userList[newPlayer.playerID] = newPlayer;
                 }
             } else if (cmd == NetworkEvent.Type.Disconnect) {
                 Debug.Log("[WRAPPER]Disconnect.");
@@ -364,6 +385,14 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <returns>存在するWorkspace 構造体配列(ワークスペースが存在しない場合はnull)</returns>
     public Workspace[]? GetWorkspaces() {
         return null;
+    }
+
+    /// <summary>
+    /// 接続が有効か確認する。
+    /// </summary>
+    /// <returns>接続が有効かどうかを示す bool 値</returns>
+    public bool IsConnectionActive() {
+        return active;
     }
 
     /// <summary>

@@ -158,12 +158,12 @@ public class GenericEntityManager : MonoBehaviour
 
     }
 
-    private bool OnPlayerDisconnect(Guid id)
+    public bool OnPlayerDisconnect(Guid id)
     {
         if (!started) Start();
         if (!players.ContainsKey(id))
         {
-            Debug.logWarning($"対象のGuid:{id} を持つプレイヤーが見つかりませんでした。");
+            Debug.LogWarning($"対象のGuid:{id} を持つプレイヤーが見つかりませんでした。");
             return false;
         }
         players.Remove(id);

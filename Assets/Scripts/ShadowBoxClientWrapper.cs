@@ -452,16 +452,6 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     }
 
     /// <summary>
-    /// バッファを送信する。
-    /// </summary>
-    /// <param name="workspaceGuid">送信するEditBufferが属するWorkspaceのGuid</param>
-    /// <param name="editBuffer">送信するEditBuffer</param>
-    /// <param name="layer">EditBufferの中で更新を通知するLayer</param>
-    public void SendEditBuffer(Guid workspaceGuid, EditBuffer editBuffer, BlockLayer layer) {
-
-    }
-
-    /// <summary>
     /// ブロック単位のWorkspaceに発生した変更を通知する。
     /// </summary>
     /// <param name="workspaceGuid">変更が発生したWorkspaceのGuid</param>
@@ -470,7 +460,18 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="relativeY">EditBufferの左上を起点とした変更点の相対座標Y</param>
     /// <param name="blockID">変更先のブロックID</param>
     public void SendEditBufferBlockChange(Guid workspaceGuid, BlockLayer layer, int relativeX, int relativeY, int blockID) {
+        if (this.connection.IsCreated) {
+            this.driver.ScheduleUpdate().Complete();
+            if (!this.connection.IsCreated)
+                return;
+            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+            if (writer >= 0) {
+                dsw.WriteFixedString4096(new FixedString4096Bytes($"BBC,{workspaceGuid.ToString("N")},{layer},{relativeX},{relativeY},{blockID}"));
+                Debug.Log("[WRAPPER]Sending buffer block data:\n" + $"BBC,{workspaceGuid.ToString("N")},{layer},{relativeX},{relativeY},{blockID}");
+                this.driver.EndSend(dsw);
+            }
 
+        }
     }
 
     /// <summary>
@@ -478,7 +479,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// </summary>
     /// <param name="workspaceGuid">変更を取得するWorkspaceのGuid</param>
     /// <param name="layer">変更を取得するWorkspaceのレイヤー</param>
-    /// <returns></returns>
+    /// <returns>キャッシュされていない場合はnullを返し、取得要求を行う</returns>
     public int[][]? GetEditBufferManual(Guid workspaceGuid, BlockLayer layer) {
         return null;
     }

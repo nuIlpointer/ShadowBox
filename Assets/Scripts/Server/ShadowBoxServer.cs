@@ -156,6 +156,20 @@ public class ShadowBoxServer : MonoBehaviour {
                         this.driver.EndSend(dsw);
                     }
 
+                    if(receivedData.StartsWith("SBF")) { //チャンクバッファを受け取ったとき
+                        Debug.Log("[SERVER]Receive chunk buffer data");
+                        receivedData = receivedData.Replace("SBF,", "");
+                        Guid workspaceId = Guid.Parse(receivedData.Split(',')[0]);
+                        BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[1]);
+                        int chunkId = Int32.Parse(receivedData.Split(',')[2]);
+                        receivedData = receivedData.Replace($"{workspaceId.ToString("N")},{layer},{chunkId},", "");
+                        List<int[]> bufferLineList = new List<int[]>();
+                        foreach (string bufferLine in receivedData.Split('\n'))
+                            if (bufferLine != "")
+                                bufferLineList.Add(Array.ConvertAll(bufferLine.Split(','), int.Parse));
+                        SaveChunkBuffer(workspaceId, layer, chunkId, bufferLineList.ToArray());
+                    }
+
                     //プレイヤー一覧の取得要求
                     if (receivedData.StartsWith("RPL")) {
                         var sendPListStr = "PDL,";

@@ -257,8 +257,9 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// </summary>
     /// <param name="workspaceId">バッファの変更を送信するワークスペースのID</param>
     /// <param name="blockLayer">バッファの変更が発生したレイヤー</param>
+    /// <param name="chunkId">変更するバッファのチャンクID</param>
     /// <param name="bufferChunkData">変更後のチャンクデータ</param>
-    public void SendBuffer(Guid workspaceId, BlockLayer blockLayer, int[][] bufferChunkData) {
+    public void SendBuffer(Guid workspaceId, BlockLayer blockLayer, int chunkId, int[][] bufferChunkData) {
         //TODO 実装する
         if (this.connection.IsCreated) {
             this.driver.ScheduleUpdate().Complete();
@@ -270,7 +271,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
 
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if(writer >= 0) {
-                dsw.WriteFixedString4096(new FixedString4096Bytes($"SBF,{workspaceId.ToString("N")},{blockLayer},{sendDataTemp}"));
+                dsw.WriteFixedString4096(new FixedString4096Bytes($"SBF,{workspaceId.ToString("N")},{blockLayer},{chunkId},{sendDataTemp}"));
                 Debug.Log("[WRAPPER]Sending buffer data:\n" + sendDataTemp);
                 this.driver.EndSend(dsw);
             }

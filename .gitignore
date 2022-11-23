@@ -1,15 +1,16 @@
+#ignore directory
 [Ll]ibrary/
 [Tt]emp/
 [Ll]ogs/
-<<<<<<< HEAD
-<<<<<<< HEAD
-[Ll]ogs/*
-=======
->>>>>>> 4b3bd6ede8d0c30e80392ab08ae217a6509f3f15
-=======
->>>>>>> MakeTerrain
-obj/
+[Oo]bj/
 .vs/
+
+#ignore worlddata
 worlddata/*.dat
+
+#ignore by extension
 *.log
-*.log
+*.csproj
+*.sln
+*.tmp
+

@@ -76,7 +76,7 @@ public class GenericEntityManager : MonoBehaviour
 
         //移動
         foreach (Guid id in players.Keys) {
-            Debug.Log((Time.deltaTime / players[id].moveTime));
+            //Debug.Log((Time.deltaTime / players[id].moveTime));
             players[id].sprite.transform.localPosition = players[id].sprite.transform.localPosition + (players[id].movement * (Time.deltaTime / players[id].moveTime));
 
 
@@ -124,7 +124,7 @@ public class GenericEntityManager : MonoBehaviour
     public bool SyncPlayer(Guid id, float x, float y, int layer, int actState) {
         if (!started) Start();
         //Guid検索
-        UnityEngine.Debug.Log(id);
+        //UnityEngine.Debug.Log(id);
         if (!players.ContainsKey(id)) {
             UnityEngine.Debug.LogWarning($"Guid:{id}　のプレイヤーが見つかりませんでした。");
             return false;

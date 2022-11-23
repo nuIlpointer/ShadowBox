@@ -220,7 +220,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5439f9de592b7074f85ba4952d6c1eca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wrapper: {fileID: 0}
+  wrapperObject: {fileID: 946281863}
+  serverObject: {fileID: 1515226643}
+  server: {fileID: 1515226644}
+  wrapper: {fileID: 946281864}
   worldLoader: {fileID: 1724355517}
   controller: {fileID: 142052764}
   anim: {fileID: 142052763}
@@ -228,7 +231,7 @@ MonoBehaviour:
   skinID: 0
   syncTimeLate: 0.1
   actState: 0
-  testUseWrapper: 0
+  testUseWrapper: 1
   gt: {fileID: 1724355516}
 --- !u!95 &142052763
 Animator:
@@ -430,6 +433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b674f356e82714d4dbcea16037270932, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entityManagerObject: {fileID: 1784876087}
 --- !u!4 &946281865
 Transform:
   m_ObjectHideFlags: 0

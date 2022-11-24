@@ -97,9 +97,9 @@ public class GenericEntityManager : MonoBehaviour
 
             String sname = Enum.GetName(typeof(skinName), skinID);
             if(Enum.GetName(typeof(skinName), skinID) != null /*&& Instantiate((GameObject)Resources.Load("Characters/" + sname)) != null*/) {
-                Debug.Log(transform);
-                players[id] = new Player(Instantiate((GameObject)Resources.Load("Characters/" + sname), transform.position, transform.rotation), spawnPos, 0.1f, 0);    
-                Debug.Log("A");
+                players[id] = new Player(Instantiate((GameObject)Resources.Load("Characters/" + sname), transform.position, transform.rotation), spawnPos, 0.1f, 0);
+                Debug.Log("Players:" + players.Count);
+
             }
             else {
                 UnityEngine.Debug.LogWarning($"skinID:{skinID}　のキャラクターが見つかりませんでした。エラーマンが出動します");
@@ -110,6 +110,10 @@ public class GenericEntityManager : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    public bool HasPlayer(Guid id) {
+        return players.ContainsKey(id); 
     }
 
     /// <summary>
@@ -125,11 +129,14 @@ public class GenericEntityManager : MonoBehaviour
         if (!started) Start();
         //Guid検索
         //UnityEngine.Debug.Log(id);
-        if (players.ContainsKey(id)) {
+
+
+        if (!players.ContainsKey(id)) {
             UnityEngine.Debug.LogWarning($"Guid:{id}　の  プレイヤーが見つかりませんでした。");
             return false;
         }
-        
+
+
         //移動量同期
         Vector3 oldPos =  players[id].sprite.transform.position;
         players[id] = new Player(players[id].sprite, new Vector3(x,y,0) - oldPos, players[id].interval, 0.1f);
@@ -169,6 +176,7 @@ public class GenericEntityManager : MonoBehaviour
             Debug.LogWarning($"対象のGuid:{id} を持つプレイヤーが見つかりませんでした。");
             return false;
         }
+        Destroy(players[id].sprite);
         players.Remove(id);
         return true;
     }

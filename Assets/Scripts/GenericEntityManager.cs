@@ -112,6 +112,10 @@ public class GenericEntityManager : MonoBehaviour
         return true;
     }
 
+    public bool HasPlayer(Guid id) {
+        return players.ContainsKey(id); 
+    }
+
     /// <summary>
     /// プレイヤー情報を更新します
     /// </summary>

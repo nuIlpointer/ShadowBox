@@ -123,7 +123,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     if(!playerId.Equals(player.playerID)) {
                         //そのプレイヤーが現在のローカルデータに存在するか確認し、なければ仮のプレイヤーとして情報を保持
                         //そのままだとまずいので、プレイヤーの一覧を自動的に要求する。←お前ができてなかったんや
-                        if (!userList.ContainsKey(playerId)) {
+                        if (!userList.ContainsKey(playerId) || !entityManager.HasPlayer(playerId)) {
                             newPlayer.name = "Player";
                             newPlayer.skinType = 0;
                             newPlayer.actState = 0;

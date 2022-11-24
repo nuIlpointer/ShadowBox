@@ -225,18 +225,24 @@ public class ShadowBoxServer : MonoBehaviour {
 
                         //全ユーザに移動情報を通知する
                         foreach(NetworkConnection conn in connectionList) {
-                            var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                            dsw.WriteFixedString4096(new FixedString4096Bytes($"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}"));
-                            this.driver.EndSend(dsw);
+                            if(conn.IsCreated) {
+                                var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                                dsw.WriteFixedString4096(new FixedString4096Bytes($"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}"));
+                                this.driver.EndSend(dsw);
+
+                            }
                         }
                     }
                 } else if (cmd == NetworkEvent.Type.Disconnect) {
                     Debug.Log("[SERVER]Disconnected.");
                     foreach (NetworkConnection conn in connectionList) { 
-                        if(guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != this.connectionList[i].InternalId) {
-                            var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                            dsw.WriteFixedString4096(new FixedString4096Bytes($"UDC,{guidConnectionList[this.connectionList[i].InternalId]}"));
-                            this.driver.EndSend(dsw);
+                        if(conn.IsCreated) {
+                            if (guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != this.connectionList[i].InternalId) {
+                                var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                                dsw.WriteFixedString4096(new FixedString4096Bytes($"UDC,{guidConnectionList[this.connectionList[i].InternalId]}"));
+                                this.driver.EndSend(dsw);
+                            }
+
                         }
                     }
                     this.connectionList[i].Disconnect(driver);

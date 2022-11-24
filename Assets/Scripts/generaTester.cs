@@ -156,8 +156,8 @@ public class generaTester : MonoBehaviour
         UnityEngine.Debug.Log("generaTester > ロードチャンク　chunkNumber : " + 0);
         wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 
-        em.AddPlayer(id, "mememe", 0);
-        Debug.LogError("");
+        //em.AddPlayer(id, "mememe", 0);
+        //Debug.LogError("");
     }
 
     // Update is called once per frame
@@ -179,13 +179,13 @@ public class generaTester : MonoBehaviour
         }
 
 
-        synclate += Time.deltaTime;
+        /*synclate += Time.deltaTime;
         if (synclate > 0.01) {
             synclate = 0;
             //UnityEngine.Debug.Log("kkkk");
             em.SyncPlayer(id, inPos.x + 5, inPos.y, 2, actState);
 
-        }
+        }*/
 
         //wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
 

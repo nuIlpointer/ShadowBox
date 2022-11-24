@@ -134,9 +134,12 @@ public class ShadowBoxServer : MonoBehaviour {
 
                         //プレイヤー情報を周知する
                         foreach (NetworkConnection conn in connectionList) {
-                            var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                            dsw.WriteFixedString4096(new FixedString4096Bytes($"NPD,{newPlayer.ToString()}"));
-                            this.driver.EndSend(dsw);
+                            if(conn.IsCreated) {
+                                var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                                dsw.WriteFixedString4096(new FixedString4096Bytes($"NPD,{newPlayer.ToString()}"));
+                                this.driver.EndSend(dsw);
+
+                            }
                         }
                     }
 

@@ -135,6 +135,12 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                         userList[playerId] = newPlayer;
                         Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
                         entityManager.SyncPlayer(playerId, playerX, playerY, (int)playerLayer, actState);
+                        var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+                        if (writer >= 0) {
+                            dsw.WriteFixedString4096(new FixedString4096Bytes("RPL"));
+                            Debug.Log("[WRAPPER]Requesting player data");
+                            this.driver.EndSend(dsw);
+                        }
                     } else {
                         Debug.Log("[WRAPPER]Player move event received but it's same as local player, so skipping it.");
                     }

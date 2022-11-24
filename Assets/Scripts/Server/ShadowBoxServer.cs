@@ -168,7 +168,23 @@ public class ShadowBoxServer : MonoBehaviour {
                             if (bufferLine != "")
                                 bufferLineList.Add(Array.ConvertAll(bufferLine.Split(','), int.Parse));
                         SaveChunkBuffer(workspaceId, layer, chunkId, bufferLineList.ToArray());
+                        //TODO 該当するworkspaceIdの編集者に対して一斉送信
                     }
+
+                    //バッファの適用要求
+                    if(recievedData.StartsWith("BRQ")) {
+                        Debug.Log("[SERVER]Receive buffer applying request");
+                        receivedData = receivedData.Replace("BRQ", "");
+                        var dataArr = receivedData.Split(',');
+                        Guid workspaceId = Guid.Parse(dataArr[0]);
+                        BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
+                        int chunkId = Int32.Parse(dataArr[2]);
+                        SaveChunkBuffer(workspaceID, layer, chunkId, LoadChunkBuffer(workspaceID, layer, chunkId));
+                        //TODO 一斉送信
+
+                    }
+
+
 
                     //プレイヤー一覧の取得要求
                     if (receivedData.StartsWith("RPL")) {

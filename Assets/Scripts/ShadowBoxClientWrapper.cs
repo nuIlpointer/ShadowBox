@@ -217,8 +217,13 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// ドライバと接続情報の破棄を行う
     /// </summary>
     public void OnDestroy() {
-        this.connection.Disconnect(driver);
-        this.connection.Close(driver);
+        var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+        if (writer >= 0) {
+            dsw.WriteFixedString4096(new FixedString4096Bytes("DCN"));
+            if (debugMode) Debug.Log("[WRAPPER]Sending Disconnect event");
+            this.driver.EndSend(dsw);
+        }
+
         this.driver.Dispose();
     }
 

@@ -247,19 +247,24 @@ public class ShadowBoxServer : MonoBehaviour {
                             }
                         }
                     }
-                } else if (cmd == NetworkEvent.Type.Disconnect) {
-                    Debug.Log("[SERVER]Disconnected.");
-                    foreach (NetworkConnection conn in connectionList) { 
-                        if(conn.IsCreated) {
-                            if (guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != this.connectionList[i].InternalId) {
-                                var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                                dsw.WriteFixedString4096(new FixedString4096Bytes($"UDC,{guidConnectionList[this.connectionList[i].InternalId]}"));
-                                this.driver.EndSend(dsw);
-                            }
 
+                    // 切断処理...なんでDisconnectイベント拾ってくれないんや！
+                    if(receivedData.StartsWith("DCN")) {
+                        Debug.Log("[SERVER]User disconnected.");
+                        foreach (NetworkConnection conn in connectionList) {
+                            if (conn.IsCreated) {
+                                if (guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != this.connectionList[i].InternalId) {
+                                    var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                                    dsw.WriteFixedString4096(new FixedString4096Bytes($"UDC,{guidConnectionList[this.connectionList[i].InternalId]}"));
+                                    this.driver.EndSend(dsw);
+                                }
+
+                            }
                         }
+                        this.connectionList[i].Disconnect(driver);
                     }
-                    this.connectionList[i].Disconnect(driver);
+                } else if (cmd == NetworkEvent.Type.Disconnect) {
+                    
 
                 }
             }

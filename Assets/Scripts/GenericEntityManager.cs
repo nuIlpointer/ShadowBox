@@ -129,7 +129,10 @@ public class GenericEntityManager : MonoBehaviour
             UnityEngine.Debug.LogWarning($"Guid:{id}　の  プレイヤーが見つかりませんでした。");
             return false;
         }
-        
+
+        //検証用
+        Debug.Log(players[id].sprite.transform.position);
+
         //移動量同期
         Vector3 oldPos =  players[id].sprite.transform.position;
         players[id] = new Player(players[id].sprite, new Vector3(x,y,0) - oldPos, players[id].interval, 0.1f);

@@ -60,7 +60,7 @@ public class PlayerController : MonoBehaviour
             wrapper = wrapperObject.GetComponent<ShadowBoxClientWrapper>();
             server = serverObject.GetComponent<ShadowBoxServer>();
             server.CreateInternalServer();
-            wrapper.Connect("127.0.0.1", 11781);
+            wrapper.Connect("172.16.103.230", 11781);
 
             
         }

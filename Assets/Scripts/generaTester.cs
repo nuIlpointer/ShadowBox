@@ -130,12 +130,9 @@ public class generaTester : MonoBehaviour
     float synclate = 0;
 
     int f = 0;
-
-    Guid id = Guid.NewGuid();
     void Start()
     {
         //id = Guid.NewGuid() ;
-        UnityEngine.Debug.Log(id);
         inPos = new Vector3(0, 0, 0);
         wl = GetComponent<WorldLoader>();
         

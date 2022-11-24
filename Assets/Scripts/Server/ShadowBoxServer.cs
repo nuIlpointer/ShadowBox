@@ -110,6 +110,8 @@ public class ShadowBoxServer : MonoBehaviour {
                 userList.Remove(guidConnectionList[connectionId]);
                 lastCommandSend.Remove(connectionId);
                 guidConnectionList.Remove(connectionId);
+                this.connectionList[connectionId].Disconnect(driver);
+                this.connectionList[connectionId] = default(NetworkConnection);
             } else
                 lastCommandSend[connectionId] += Time.deltaTime;
         }
@@ -278,7 +280,6 @@ public class ShadowBoxServer : MonoBehaviour {
                     if(receivedData.StartsWith("DCN")) {
                         if(debugMode) Debug.Log("[SERVER]User disconnected.");
                         
-                        this.connectionList[i].Disconnect(driver);
                     }
 
                 } else if (cmd == NetworkEvent.Type.Disconnect) {

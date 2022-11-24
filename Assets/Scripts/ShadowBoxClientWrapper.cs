@@ -176,16 +176,18 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     receivedData = receivedData.Replace("PDL,", "");
                     var dataArr = receivedData.Split('\n');
                     foreach (string playerDataLine in dataArr) {
-                        PlayerData newPlayer;
-                        var pDataArr = playerDataLine.Split(',');
-                        newPlayer.name = pDataArr[0];
-                        newPlayer.skinType = Int32.Parse(pDataArr[1]);
-                        newPlayer.actState = Int32.Parse(pDataArr[2]);
-                        newPlayer.playerID = Guid.Parse(pDataArr[3]);
-                        newPlayer.playerX = float.Parse(pDataArr[4]);
-                        newPlayer.playerY = float.Parse(pDataArr[5]);
-                        newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), pDataArr[6]);
-                        userList[newPlayer.playerID] = newPlayer;
+                        if(playerDataLine != "") {
+                            PlayerData newPlayer;
+                            var pDataArr = playerDataLine.Split(',');
+                            newPlayer.name = pDataArr[0];
+                            newPlayer.skinType = Int32.Parse(pDataArr[1]);
+                            newPlayer.actState = Int32.Parse(pDataArr[2]);
+                            newPlayer.playerID = Guid.Parse(pDataArr[3]);
+                            newPlayer.playerX = float.Parse(pDataArr[4]);
+                            newPlayer.playerY = float.Parse(pDataArr[5]);
+                            newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), pDataArr[6]);
+                            userList[newPlayer.playerID] = newPlayer;
+                        }
                     }
                     Debug.Log($"[WRAPPER]{dataArr.Length} players data received");
                 }

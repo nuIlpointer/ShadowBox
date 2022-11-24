@@ -134,9 +134,12 @@ public class ShadowBoxServer : MonoBehaviour {
 
                         //プレイヤー情報を周知する
                         foreach (NetworkConnection conn in connectionList) {
-                            var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                            dsw.WriteFixedString4096(new FixedString4096Bytes($"NPD,{newPlayer.ToString()}"));
-                            this.driver.EndSend(dsw);
+                            if(conn.IsCreated) {
+                                var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                                dsw.WriteFixedString4096(new FixedString4096Bytes($"NPD,{newPlayer.ToString()}"));
+                                this.driver.EndSend(dsw);
+
+                            }
                         }
                     }
 
@@ -155,6 +158,36 @@ public class ShadowBoxServer : MonoBehaviour {
                         dsw.WriteFixedString4096(new FixedString4096Bytes(sendChunkStr));
                         this.driver.EndSend(dsw);
                     }
+
+                    if(receivedData.StartsWith("SBF")) { //チャンクバッファを受け取ったとき
+                        Debug.Log("[SERVER]Receive chunk buffer data");
+                        receivedData = receivedData.Replace("SBF,", "");
+                        Guid workspaceId = Guid.Parse(receivedData.Split(',')[0]);
+                        BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[1]);
+                        int chunkId = Int32.Parse(receivedData.Split(',')[2]);
+                        receivedData = receivedData.Replace($"{workspaceId.ToString("N")},{layer},{chunkId},", "");
+                        List<int[]> bufferLineList = new List<int[]>();
+                        foreach (string bufferLine in receivedData.Split('\n'))
+                            if (bufferLine != "")
+                                bufferLineList.Add(Array.ConvertAll(bufferLine.Split(','), int.Parse));
+                        SaveChunkBuffer(workspaceId, layer, chunkId, bufferLineList.ToArray());
+                        //TODO 該当するworkspaceIdの編集者に対して一斉送信
+                    }
+
+                    //バッファの適用要求
+                    if(receivedData.StartsWith("BRQ")) {
+                        Debug.Log("[SERVER]Receive buffer applying request");
+                        receivedData = receivedData.Replace("BRQ", "");
+                        var dataArr = receivedData.Split(',');
+                        Guid workspaceId = Guid.Parse(dataArr[0]);
+                        BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
+                        int chunkId = Int32.Parse(dataArr[2]);
+                        SaveChunkBuffer(workspaceId, layer, chunkId, LoadChunkBuffer(workspaceId, layer, chunkId));
+                        //TODO 一斉送信
+
+                    }
+
+
 
                     //プレイヤー一覧の取得要求
                     if (receivedData.StartsWith("RPL")) {

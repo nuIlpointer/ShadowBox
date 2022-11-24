@@ -130,15 +130,12 @@ public class GenericEntityManager : MonoBehaviour
         //Guid検索
         //UnityEngine.Debug.Log(id);
 
-        Debug.Log(players.Count + ":" + string.Join(",", players.Keys));
 
         if (!players.ContainsKey(id)) {
             UnityEngine.Debug.LogWarning($"Guid:{id}　の  プレイヤーが見つかりませんでした。");
             return false;
         }
 
-        //検証用
-        Debug.Log(players[id].sprite.transform.position);
 
         //移動量同期
         Vector3 oldPos =  players[id].sprite.transform.position;
@@ -179,6 +176,7 @@ public class GenericEntityManager : MonoBehaviour
             Debug.LogWarning($"対象のGuid:{id} を持つプレイヤーが見つかりませんでした。");
             return false;
         }
+        Destroy(players[id].sprite);
         players.Remove(id);
         return true;
     }

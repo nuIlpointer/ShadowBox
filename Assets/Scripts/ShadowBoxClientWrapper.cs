@@ -203,8 +203,10 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                 }
 
                 if(receivedData.StartsWith("UDC")) { //他のユーザーが切断したときの処理
-                    if(debugMode) Debug.Log($"[WRAPPER]User {receivedData.Replace("UDC,", "")} has disconnected from server");
-                    entityManager.OnPlayerDisconnect(Guid.Parse(receivedData.Split(',')[1]));
+                    Guid targetId = Guid.Parse(receivedData.Split(',')[1]);
+                    if (debugMode) Debug.Log($"[WRAPPER]User {receivedData.Replace("UDC,", "")} has disconnected from server");
+                    entityManager.OnPlayerDisconnect(targetId);
+                    userList.Remove(targetId);
                 }
             } else if (cmd == NetworkEvent.Type.Disconnect) {
                 if(debugMode) Debug.Log("[WRAPPER]Disconnect.");

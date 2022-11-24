@@ -12,6 +12,7 @@ using static InitialProcess;
 using static ShadowBoxClientWrapper;
 
 public class ShadowBoxServer : MonoBehaviour {
+    public bool debugMode = false;
     public enum BlockLayer {
         InsideWall = 1,
         InsideBlock = 2,
@@ -33,12 +34,14 @@ public class ShadowBoxServer : MonoBehaviour {
     private NetworkDriver driver;
     private NativeList<NetworkConnection> connectionList;
     private Dictionary<Guid, PlayerData> userList;
-    private Dictionary<int, Guid> guidConnectionList; 
+    private Dictionary<int, Guid> guidConnectionList;
+    private Dictionary<int, float> lastCommandSend;
     private bool active = false;
     // Start is called before the first frame update
     void Start() {
         userList = new Dictionary<Guid, PlayerData>();
         guidConnectionList = new Dictionary<int, Guid>();
+        lastCommandSend = new Dictionary<int, float>();
     }
 
     /// <summary>
@@ -65,10 +68,10 @@ public class ShadowBoxServer : MonoBehaviour {
         var endpoint = NetworkEndPoint.AnyIpv4;
         endpoint.Port = (ushort)port;
         if (this.driver.Bind(endpoint) != 0) {
-            Debug.LogError("[SERVER]Failed to bind port " + port + ".");
+            if(debugMode) Debug.LogError("[SERVER]Failed to bind port " + port + ".");
             return false;
         } else this.driver.Listen();
-        Debug.Log("[SERVER]Listen on " + port);
+        if(debugMode) Debug.Log("[SERVER]Listen on " + port);
         active = true;
         return true;
     }
@@ -89,6 +92,28 @@ public class ShadowBoxServer : MonoBehaviour {
             this.connectionList.Add(connection);
         }
 
+        if(debugMode) Debug.Log(string.Join(",", lastCommandSend.Values));
+        foreach (int connectionId in new List<int>(lastCommandSend.Keys)) {
+            if (lastCommandSend[connectionId] >= 1.5f) {
+                foreach (NetworkConnection conn in connectionList) {
+                    if (conn.IsCreated) {
+                        if (guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != connectionId) {
+                            var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                            dsw.WriteFixedString4096(new FixedString4096Bytes($"UDC,{guidConnectionList[connectionId]}"));
+                            this.driver.EndSend(dsw);
+                        }
+
+                    }
+                }
+
+                if(debugMode) Debug.Log($"User {guidConnectionList[connectionId]} has disconnected.");
+                userList.Remove(guidConnectionList[connectionId]);
+                lastCommandSend.Remove(connectionId);
+                guidConnectionList.Remove(connectionId);
+            } else
+                lastCommandSend[connectionId] += Time.deltaTime;
+        }
+
         DataStreamReader stream;
         for (int i = 0; i < this.connectionList.Length; i++) {
             //コネクションが作成されているかどうか
@@ -97,13 +122,14 @@ public class ShadowBoxServer : MonoBehaviour {
             NetworkEvent.Type cmd;
             while ((cmd = this.driver.PopEventForConnection(this.connectionList[i], out stream)) != NetworkEvent.Type.Empty) {
                 if (cmd == NetworkEvent.Type.Connect) {
-                    Debug.Log("[SERVER]User Connected.");
+                    if(debugMode) Debug.Log("[SERVER]User Connected.");
                 } else if (cmd == NetworkEvent.Type.Data) {
                     //データを受信したとき
                     String receivedData = ("" + stream.ReadFixedString4096());
+                    lastCommandSend[this.connectionList[i].InternalId] = 0.0f;
                     if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
                         receivedData = receivedData.Replace("SCH,", "");
-                        Debug.Log("[SERVER]Receive chunk data: \n" + receivedData);
+                        if(debugMode) Debug.Log("[SERVER]Receive chunk data: \n" + receivedData);
                         BlockLayer layerID = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[0]);
                         int chunkID = Int32.Parse(receivedData.Split(',')[1]);
                         receivedData = receivedData.Replace($"{layerID},{chunkID},", "");
@@ -128,7 +154,7 @@ public class ShadowBoxServer : MonoBehaviour {
                         userList[newPlayer.playerID] = newPlayer;
 
                         //デバッグ出力
-                        Debug.Log("[SERVER]Recieve new user data: " + userList[newPlayer.playerID].ToString());
+                        if(debugMode) Debug.Log("[SERVER]Recieve new user data: " + userList[newPlayer.playerID].ToString());
                         
                         //当該プレイヤーとNetworkConnectionを紐づけする
                         guidConnectionList[this.connectionList[i].InternalId] = newPlayer.playerID;
@@ -151,12 +177,12 @@ public class ShadowBoxServer : MonoBehaviour {
                             dsw2.WriteFixedString4096(new FixedString4096Bytes(sendPListStr));
                             this.driver.EndSend(dsw2);
                         }
-                        Debug.Log("USERS:" + string.Join(",", userList.Values));
+                        if(debugMode) Debug.Log("USERS:" + string.Join(",", userList.Values));
                     }
 
                     //送出
                     if(receivedData.StartsWith("RQC")) { //チャンク要求を受け取った時
-                        Debug.Log("[SERVER]Recieve chunk request from client");
+                        if(debugMode) Debug.Log("[SERVER]Recieve chunk request from client");
                         receivedData = receivedData.Replace("RQC,", "");
                         var dataArr = receivedData.Split(',');
                         BlockLayer blockLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
@@ -171,7 +197,7 @@ public class ShadowBoxServer : MonoBehaviour {
                     }
 
                     if(receivedData.StartsWith("SBF")) { //チャンクバッファを受け取ったとき
-                        Debug.Log("[SERVER]Receive chunk buffer data");
+                        if(debugMode) Debug.Log("[SERVER]Receive chunk buffer data");
                         receivedData = receivedData.Replace("SBF,", "");
                         Guid workspaceId = Guid.Parse(receivedData.Split(',')[0]);
                         BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[1]);
@@ -187,7 +213,7 @@ public class ShadowBoxServer : MonoBehaviour {
 
                     //バッファの適用要求
                     if(receivedData.StartsWith("BRQ")) {
-                        Debug.Log("[SERVER]Receive buffer applying request");
+                        if(debugMode) Debug.Log("[SERVER]Receive buffer applying request");
                         receivedData = receivedData.Replace("BRQ", "");
                         var dataArr = receivedData.Split(',');
                         Guid workspaceId = Guid.Parse(dataArr[0]);
@@ -210,7 +236,7 @@ public class ShadowBoxServer : MonoBehaviour {
                             dsw.WriteFixedString4096(new FixedString4096Bytes(sendPListStr));
                             this.driver.EndSend(dsw);
                         }
-                        Debug.Log("USERS:"+ string.Join(",", userList.Values));
+                        if(debugMode) Debug.Log("USERS:"+ string.Join(",", userList.Values));
                     }
                     
                     // プレイヤーのデータ
@@ -235,7 +261,7 @@ public class ShadowBoxServer : MonoBehaviour {
                         userList[newPlayer.playerID] = newPlayer;
 
                         //仮 ログ出力
-                        Debug.Log($"[SERVER]Player {userList[newPlayer.playerID].name} moving to {newPlayer.playerX}, {newPlayer.playerY}");
+                        if(debugMode) Debug.Log($"[SERVER]Player {userList[newPlayer.playerID].name} moving to {newPlayer.playerX}, {newPlayer.playerY}");
 
                         //全ユーザに移動情報を通知する
                         foreach(NetworkConnection conn in connectionList) {
@@ -250,23 +276,16 @@ public class ShadowBoxServer : MonoBehaviour {
 
                     // 切断処理...なんでDisconnectイベント拾ってくれないんや！
                     if(receivedData.StartsWith("DCN")) {
-                        Debug.Log("[SERVER]User disconnected.");
-                        foreach (NetworkConnection conn in connectionList) {
-                            if (conn.IsCreated) {
-                                if (guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != this.connectionList[i].InternalId) {
-                                    var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                                    dsw.WriteFixedString4096(new FixedString4096Bytes($"UDC,{guidConnectionList[this.connectionList[i].InternalId]}"));
-                                    this.driver.EndSend(dsw);
-                                }
-
-                            }
-                        }
+                        if(debugMode) Debug.Log("[SERVER]User disconnected.");
+                        
                         this.connectionList[i].Disconnect(driver);
                     }
+
                 } else if (cmd == NetworkEvent.Type.Disconnect) {
                     
 
                 }
+
             }
         }
     }

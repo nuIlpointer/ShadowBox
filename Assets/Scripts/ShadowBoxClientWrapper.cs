@@ -121,7 +121,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     newPlayer.playerLayer = playerLayer;
                     if(!playerId.Equals(player.playerID)) {
                         //そのプレイヤーが現在のローカルデータに存在するか確認し、なければ仮のプレイヤーとして情報を保持
-                        //そのままだとまずいので、プレイヤーの一覧を自動的に要求する。
+                        //そのままだとまずいので、プレイヤーの一覧を自動的に要求する。←お前ができてなかったんや
                         if (!userList.ContainsKey(playerId)) {
                             newPlayer.name = "Player";
                             newPlayer.skinType = 0;
@@ -174,6 +174,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
 
                 if (receivedData.StartsWith("PDL")) { //プレイヤー一覧を受信した場合
                     receivedData = receivedData.Replace("PDL,", "");
+                    Debug.Log(receivedData);
                     var dataArr = receivedData.Split('\n');
                     foreach (string playerDataLine in dataArr) {
                         if(playerDataLine != "") {
@@ -214,6 +215,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// ドライバと接続情報の破棄を行う
     /// </summary>
     public void OnDestroy() {
+        this.connection.Close(driver);
         this.driver.Dispose();
     }
 

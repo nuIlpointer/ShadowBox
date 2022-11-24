@@ -8,6 +8,7 @@ using Unity.Networking.Transport;
 using UnityEngine;
 
 public class ShadowBoxClientWrapper : MonoBehaviour {
+    public bool debugMode = false;
     public enum BlockLayer {
         InsideWall = 1,
         InsideBlock = 2,
@@ -78,13 +79,13 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         NetworkEvent.Type cmd;
         while ((cmd = this.connection.PopEvent(this.driver, out stream)) != NetworkEvent.Type.Empty) {
             if (cmd == NetworkEvent.Type.Connect) {
-                Debug.Log("[WRAPPER]Success to connect.");
+                if(debugMode) Debug.Log("[WRAPPER]Success to connect.");
                 active = true;
                 if (!player.Equals(default(PlayerData))) {
                     var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
                     if (writer >= 0) {
                         dsw.WriteFixedString4096(new FixedString4096Bytes("SPD," + player));
-                        Debug.Log(new FixedString4096Bytes("[WRAPPER]Sending user data:\n" + player));
+                        if(debugMode) Debug.Log(new FixedString4096Bytes("[WRAPPER]Sending user data:\n" + player));
                         this.driver.EndSend(dsw);
                     }
                 }
@@ -104,7 +105,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     foreach (int[] arrLine in chunkTemp.ToArray())
                         chunkStr += string.Join(",", arrLine) + "\n";
 
-                    Debug.Log("[WRAPPER]Received chunk data:\n" + chunkStr);
+                    if(debugMode) Debug.Log("[WRAPPER]Received chunk data:\n" + chunkStr);
                 }
                 if(receivedData.StartsWith("PLM")) { //プレイヤーの移動情報を受信したときの処理
                     receivedData = receivedData.Replace("PLM,", "");
@@ -121,28 +122,29 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     newPlayer.playerLayer = playerLayer;
                     if(!playerId.Equals(player.playerID)) {
                         //そのプレイヤーが現在のローカルデータに存在するか確認し、なければ仮のプレイヤーとして情報を保持
-                        //そのままだとまずいので、プレイヤーの一覧を自動的に要求する。
+                        //そのままだとまずいので、プレイヤーの一覧を自動的に要求する。←お前ができてなかったんや
                         if (!userList.ContainsKey(playerId)) {
                             newPlayer.name = "Player";
                             newPlayer.skinType = 0;
                             newPlayer.actState = 0;
-
+                            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+                            if (writer >= 0) {
+                                dsw.WriteFixedString4096(new FixedString4096Bytes("RPL"));
+                                if (debugMode) Debug.Log("[WRAPPER]Requesting player data because this wrapper doesn't have this player data");
+                                this.driver.EndSend(dsw);
+                            }
                         } else {
                             newPlayer.name = userList[playerId].name;
                             newPlayer.skinType = userList[playerId].skinType;
                             newPlayer.actState = userList[playerId].actState;
                         }
                         userList[playerId] = newPlayer;
-                        Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
+                        if(debugMode) Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
+                        if(!entityManager.HasPlayer(playerId))
+                            entityManager.AddPlayer(newPlayer.playerID, newPlayer.name, newPlayer.skinType);
                         entityManager.SyncPlayer(playerId, playerX, playerY, (int)playerLayer, actState);
-                        var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
-                        if (writer >= 0) {
-                            dsw.WriteFixedString4096(new FixedString4096Bytes("RPL"));
-                            Debug.Log("[WRAPPER]Requesting player data");
-                            this.driver.EndSend(dsw);
-                        }
                     } else {
-                        Debug.Log("[WRAPPER]Player move event received but it's same as local player, so skipping it.");
+                        if(debugMode) Debug.Log("[WRAPPER]Player move event received but it's same as local player, so skipping it.");
                     }
                     
                 }
@@ -158,10 +160,10 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     newPlayer.playerX = float.Parse(dataArr[4]);
                     newPlayer.playerY = float.Parse(dataArr[5]);
                     newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[6]);
-                    Debug.Log("[WRAPPER]Received new player data\n" + newPlayer.ToString());
+                    if(debugMode) Debug.Log("[WRAPPER]Received new player data\n" + newPlayer.ToString());
 
                     if (newPlayer.playerID.Equals(player.playerID))
-                        Debug.Log("[WRAPPER]Received data is same as local player, skipping it.");
+                        if(debugMode) Debug.Log("[WRAPPER]Received data is same as local player, skipping it.");
                     else {
                         //追加する
                         userList[newPlayer.playerID] = newPlayer;
@@ -174,6 +176,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
 
                 if (receivedData.StartsWith("PDL")) { //プレイヤー一覧を受信した場合
                     receivedData = receivedData.Replace("PDL,", "");
+                    if(debugMode) Debug.Log(receivedData);
                     var dataArr = receivedData.Split('\n');
                     foreach (string playerDataLine in dataArr) {
                         if(playerDataLine != "") {
@@ -190,21 +193,23 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
 
                                 entityManager.AddPlayer(newPlayer.playerID, newPlayer.name, newPlayer.skinType);
                                 entityManager.SyncPlayer(newPlayer.playerID, newPlayer.playerX, newPlayer.playerY, (int)newPlayer.playerLayer, newPlayer.actState);
-                                Debug.Log("[WRAPPER]Generate new Player");
+                                if(debugMode) Debug.Log("[WRAPPER]Generate new Player");
                             }
                             userList[newPlayer.playerID] = newPlayer;
                         }
                     }
-                    Debug.Log($"[WRAPPER]{dataArr.Length} players data received");
-                    Debug.Log(userList.Values);
+                    if(debugMode) Debug.Log($"[WRAPPER]{dataArr.Length} players data received");
+                    if(debugMode) Debug.Log(userList.Values);
                 }
 
                 if(receivedData.StartsWith("UDC")) { //他のユーザーが切断したときの処理
-                    Debug.Log($"[WRAPPER]User {receivedData.Replace("UDC,", "")} has disconnected from server");
-                    entityManager.OnPlayerDisconnect(Guid.Parse(receivedData.Split(',')[1]));
+                    Guid targetId = Guid.Parse(receivedData.Split(',')[1]);
+                    if (debugMode) Debug.Log($"[WRAPPER]User {receivedData.Replace("UDC,", "")} has disconnected from server");
+                    entityManager.OnPlayerDisconnect(targetId);
+                    userList.Remove(targetId);
                 }
             } else if (cmd == NetworkEvent.Type.Disconnect) {
-                Debug.Log("[WRAPPER]Disconnect.");
+                if(debugMode) Debug.Log("[WRAPPER]Disconnect.");
                 this.connection = default(NetworkConnection);
             }
         }
@@ -214,6 +219,13 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// ドライバと接続情報の破棄を行う
     /// </summary>
     public void OnDestroy() {
+        var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+        if (writer >= 0) {
+            dsw.WriteFixedString4096(new FixedString4096Bytes("DCN"));
+            if (debugMode) Debug.Log("[WRAPPER]Sending Disconnect event");
+            this.driver.EndSend(dsw);
+        }
+
         this.driver.Dispose();
     }
 
@@ -225,13 +237,10 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <returns>送信に成功したかを示すbool値</returns>
     public bool GetChunk(BlockLayer layerID, int chunkID) {
         if (this.connection.IsCreated) {
-            this.driver.ScheduleUpdate().Complete();
-            if (!this.connection.IsCreated)
-                return false;
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes($"RQC,{layerID},{chunkID}"));
-                Debug.Log("[WRAPPER]Requesting chunk data");
+                if(debugMode) Debug.Log("[WRAPPER]Requesting chunk data");
                 this.driver.EndSend(dsw);
             } else return false;
             return true;
@@ -247,9 +256,6 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <returns>送信に成功したか</returns>
     public bool SendChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
         if (this.connection.IsCreated) {
-            this.driver.ScheduleUpdate().Complete();
-            if (!this.connection.IsCreated)
-                return false;
             string sendDataTemp = "";
             foreach (int[] chunkRow in chunkData)
                 for (int i = 0; i < chunkRow.Length; i++)
@@ -259,7 +265,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes("SCH," + layerID + "," + chunkID + "," + sendDataTemp));
-                Debug.Log("[WRAPPER]Sending chunk data:\n" + sendDataTemp);
+                if(debugMode) Debug.Log("[WRAPPER]Sending chunk data:\n" + sendDataTemp);
                 this.driver.EndSend(dsw);
             } else return false;
             return true;
@@ -277,9 +283,6 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     public void SendBuffer(Guid workspaceId, BlockLayer blockLayer, int chunkId, int[][] bufferChunkData) {
         //TODO 実装する
         if (this.connection.IsCreated) {
-            this.driver.ScheduleUpdate().Complete();
-            if (!this.connection.IsCreated)
-                return;
             string sendDataTemp = "";
             foreach (int[] bufferRow in bufferChunkData)
                 sendDataTemp += string.Join(",", bufferRow) + "\n";
@@ -287,7 +290,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if(writer >= 0) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes($"SBF,{workspaceId.ToString("N")},{blockLayer},{chunkId},{sendDataTemp}"));
-                Debug.Log("[WRAPPER]Sending buffer data:\n" + sendDataTemp);
+                if(debugMode) Debug.Log("[WRAPPER]Sending buffer data:\n" + sendDataTemp);
                 this.driver.EndSend(dsw);
             }
 
@@ -303,13 +306,10 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="chunkId">更新するチャンクのID</param>
     public void ApplyBuffer(Guid workspaceId, BlockLayer layer, int chunkId) {
         if(this.connection.IsCreated) {
-            this.driver.ScheduleUpdate().Complete();
-            if (!this.connection.IsCreated)
-                return;
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if(writer >= 0) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes($"BRQ,{workspaceId.ToString("N")},{layer},{chunkId}"));
-                Debug.Log("[WRAPPER]Requesting applying buffer data to chunk data");
+                if(debugMode) Debug.Log("[WRAPPER]Requesting applying buffer data to chunk data");
                 this.driver.EndSend(dsw);
             }
         }
@@ -334,7 +334,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         this.connectPort = port;
         this.connection = this.driver.Connect(endPoint);
         active = true;
-        Debug.Log("[WRAPPER]Connect to " + endPoint);
+        if(debugMode) Debug.Log("[WRAPPER]Connect to " + endPoint);
     }
 
     /// <summary>
@@ -362,7 +362,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes("SPD," + player));
-                Debug.Log(new FixedString4096Bytes("[WRAPPER]Sending user data:\n" + player));
+                if(debugMode) Debug.Log(new FixedString4096Bytes("[WRAPPER]Sending user data:\n" + player));
                 this.driver.EndSend(dsw);
             }
         }
@@ -395,13 +395,10 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="actState">プレイヤーの詳細情報？</param>
     public bool SendPlayerMove(BlockLayer layer, float x, float y, int actState) {
         if (this.connection.IsCreated) {
-            this.driver.ScheduleUpdate().Complete();
-            if (!this.connection.IsCreated)
-                return false;
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes($"PMV,{player.playerID},{layer},{x},{y},{actState}"));
-                Debug.Log("[WRAPPER]Sending player move data");
+                if(debugMode) Debug.Log("[WRAPPER]Sending player move data");
                 this.driver.EndSend(dsw);
             } else return false;
             return true;
@@ -417,12 +414,10 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="blockID">変更された後のブロックID</param>
     public void SendBlockChange(BlockLayer layer, int x, int y, int blockID) {
         if (this.connection.IsCreated) {
-            this.driver.ScheduleUpdate().Complete();
-            if (!this.connection.IsCreated) return;
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes($"SBC,{layer},{x},{y},{blockID}"));
-                Debug.Log("[WRAPPER]Sending block changing Data");
+                if(debugMode) Debug.Log("[WRAPPER]Sending block changing Data");
                 this.driver.EndSend(dsw);
             }
         }
@@ -480,13 +475,10 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="blockID">変更先のブロックID</param>
     public void SendEditBufferBlockChange(Guid workspaceGuid, BlockLayer layer, int relativeX, int relativeY, int blockID) {
         if (this.connection.IsCreated) {
-            this.driver.ScheduleUpdate().Complete();
-            if (!this.connection.IsCreated)
-                return;
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes($"BBC,{workspaceGuid.ToString("N")},{layer},{relativeX},{relativeY},{blockID}"));
-                Debug.Log("[WRAPPER]Sending buffer block data:\n" + $"BBC,{workspaceGuid.ToString("N")},{layer},{relativeX},{relativeY},{blockID}");
+                if(debugMode) Debug.Log("[WRAPPER]Sending buffer block data:\n" + $"BBC,{workspaceGuid.ToString("N")},{layer},{relativeX},{relativeY},{blockID}");
                 this.driver.EndSend(dsw);
             }
 

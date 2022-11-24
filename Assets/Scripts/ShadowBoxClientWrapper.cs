@@ -127,7 +127,12 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                             newPlayer.name = "Player";
                             newPlayer.skinType = 0;
                             newPlayer.actState = 0;
-
+                            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+                            if (writer >= 0) {
+                                dsw.WriteFixedString4096(new FixedString4096Bytes("RPL"));
+                                if (debugMode) Debug.Log("[WRAPPER]Requesting player data because this wrapper doesn't have this player data");
+                                this.driver.EndSend(dsw);
+                            }
                         } else {
                             newPlayer.name = userList[playerId].name;
                             newPlayer.skinType = userList[playerId].skinType;
@@ -136,12 +141,6 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                         userList[playerId] = newPlayer;
                         if(debugMode) Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
                         entityManager.SyncPlayer(playerId, playerX, playerY, (int)playerLayer, actState);
-                        var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
-                        if (writer >= 0) {
-                            dsw.WriteFixedString4096(new FixedString4096Bytes("RPL"));
-                            if(debugMode) Debug.Log("[WRAPPER]Requesting player data");
-                            this.driver.EndSend(dsw);
-                        }
                     } else {
                         if(debugMode) Debug.Log("[WRAPPER]Player move event received but it's same as local player, so skipping it.");
                     }

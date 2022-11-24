@@ -6,7 +6,8 @@ public class PlayerController : MonoBehaviour
 {
 
     public GameObject wrapperObject;
-    public ShadowBoxServer Server;
+    public GameObject serverObject;
+    public ShadowBoxServer server;
     public ShadowBoxClientWrapper wrapper;
     public WorldLoader worldLoader;
     public CharacterController controller;
@@ -41,25 +42,39 @@ public class PlayerController : MonoBehaviour
     /// プレイヤーのアクションによって変動する値です（ 1の位{ 0:Standby 1:run 3:jump 4:fall } 10の位{ 0:右 1:左} ）
     /// </summary>
     public int actState;
-
+    
 
     bool started = false;
 
     //test
     public bool testUseWrapper = true;
     public generaTester gt;
+
+    private bool firstUpdate = true;
     
     // Start is called before the first frame update
     void Start()
     {
-        if (!started) Start();
-        wrapper = wrapperObject.GetComponent<ShadowBoxClientWrapper>();
-        wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x,transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock) ;
+        if (!started)
+        {
+            wrapper = wrapperObject.GetComponent<ShadowBoxClientWrapper>();
+            server = serverObject.GetComponent<ShadowBoxServer>();
+            server.CreateInternalServer();
+            wrapper.Connect("127.0.0.1", 11781);
+
+            
+        }
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (firstUpdate)
+        {
+            firstUpdate = false;
+            wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x, transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock);
+        }
         //移動
         //(ミスによりrunLが右移動、runRが左移動になっています)
         runR = false;
@@ -145,6 +160,12 @@ public class PlayerController : MonoBehaviour
         syncCnt += Time.deltaTime;
         if(syncCnt > syncTimeLate) {
             if (testUseWrapper) {
+                Debug.Log(wrapper.IsConnectionActive());
+                if (wrapper.IsConnectionActive())
+                {
+                    wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, transform.position.x, transform.position.y, actState);
+                }
+
                 //wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, (float)2.0, (float)2.0);
             }
             else {

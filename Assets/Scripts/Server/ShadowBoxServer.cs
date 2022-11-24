@@ -38,6 +38,7 @@ public class ShadowBoxServer : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         userList = new Dictionary<Guid, PlayerData>();
+        guidConnectionList = new Dictionary<int, Guid>();
     }
 
     /// <summary>
@@ -138,9 +139,19 @@ public class ShadowBoxServer : MonoBehaviour {
                                 var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
                                 dsw.WriteFixedString4096(new FixedString4096Bytes($"NPD,{newPlayer.ToString()}"));
                                 this.driver.EndSend(dsw);
-
                             }
                         }
+
+                        //当該ユーザに現在のユーザ一覧を送信する
+                        var sendPListStr = "PDL,";
+                        foreach (PlayerData data in userList.Values)
+                            sendPListStr += data.ToString() + "\n";
+                        var writer2 = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw2);
+                        if (writer2 >= 0) {
+                            dsw2.WriteFixedString4096(new FixedString4096Bytes(sendPListStr));
+                            this.driver.EndSend(dsw2);
+                        }
+                        Debug.Log("USERS:" + string.Join(",", userList.Values));
                     }
 
                     //送出
@@ -195,8 +206,11 @@ public class ShadowBoxServer : MonoBehaviour {
                         foreach (PlayerData data in userList.Values)
                             sendPListStr += data.ToString() + "\n";
                         var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
-                        dsw.WriteFixedString4096(new FixedString4096Bytes(sendPListStr));
-                        this.driver.EndSend(dsw);
+                        if(writer >= 0) {
+                            dsw.WriteFixedString4096(new FixedString4096Bytes(sendPListStr));
+                            this.driver.EndSend(dsw);
+                        }
+                        Debug.Log("USERS:"+ string.Join(",", userList.Values));
                     }
                     
                     // プレイヤーのデータ
@@ -269,7 +283,7 @@ public class ShadowBoxServer : MonoBehaviour {
         if (!Directory.Exists("./worlddata/")) {
             Directory.CreateDirectory("./worlddata");
         }
-        string fileName = $"./workdata/{layerID}.chunk{chunkID}.dat";
+        string fileName = $"./worlddata/{layerID}.chunk{chunkID}.dat";
         using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
             foreach (int[] row in chunkData)
                 writer.WriteLine(string.Join(",", row));
@@ -287,7 +301,7 @@ public class ShadowBoxServer : MonoBehaviour {
         if (!Directory.Exists("./worlddata/")) {
             Directory.CreateDirectory("./worlddata");
         }
-        string fileName = $"./workdata/{workspaceID}.{layerID}.chunk{chunkID}.dat";
+        string fileName = $"./worlddata/{workspaceID}.{layerID}.chunk{chunkID}.dat";
         using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
             foreach (int[] row in chunkData)
                 writer.WriteLine(string.Join(",", row));
@@ -301,7 +315,7 @@ public class ShadowBoxServer : MonoBehaviour {
     /// <param name="chunkID">読み込むチャンクのID</param>
     /// <returns></returns>
     public int[][]? LoadChunk(BlockLayer layerID, int chunkID) {
-        string fileName = $"./workdata/{layerID}.chunk{chunkID}.dat";
+        string fileName = $"./worlddata/{layerID}.chunk{chunkID}.dat";
         if (File.Exists(fileName)) {
             List<int[]> tempList = new List<int[]>();
             using (var reader = new StreamReader(fileName, Encoding.UTF8)) {
@@ -324,7 +338,7 @@ public class ShadowBoxServer : MonoBehaviour {
     /// <param name="chunkID"></param>
     /// <returns></returns>
     public int[][]? LoadChunkBuffer(Guid workspaceID, BlockLayer layerID, int chunkID) {
-        string fileName = $"./workdata/{workspaceID}.{layerID}.chunk{chunkID}.dat";
+        string fileName = $"./worlddata/{workspaceID}.{layerID}.chunk{chunkID}.dat";
         if (File.Exists(fileName)) {
             List<int[]> tempList = new List<int[]>();
             using (var reader = new StreamReader(fileName, Encoding.UTF8)) {

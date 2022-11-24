@@ -97,9 +97,9 @@ public class GenericEntityManager : MonoBehaviour
 
             String sname = Enum.GetName(typeof(skinName), skinID);
             if(Enum.GetName(typeof(skinName), skinID) != null /*&& Instantiate((GameObject)Resources.Load("Characters/" + sname)) != null*/) {
-                Debug.Log(transform);
-                players[id] = new Player(Instantiate((GameObject)Resources.Load("Characters/" + sname), transform.position, transform.rotation), spawnPos, 0.1f, 0);    
-                Debug.Log("A");
+                players[id] = new Player(Instantiate((GameObject)Resources.Load("Characters/" + sname), transform.position, transform.rotation), spawnPos, 0.1f, 0);
+                Debug.Log("Players:" + players.Count);
+
             }
             else {
                 UnityEngine.Debug.LogWarning($"skinID:{skinID}　のキャラクターが見つかりませんでした。エラーマンが出動します");
@@ -125,7 +125,10 @@ public class GenericEntityManager : MonoBehaviour
         if (!started) Start();
         //Guid検索
         //UnityEngine.Debug.Log(id);
-        if (players.ContainsKey(id)) {
+
+        Debug.Log(players.Count + ":" + string.Join(",", players.Keys));
+
+        if (!players.ContainsKey(id)) {
             UnityEngine.Debug.LogWarning($"Guid:{id}　の  プレイヤーが見つかりませんでした。");
             return false;
         }

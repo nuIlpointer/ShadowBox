@@ -77,7 +77,7 @@ public class GenericEntityManager : MonoBehaviour
         //移動
         foreach (Guid id in players.Keys) {
             //Debug.Log((Time.deltaTime / players[id].moveTime));
-            players[id].sprite.transform.localPosition = players[id].sprite.transform.localPosition + (players[id].movement * (Time.deltaTime / players[id].moveTime));
+            players[id].sprite.transform.localPosition = players[id].sprite.transform.localPosition + (players[id].movement * (Time.deltaTime / players[id].moveTime == 0 ? 0.1f     : players[id].moveTime));
 
 
         }
@@ -98,12 +98,12 @@ public class GenericEntityManager : MonoBehaviour
             String sname = Enum.GetName(typeof(skinName), skinID);
             if(Enum.GetName(typeof(skinName), skinID) != null /*&& Instantiate((GameObject)Resources.Load("Characters/" + sname)) != null*/) {
                 Debug.Log(transform);
-                players.Add(id, new Player(Instantiate((GameObject)Resources.Load("Characters/" + sname), transform.position, transform.rotation),spawnPos, (float)0.1, 0));
+                players[id] = new Player(Instantiate((GameObject)Resources.Load("Characters/" + sname), transform.position, transform.rotation), spawnPos, 0.1f, 0);    
                 Debug.Log("A");
             }
             else {
                 UnityEngine.Debug.LogWarning($"skinID:{skinID}　のキャラクターが見つかりませんでした。エラーマンが出動します");
-                players.Add(id, new Player(Instantiate((GameObject)Resources.Load("Characters/error_man"), transform.position, transform.rotation), spawnPos,(float)0.1, 0));
+                players.Add(id, new Player(Instantiate((GameObject)Resources.Load("Characters/error_man"), transform.position, transform.rotation), spawnPos, 0.1f, 0));
             }
         }catch(Exception e) {
             UnityEngine.Debug.LogError("<<<AddPlayer エラー>>>\n" + e);
@@ -125,8 +125,8 @@ public class GenericEntityManager : MonoBehaviour
         if (!started) Start();
         //Guid検索
         //UnityEngine.Debug.Log(id);
-        if (!players.ContainsKey(id)) {
-            UnityEngine.Debug.LogWarning($"Guid:{id}　のプレイヤーが見つかりませんでした。");
+        if (players.ContainsKey(id)) {
+            UnityEngine.Debug.LogWarning($"Guid:{id}　の  プレイヤーが見つかりませんでした。");
             return false;
         }
         

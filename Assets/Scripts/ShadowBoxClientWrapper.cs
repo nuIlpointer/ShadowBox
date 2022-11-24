@@ -186,10 +186,17 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                             newPlayer.playerX = float.Parse(pDataArr[4]);
                             newPlayer.playerY = float.Parse(pDataArr[5]);
                             newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), pDataArr[6]);
+                            if(!userList.ContainsKey(newPlayer.playerID)) {
+
+                                entityManager.AddPlayer(newPlayer.playerID, newPlayer.name, newPlayer.skinType);
+                                entityManager.SyncPlayer(newPlayer.playerID, newPlayer.playerX, newPlayer.playerY, (int)newPlayer.playerLayer, newPlayer.actState);
+                                Debug.Log("[WRAPPER]Generate new Player");
+                            }
                             userList[newPlayer.playerID] = newPlayer;
                         }
                     }
                     Debug.Log($"[WRAPPER]{dataArr.Length} players data received");
+                    Debug.Log(userList.Values);
                 }
 
                 if(receivedData.StartsWith("UDC")) { //他のユーザーが切断したときの処理

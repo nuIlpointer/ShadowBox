@@ -112,6 +112,11 @@ public class GenericEntityManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// 指定した Guid のユーザがEntityManagerに存在するかを確認します。
+    /// </summary>
+    /// <param name="id">存在を確認するユーザのGuid</param>
+    /// <returns>存在する場合 true を返す</returns>
     public bool HasPlayer(Guid id) {
         return players.ContainsKey(id); 
     }

@@ -14,6 +14,10 @@ using static ShadowBoxClientWrapper;
 public class ShadowBoxServer : MonoBehaviour {
     public bool debugMode = false;
     public GameObject textObj;
+    /// <summary>
+    /// 最後の通信からこの時間が経過した場合、切断とみなす時間
+    /// </summary>
+    public float timeout = 0.5f;
     private LogToDisplay log;
     public enum BlockLayer {
         InsideWall = 1,
@@ -99,7 +103,7 @@ public class ShadowBoxServer : MonoBehaviour {
         // 原因不明の為少し不安要素。まあいいや。
         if(debugMode) Debug.Log(string.Join(",", lastCommandSend.Values));
         foreach (int connectionId in new List<int>(lastCommandSend.Keys)) {
-            if (lastCommandSend[connectionId] >= 0.5f) {
+            if (lastCommandSend[connectionId] >= timeout) {
                 foreach (NetworkConnection conn in connectionList) {
                     if (conn.IsCreated) {
                         if (guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != connectionId) {

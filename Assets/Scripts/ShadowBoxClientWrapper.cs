@@ -126,7 +126,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     newPlayer.playerLayer = playerLayer;
                     if(!playerId.Equals(player.playerID)) {
                         //そのプレイヤーが現在のローカルデータに存在するか確認し、なければ仮のプレイヤーとして情報を保持
-                        //そのままだとまずいので、プレイヤーの一覧を自動的に要求する。←お前ができてなかったんや
+                        //そのままだとまずいので、プレイヤーの一覧を自動的に要求する。挙動が怪しい。なんだこれ。
                         if (!userList.ContainsKey(playerId)) {
                             newPlayer.name = "Player";
                             newPlayer.skinType = 0;
@@ -144,8 +144,9 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                         }
                         userList[playerId] = newPlayer;
                         if(debugMode) Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
-                        if(!entityManager.HasPlayer(playerId))
+                        if (!entityManager.HasPlayer(playerId)) {
                             entityManager.AddPlayer(newPlayer.playerID, newPlayer.name, newPlayer.skinType);
+                        }
                         entityManager.SyncPlayer(playerId, playerX, playerY, (int)playerLayer, actState);
                     } else {
                         if(debugMode) Debug.Log("[WRAPPER]Player move event received but it's same as local player, so skipping it.");
@@ -167,11 +168,13 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     if(debugMode) Debug.Log("[WRAPPER]Received new player data\n" + newPlayer.ToString());
 
                     if (newPlayer.playerID.Equals(player.playerID)) {
-
                         if (debugMode) Debug.Log("[WRAPPER]Received data is same as local player, skipping it.");
                     } else {
                         //追加する
                         userList[newPlayer.playerID] = newPlayer;
+                        if(!this.player.playerID.Equals(newPlayer.playerID)) {
+                            log.addText($"{newPlayer.name}さんが接続しました。");
+                        }
                         entityManager.AddPlayer(newPlayer.playerID, newPlayer.name, newPlayer.skinType);
                         entityManager.SyncPlayer(newPlayer.playerID, newPlayer.playerX, newPlayer.playerY, (int)newPlayer.playerLayer, newPlayer.actState);
 
@@ -194,7 +197,6 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                             newPlayer.playerY = float.Parse(pDataArr[5]);
                             newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), pDataArr[6]);
                             if(!userList.ContainsKey(newPlayer.playerID)) {
-                                log.addText($"{newPlayer.name}さんが接続しました。");
                                 entityManager.AddPlayer(newPlayer.playerID, newPlayer.name, newPlayer.skinType);
                                 entityManager.SyncPlayer(newPlayer.playerID, newPlayer.playerX, newPlayer.playerY, (int)newPlayer.playerLayer, newPlayer.actState);
                                 if(debugMode) Debug.Log("[WRAPPER]Generate new Player");

@@ -625,7 +625,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b674f356e82714d4dbcea16037270932, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugMode: 0
+  debugMode: 1
   textObj: {fileID: 270579208}
   entityManagerObject: {fileID: 1784876087}
 --- !u!4 &946281865

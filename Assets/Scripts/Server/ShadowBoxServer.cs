@@ -95,9 +95,11 @@ public class ShadowBoxServer : MonoBehaviour {
             this.connectionList.Add(connection);
         }
 
+        // なんかDisconnectイベントを拾ってくれないので一定時間何のパケットも送信しなかった時切断とみなすよう変更。
+        // 原因不明の為少し不安要素。まあいいや。
         if(debugMode) Debug.Log(string.Join(",", lastCommandSend.Values));
         foreach (int connectionId in new List<int>(lastCommandSend.Keys)) {
-            if (lastCommandSend[connectionId] >= 1.5f) {
+            if (lastCommandSend[connectionId] >= 0.5f) {
                 foreach (NetworkConnection conn in connectionList) {
                     if (conn.IsCreated) {
                         if (guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != connectionId) {
@@ -122,175 +124,171 @@ public class ShadowBoxServer : MonoBehaviour {
         DataStreamReader stream;
         for (int i = 0; i < this.connectionList.Length; i++) {
             //コネクションが作成されているかどうか
-            Assert.IsTrue(this.connectionList[i].IsCreated);
+            if(this.connectionList[i].IsCreated) {
+                Assert.IsTrue(this.connectionList[i].IsCreated);
 
-            NetworkEvent.Type cmd;
-            while ((cmd = this.driver.PopEventForConnection(this.connectionList[i], out stream)) != NetworkEvent.Type.Empty) {
-                if (cmd == NetworkEvent.Type.Connect) {
-                    if(debugMode) Debug.Log("[SERVER]User Connected.");
-                } else if (cmd == NetworkEvent.Type.Data) {
-                    //データを受信したとき
-                    String receivedData = ("" + stream.ReadFixedString4096());
-                    lastCommandSend[this.connectionList[i].InternalId] = 0.0f;
-                    if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
-                        receivedData = receivedData.Replace("SCH,", "");
-                        if(debugMode) Debug.Log("[SERVER]Receive chunk data: \n" + receivedData);
-                        BlockLayer layerID = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[0]);
-                        int chunkID = Int32.Parse(receivedData.Split(',')[1]);
-                        receivedData = receivedData.Replace($"{layerID},{chunkID},", "");
-                        List<int[]> tempArr = new List<int[]>();
-                        foreach (string line in receivedData.Split('\n'))
-                            if (line != "")
-                                tempArr.Add(Array.ConvertAll(line.Split(','), int.Parse));
-                        SaveChunk(layerID, chunkID, tempArr.ToArray());
-                    }
+                NetworkEvent.Type cmd;
+                while ((cmd = this.driver.PopEventForConnection(this.connectionList[i], out stream)) != NetworkEvent.Type.Empty) {
+                    if (cmd == NetworkEvent.Type.Connect) {
+                        if (debugMode) Debug.Log("[SERVER]User Connected.");
+                    } else if (cmd == NetworkEvent.Type.Data) {
+                        //データを受信したとき
+                        String receivedData = ("" + stream.ReadFixedString4096());
+                        lastCommandSend[this.connectionList[i].InternalId] = 0.0f;
+                        if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
+                            receivedData = receivedData.Replace("SCH,", "");
+                            if (debugMode) Debug.Log("[SERVER]Receive chunk data: \n" + receivedData);
+                            BlockLayer layerID = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[0]);
+                            int chunkID = Int32.Parse(receivedData.Split(',')[1]);
+                            receivedData = receivedData.Replace($"{layerID},{chunkID},", "");
+                            List<int[]> tempArr = new List<int[]>();
+                            foreach (string line in receivedData.Split('\n'))
+                                if (line != "")
+                                    tempArr.Add(Array.ConvertAll(line.Split(','), int.Parse));
+                            SaveChunk(layerID, chunkID, tempArr.ToArray());
+                        }
 
-                    if (receivedData.StartsWith("SPD")) { //プレイヤーデータを受信したとき
-                        var dataArr = receivedData.Split(',');
-                        PlayerData newPlayer;
-                        // 受信したデータをPlayerDataに落としこむ
-                        newPlayer.name = dataArr[1];
-                        newPlayer.skinType = Int32.Parse(dataArr[2]);
-                        newPlayer.actState = Int32.Parse(dataArr[3]);
-                        newPlayer.playerID = Guid.Parse(dataArr[4]);
-                        newPlayer.playerX = float.Parse(dataArr[5]);
-                        newPlayer.playerY = float.Parse(dataArr[6]);
-                        newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[7]);
-                        userList[newPlayer.playerID] = newPlayer;
+                        if (receivedData.StartsWith("SPD")) { //プレイヤーデータを受信したとき
+                            var dataArr = receivedData.Split(',');
+                            PlayerData newPlayer;
+                            // 受信したデータをPlayerDataに落としこむ
+                            newPlayer.name = dataArr[1];
+                            newPlayer.skinType = Int32.Parse(dataArr[2]);
+                            newPlayer.actState = Int32.Parse(dataArr[3]);
+                            newPlayer.playerID = Guid.Parse(dataArr[4]);
+                            newPlayer.playerX = float.Parse(dataArr[5]);
+                            newPlayer.playerY = float.Parse(dataArr[6]);
+                            newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[7]);
+                            userList[newPlayer.playerID] = newPlayer;
 
-                        //デバッグ出力
-                        if(debugMode) Debug.Log("[SERVER]Recieve new user data: " + userList[newPlayer.playerID].ToString());
-                        
-                        //当該プレイヤーとNetworkConnectionを紐づけする
-                        guidConnectionList[this.connectionList[i].InternalId] = newPlayer.playerID;
+                            //デバッグ出力
+                            if (debugMode) Debug.Log("[SERVER]Recieve new user data: " + userList[newPlayer.playerID].ToString());
 
-                        //プレイヤー情報を周知する
-                        foreach (NetworkConnection conn in connectionList) {
-                            if(conn.IsCreated) {
-                                var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                                dsw.WriteFixedString4096(new FixedString4096Bytes($"NPD,{newPlayer.ToString()}"));
-                                this.driver.EndSend(dsw);
+                            //当該プレイヤーとNetworkConnectionを紐づけする
+                            guidConnectionList[this.connectionList[i].InternalId] = newPlayer.playerID;
+
+                            //プレイヤー情報を周知する
+                            foreach (NetworkConnection conn in connectionList) {
+                                if (conn.IsCreated) {
+                                    var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                                    dsw.WriteFixedString4096(new FixedString4096Bytes($"NPD,{newPlayer.ToString()}"));
+                                    this.driver.EndSend(dsw);
+                                }
                             }
+
+                            //当該ユーザに現在のユーザ一覧を送信する
+                            var sendPListStr = "PDL,";
+                            foreach (PlayerData data in userList.Values)
+                                sendPListStr += data.ToString() + "\n";
+                            var writer2 = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw2);
+                            if (writer2 >= 0) {
+                                dsw2.WriteFixedString4096(new FixedString4096Bytes(sendPListStr));
+                                this.driver.EndSend(dsw2);
+                            }
+                            if (debugMode) Debug.Log("USERS:" + string.Join(",", userList.Values));
                         }
 
-                        //当該ユーザに現在のユーザ一覧を送信する
-                        var sendPListStr = "PDL,";
-                        foreach (PlayerData data in userList.Values)
-                            sendPListStr += data.ToString() + "\n";
-                        var writer2 = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw2);
-                        if (writer2 >= 0) {
-                            dsw2.WriteFixedString4096(new FixedString4096Bytes(sendPListStr));
-                            this.driver.EndSend(dsw2);
-                        }
-                        if(debugMode) Debug.Log("USERS:" + string.Join(",", userList.Values));
-                    }
-
-                    //送出
-                    if(receivedData.StartsWith("RQC")) { //チャンク要求を受け取った時
-                        if(debugMode) Debug.Log("[SERVER]Recieve chunk request from client");
-                        receivedData = receivedData.Replace("RQC,", "");
-                        var dataArr = receivedData.Split(',');
-                        BlockLayer blockLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
-                        int chunkID = Int32.Parse(dataArr[1]);
-                        var sendChunkData = this.LoadChunk(blockLayer, chunkID);
-                        var sendChunkStr = $"CKD,{blockLayer},{chunkID},";
-                        foreach (int[] chunkLine in sendChunkData)
-                            sendChunkStr += string.Join(",", chunkLine) + "\n";
-                        var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
-                        dsw.WriteFixedString4096(new FixedString4096Bytes(sendChunkStr));
-                        this.driver.EndSend(dsw);
-                    }
-
-                    if(receivedData.StartsWith("SBF")) { //チャンクバッファを受け取ったとき
-                        if(debugMode) Debug.Log("[SERVER]Receive chunk buffer data");
-                        receivedData = receivedData.Replace("SBF,", "");
-                        Guid workspaceId = Guid.Parse(receivedData.Split(',')[0]);
-                        BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[1]);
-                        int chunkId = Int32.Parse(receivedData.Split(',')[2]);
-                        receivedData = receivedData.Replace($"{workspaceId.ToString("N")},{layer},{chunkId},", "");
-                        List<int[]> bufferLineList = new List<int[]>();
-                        foreach (string bufferLine in receivedData.Split('\n'))
-                            if (bufferLine != "")
-                                bufferLineList.Add(Array.ConvertAll(bufferLine.Split(','), int.Parse));
-                        SaveChunkBuffer(workspaceId, layer, chunkId, bufferLineList.ToArray());
-                        //TODO 該当するworkspaceIdの編集者に対して一斉送信
-                    }
-
-                    //バッファの適用要求
-                    if(receivedData.StartsWith("BRQ")) {
-                        if(debugMode) Debug.Log("[SERVER]Receive buffer applying request");
-                        receivedData = receivedData.Replace("BRQ", "");
-                        var dataArr = receivedData.Split(',');
-                        Guid workspaceId = Guid.Parse(dataArr[0]);
-                        BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
-                        int chunkId = Int32.Parse(dataArr[2]);
-                        SaveChunkBuffer(workspaceId, layer, chunkId, LoadChunkBuffer(workspaceId, layer, chunkId));
-                        //TODO 一斉送信
-
-                    }
-
-
-
-                    //プレイヤー一覧の取得要求
-                    if (receivedData.StartsWith("RPL")) {
-                        var sendPListStr = "PDL,";
-                        foreach (PlayerData data in userList.Values)
-                            sendPListStr += data.ToString() + "\n";
-                        var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
-                        if(writer >= 0) {
-                            dsw.WriteFixedString4096(new FixedString4096Bytes(sendPListStr));
+                        //送出
+                        if (receivedData.StartsWith("RQC")) { //チャンク要求を受け取った時
+                            if (debugMode) Debug.Log("[SERVER]Recieve chunk request from client");
+                            receivedData = receivedData.Replace("RQC,", "");
+                            var dataArr = receivedData.Split(',');
+                            BlockLayer blockLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
+                            int chunkID = Int32.Parse(dataArr[1]);
+                            var sendChunkData = this.LoadChunk(blockLayer, chunkID);
+                            var sendChunkStr = $"CKD,{blockLayer},{chunkID},";
+                            foreach (int[] chunkLine in sendChunkData)
+                                sendChunkStr += string.Join(",", chunkLine) + "\n";
+                            var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
+                            dsw.WriteFixedString4096(new FixedString4096Bytes(sendChunkStr));
                             this.driver.EndSend(dsw);
                         }
-                        if(debugMode) Debug.Log("USERS:"+ string.Join(",", userList.Values));
-                    }
-                    
-                    // プレイヤーのデータ
-                    if(receivedData.StartsWith("RPD")) {
-                        var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
-                        dsw.WriteFixedString4096(new FixedString4096Bytes($"PLD,{userList[Guid.Parse(receivedData.Replace("RPD,", ""))]}"));
-                        this.driver.EndSend(dsw);
-                    }
 
-                    //プレイヤーの移動データ受信 
-                    if(receivedData.StartsWith("PMV")) {
-                        receivedData = receivedData.Replace("PMV,", "");
-                        var dataArr = receivedData.Split(',');
-                        PlayerData newPlayer;
-                        newPlayer.playerID = Guid.Parse(dataArr[0]);
-                        newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
-                        newPlayer.playerX = float.Parse(dataArr[2]);
-                        newPlayer.playerY = float.Parse(dataArr[3]);
-                        newPlayer.actState = Int32.Parse(dataArr[4]);
-                        newPlayer.name = userList[newPlayer.playerID].name;
-                        newPlayer.skinType = userList[newPlayer.playerID].skinType;
-                        userList[newPlayer.playerID] = newPlayer;
+                        if (receivedData.StartsWith("SBF")) { //チャンクバッファを受け取ったとき
+                            if (debugMode) Debug.Log("[SERVER]Receive chunk buffer data");
+                            receivedData = receivedData.Replace("SBF,", "");
+                            Guid workspaceId = Guid.Parse(receivedData.Split(',')[0]);
+                            BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[1]);
+                            int chunkId = Int32.Parse(receivedData.Split(',')[2]);
+                            receivedData = receivedData.Replace($"{workspaceId.ToString("N")},{layer},{chunkId},", "");
+                            List<int[]> bufferLineList = new List<int[]>();
+                            foreach (string bufferLine in receivedData.Split('\n'))
+                                if (bufferLine != "")
+                                    bufferLineList.Add(Array.ConvertAll(bufferLine.Split(','), int.Parse));
+                            SaveChunkBuffer(workspaceId, layer, chunkId, bufferLineList.ToArray());
+                            //TODO 該当するworkspaceIdの編集者に対して一斉送信
+                        }
 
-                        //仮 ログ出力
-                        if(debugMode) Debug.Log($"[SERVER]Player {userList[newPlayer.playerID].name} moving to {newPlayer.playerX}, {newPlayer.playerY}");
+                        //バッファの適用要求
+                        if (receivedData.StartsWith("BRQ")) {
+                            if (debugMode) Debug.Log("[SERVER]Receive buffer applying request");
+                            receivedData = receivedData.Replace("BRQ", "");
+                            var dataArr = receivedData.Split(',');
+                            Guid workspaceId = Guid.Parse(dataArr[0]);
+                            BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
+                            int chunkId = Int32.Parse(dataArr[2]);
+                            SaveChunkBuffer(workspaceId, layer, chunkId, LoadChunkBuffer(workspaceId, layer, chunkId));
+                            //TODO 一斉送信
 
-                        //全ユーザに移動情報を通知する
-                        foreach(NetworkConnection conn in connectionList) {
-                            if(conn.IsCreated) {
-                                var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                                dsw.WriteFixedString4096(new FixedString4096Bytes($"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}"));
+                        }
+
+
+
+                        //プレイヤー一覧の取得要求
+                        if (receivedData.StartsWith("RPL")) {
+                            var sendPListStr = "PDL,";
+                            foreach (PlayerData data in userList.Values)
+                                sendPListStr += data.ToString() + "\n";
+                            var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
+                            if (writer >= 0) {
+                                dsw.WriteFixedString4096(new FixedString4096Bytes(sendPListStr));
                                 this.driver.EndSend(dsw);
+                            }
+                            if (debugMode) Debug.Log("USERS:" + string.Join(",", userList.Values));
+                        }
 
+                        // プレイヤーのデータ
+                        if (receivedData.StartsWith("RPD")) {
+                            var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
+                            dsw.WriteFixedString4096(new FixedString4096Bytes($"PLD,{userList[Guid.Parse(receivedData.Replace("RPD,", ""))]}"));
+                            this.driver.EndSend(dsw);
+                        }
+
+                        //プレイヤーの移動データ受信 
+                        if (receivedData.StartsWith("PMV")) {
+                            receivedData = receivedData.Replace("PMV,", "");
+                            var dataArr = receivedData.Split(',');
+                            PlayerData newPlayer;
+                            newPlayer.playerID = Guid.Parse(dataArr[0]);
+                            newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
+                            newPlayer.playerX = float.Parse(dataArr[2]);
+                            newPlayer.playerY = float.Parse(dataArr[3]);
+                            newPlayer.actState = Int32.Parse(dataArr[4]);
+                            newPlayer.name = userList[newPlayer.playerID].name;
+                            newPlayer.skinType = userList[newPlayer.playerID].skinType;
+                            userList[newPlayer.playerID] = newPlayer;
+
+                            //仮 ログ出力
+                            if (debugMode) Debug.Log($"[SERVER]Player {userList[newPlayer.playerID].name} moving to {newPlayer.playerX}, {newPlayer.playerY}");
+
+                            //全ユーザに移動情報を通知する
+                            foreach (NetworkConnection conn in connectionList) {
+                                if (conn.IsCreated) {
+                                    var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                                    dsw.WriteFixedString4096(new FixedString4096Bytes($"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}"));
+                                    this.driver.EndSend(dsw);
+                                }
                             }
                         }
+
+                        // 切断処理...なんでDisconnectイベント拾ってくれないんや！
+                        if (receivedData.StartsWith("DCN")) {
+                            if (debugMode) Debug.Log("[SERVER]User disconnected.");
+                        }
                     }
-
-                    // 切断処理...なんでDisconnectイベント拾ってくれないんや！
-                    if(receivedData.StartsWith("DCN")) {
-                        if(debugMode) Debug.Log("[SERVER]User disconnected.");
-                        
-                    }
-
-                } else if (cmd == NetworkEvent.Type.Disconnect) {
-                    
-
                 }
-
             }
+            
         }
     }
 

@@ -227,8 +227,11 @@ MonoBehaviour:
   worldLoader: {fileID: 1724355517}
   controller: {fileID: 142052764}
   anim: {fileID: 142052763}
+  ipAddress: 172.16.103.69
+  port: 11781
   playerName: test_kun
   skinID: 0
+  createServer: 0
   syncTimeLate: 0.1
   actState: 0
   testUseWrapper: 1
@@ -769,6 +772,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugMode: 0
   textObj: {fileID: 270579208}
+  timeout: 0.5
 --- !u!4 &1515226645
 Transform:
   m_ObjectHideFlags: 0

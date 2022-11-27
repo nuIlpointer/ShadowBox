@@ -196,7 +196,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                             newPlayer.playerX = float.Parse(pDataArr[4]);
                             newPlayer.playerY = float.Parse(pDataArr[5]);
                             newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), pDataArr[6]);
-                            if(!userList.ContainsKey(newPlayer.playerID)) {
+                            if(!userList.ContainsKey(newPlayer.playerID) && !player.playerID.Equals(newPlayer.playerID)) {
                                 entityManager.AddPlayer(newPlayer.playerID, newPlayer.name, newPlayer.skinType);
                                 entityManager.SyncPlayer(newPlayer.playerID, newPlayer.playerX, newPlayer.playerY, (int)newPlayer.playerLayer, newPlayer.actState);
                                 if(debugMode) Debug.Log("[WRAPPER]Generate new Player");

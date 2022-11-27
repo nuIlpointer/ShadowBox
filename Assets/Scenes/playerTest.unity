@@ -433,6 +433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b674f356e82714d4dbcea16037270932, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugMode: 0
   entityManagerObject: {fileID: 1784876087}
 --- !u!4 &946281865
 Transform:
@@ -507,6 +508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f0a767e7c815ce4893ee8570c94f109, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugMode: 0
 --- !u!4 &1515226645
 Transform:
   m_ObjectHideFlags: 0
@@ -961,7 +963,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2085336955}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98c98dd292cd3df46802956adac6b34d, type: 3}
   m_Name: 

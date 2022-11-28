@@ -134,7 +134,7 @@ public class GenericEntityManager : MonoBehaviour
         if (!started) Start();
         //Guid検索
         //UnityEngine.Debug.Log(id);
-
+        
 
         if (!players.ContainsKey(id)) {
             UnityEngine.Debug.LogWarning($"Guid:{id}　の  プレイヤーが見つかりませんでした。");
@@ -147,7 +147,9 @@ public class GenericEntityManager : MonoBehaviour
         players[id] = new Player(players[id].sprite, new Vector3(x,y,0) - oldPos, players[id].interval, 0.1f);
 
         //レイヤー同期
-        //players[id].GetComponent<SpriteRenderer>().sortingLayerName = Enum.GetName(typeof(ShadowBoxClientWrapper.BlockLayer), layer);
+        players[id].sprite.GetComponent<SpriteRenderer>().sortingLayerName = Enum.GetName(typeof(ShadowBoxClientWrapper.BlockLayer), layer);
+        Vector3 p = new Vector3(players[id].sprite.transform.position.x, players[id].sprite.transform.position.y, players[id].sprite.transform.position.z);
+        players[id].sprite.transform.position = new Vector3(p.x, p.y, (float)((layer - 1) * 0.4));
 
         //アニメーション同期
         anim = players[id].sprite.GetComponent<Animator>();

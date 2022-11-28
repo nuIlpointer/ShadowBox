@@ -10,6 +10,8 @@ using UnityEngine;
 public class ShadowBoxClientWrapper : MonoBehaviour {
     public bool debugMode = false;
     public GameObject textObj;
+    public GameObject worldLoaderObj;
+    private WorldLoader worldLoader;
     private LogToDisplay log;
     public enum BlockLayer {
         InsideWall = 1,
@@ -68,6 +70,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         userList = new Dictionary<Guid, PlayerData>();
         entityManager = entityManagerObject.GetComponent<GenericEntityManager>();
         log = textObj.GetComponent<LogToDisplay>();
+        worldLoader = worldLoaderObj.GetComponent<WorldLoader>();
     }
 
     // Update is called once per frame
@@ -105,6 +108,9 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     foreach (String line in receivedData.Split('\n'))
                         if (line != "")
                             chunkTemp.Add(Array.ConvertAll(line.Split(','), int.Parse));
+                    worldLoader.ChunkUpdate(chunkTemp.ToArray(), (int)blockLayer, chunkID);
+
+                    //デバッグ表示用
                     var chunkStr = "";
                     foreach (int[] arrLine in chunkTemp.ToArray())
                         chunkStr += string.Join(",", arrLine) + "\n";

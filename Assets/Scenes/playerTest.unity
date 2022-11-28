@@ -227,10 +227,10 @@ MonoBehaviour:
   worldLoader: {fileID: 1724355517}
   controller: {fileID: 142052764}
   anim: {fileID: 142052763}
-  ipAddress: 172.16.103.69
+  ipAddress: 127.0.0.1
   port: 11781
   playerName: test_kun
-  skinID: 0
+  skinID: 1
   createServer: 1
   syncTimeLate: 0.1
   actState: 0
@@ -630,6 +630,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugMode: 1
   textObj: {fileID: 270579208}
+  worldLoaderObj: {fileID: 1724355512}
   entityManagerObject: {fileID: 1784876087}
 --- !u!4 &946281865
 Transform:

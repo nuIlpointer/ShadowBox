@@ -13,7 +13,9 @@ using static ShadowBoxClientWrapper;
 
 public class ShadowBoxServer : MonoBehaviour {
     public bool debugMode = false;
+    public GameObject terrainGeneratorObj;
 
+    private GenerateTerrain terrainGenerator;
     /// <summary>
     /// 最後の通信からこの時間が経過した場合、切断とみなす時間
     /// </summary>
@@ -47,6 +49,10 @@ public class ShadowBoxServer : MonoBehaviour {
         userList = new Dictionary<Guid, PlayerData>();
         guidConnectionList = new Dictionary<int, Guid>();
         lastCommandSend = new Dictionary<int, float>();
+        terrainGenerator = terrainGeneratorObj.GetComponent<GenerateTerrain>();
+        // OutsideWallのチャンク番号96を64x64チャンク1つを生成した配列0番目で保存...何言ってんだ？ サンプルなのでコメントアウト
+        // SaveChunk(BlockLayer.OutsideWall, 96, terrainGenerator.Generate(1, 64, 64, 6)[0]);
+        
     }
 
     /// <summary>

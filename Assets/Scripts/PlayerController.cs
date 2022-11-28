@@ -12,9 +12,11 @@ public class PlayerController : MonoBehaviour
     public WorldLoader worldLoader;
     public CharacterController controller;
     public Animator anim;
-
-    public string playerName = "test kun";
+    public string ipAddress = "127.0.0.1";
+    public int port = 11781;
+    public string playerName = "Player";
     public int skinID;
+    public bool createServer = false;
 
     /// <summary>
     /// プレイヤーデータ送信レート
@@ -58,9 +60,12 @@ public class PlayerController : MonoBehaviour
         if (!started)
         {
             wrapper = wrapperObject.GetComponent<ShadowBoxClientWrapper>();
-            server = serverObject.GetComponent<ShadowBoxServer>();
-            server.CreateInternalServer();
-            wrapper.Connect("127.0.0.1", 11781);
+            if(createServer) {
+                server = Instantiate(serverObject).GetComponent<ShadowBoxServer>();
+                server.CreateInternalServer();
+                ipAddress = "127.0.0.1";
+            }
+            wrapper.Connect(ipAddress, port);
 
             
         }

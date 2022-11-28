@@ -16,7 +16,8 @@ public class WorldLoader : MonoBehaviour
     private int cNumY;
     private int cSize;
     public InitialProcess ip;
-    public ShadowBoxClientWrapper wrapper;
+    public GameObject wObj;
+    private ShadowBoxClientWrapper wrapper;
     int lastMakePoint = -1;
 
 
@@ -25,6 +26,7 @@ public class WorldLoader : MonoBehaviour
     int[] loaded = new int[9];
     int[] lastLoad = new int[9];
     int[] liveChunk = new int[9];
+    bool[] visit;
 
     private bool started = false;
 
@@ -35,9 +37,10 @@ public class WorldLoader : MonoBehaviour
     void Start()
     {
         if (!started) {
+            wrapper = wObj.GetComponent<ShadowBoxClientWrapper>();
 
             if (autoSetCompnents) {
-                wrapper = gameObject.GetComponent<ShadowBoxClientWrapper>();
+                //wrapper = gameObject.GetComponent<ShadowBoxClientWrapper>();
                 ip = gameObject.GetComponent<InitialProcess>();
                 layers[1] = transform.Find("LayerInsideWall").GetComponent<LayerManager>();
                 layers[2] = transform.Find("LayerInsideBlock").GetComponent<LayerManager>();
@@ -55,6 +58,11 @@ public class WorldLoader : MonoBehaviour
 
             lastLoad = new int[] { -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 
+
+            visit = new bool[cNumX * cNumY];
+            for(int i = 0; i < visit.Length; i++) {
+                visit[i] = false;
+            }
 
             started = true;
         }
@@ -75,7 +83,6 @@ public class WorldLoader : MonoBehaviour
     {
         //UnityEngine.Debug.LogWarning("ワーーーールドッッッ・ロォーーーーードッッッ！！");
         if (!started) { Start(); }
-
         int chunkNumber = PosToChunkNum((int)pos.x, (int)pos.y);
         loaded[0] = chunkNumber;
         //UnityEngine.Debug.LogWarning(chunkNumber);
@@ -131,7 +138,13 @@ public class WorldLoader : MonoBehaviour
             if(loaded[i] != -1){
                 //UnityEngine.Debug.Log("生成　チャンクナンバー:" + loaded[i]);
                 for (int j = 1; j <= 4; j++){
-                    
+                    if (!visit[loaded[i]]) {
+                        Debug.Log($"チャンクデータ要求 {loaded[i]}");
+                        
+                        wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
+
+                        visit[loaded[i]] = true;
+                    }
                     layers[j].MakeChunk(loaded[i]);
                 }
             }

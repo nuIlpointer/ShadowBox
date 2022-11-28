@@ -13,12 +13,11 @@ using static ShadowBoxClientWrapper;
 
 public class ShadowBoxServer : MonoBehaviour {
     public bool debugMode = false;
-    public GameObject textObj;
+
     /// <summary>
     /// 最後の通信からこの時間が経過した場合、切断とみなす時間
     /// </summary>
     public float timeout = 0.5f;
-    private LogToDisplay log;
     public enum BlockLayer {
         InsideWall = 1,
         InsideBlock = 2,
@@ -48,7 +47,6 @@ public class ShadowBoxServer : MonoBehaviour {
         userList = new Dictionary<Guid, PlayerData>();
         guidConnectionList = new Dictionary<int, Guid>();
         lastCommandSend = new Dictionary<int, float>();
-        log = textObj.GetComponent<LogToDisplay>();
     }
 
     /// <summary>

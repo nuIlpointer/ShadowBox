@@ -24,6 +24,8 @@ public class LayerManager : MonoBehaviour
         cube_black  = 5,
 
         grass_0     = 10,
+        stone_0     = 11,
+        dirt_0      = 12,
 
         brick       = 20,
 

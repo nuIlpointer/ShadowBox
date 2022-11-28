@@ -863,7 +863,7 @@ MonoBehaviour:
   - {fileID: 1996666299}
   - {fileID: 814373629}
   ip: {fileID: 1724355513}
-  wrapper: {fileID: 0}
+  wObj: {fileID: 946281863}
   autoSetCompnents: 1
 --- !u!1 &1784876087
 GameObject:

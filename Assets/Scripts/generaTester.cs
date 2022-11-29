@@ -177,6 +177,10 @@ public class generaTester : MonoBehaviour
             wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(左から3番目下から１番目)
             wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(左から3番目下から１番目)
         }
+        if (Input.GetKeyDown(KeyCode.B)) {
+            UnityEngine.Debug.Log("入力B　ブロック変更11 4 20 20");
+            wl.BlockUpdate(11, 4, 20, 20);
+        }
 
 
         /*synclate += Time.deltaTime;

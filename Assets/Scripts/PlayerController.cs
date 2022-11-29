@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -90,7 +91,9 @@ public class PlayerController : MonoBehaviour
         }
         //スキンID変更時処理
         if(oldSkinID != skinID) {
-            //anim.
+            string sid = Enum.GetName(typeof(Skins), skinID);
+            anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load("Characters/Animator/error_man/error_man_entity");
+            oldSkinID = skinID;
         }
 
 

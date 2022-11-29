@@ -222,6 +222,10 @@ public class WorldLoader : MonoBehaviour
         return true;
     }
 
+    public bool BlockUpdate(int blockID, int LayerNumber, int x, int y) {
+        return true;
+    }
+
 
     /// <summary>
     /// ワールド座標をチャンクナンバーに変換して返します
@@ -268,4 +272,6 @@ public class WorldLoader : MonoBehaviour
         int y = (int)pos.y % cSize;
         return layers[1].checkAir(cn, x, y) && layers[2].checkAir(cn, x, y);
     }
+
+
 }

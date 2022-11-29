@@ -139,7 +139,7 @@ public class WorldLoader : MonoBehaviour
                 //UnityEngine.Debug.Log("生成　チャンクナンバー:" + loaded[i]);
                 for (int j = 1; j <= 4; j++){
                     if (!visit[loaded[i]]) {
-                        Debug.Log($"チャンクデータ要求 {loaded[i]}");
+                        //Debug.Log($"チャンクデータ要求 {loaded[i]}");
                         
                         wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
 

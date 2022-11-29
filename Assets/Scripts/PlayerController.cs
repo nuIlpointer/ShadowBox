@@ -1,10 +1,17 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-
+    enum Skins {
+        error_man = 0,
+        test_kun_1 = 1
+    }
+    
+    
+    
     public GameObject wrapperObject;
     public GameObject serverObject;
     public ShadowBoxServer server;
@@ -16,6 +23,7 @@ public class PlayerController : MonoBehaviour
     public int port = 11781;
     public string playerName = "Player";
     public int skinID;
+    private int oldSkinID;
     public bool createServer = false;
 
     /// <summary>
@@ -33,7 +41,6 @@ public class PlayerController : MonoBehaviour
     private float jumpCnt = 0;
     private float fallCnt = 0;
     private float loadCnt = 0;
-
 
     //移動制御等
     private bool runR = false, runL = false, jump = false, moveB = false, moveF = false;
@@ -59,6 +66,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!started)
         {
+            //クライアントサーバ系
             wrapper = wrapperObject.GetComponent<ShadowBoxClientWrapper>();
             if(createServer) {
                 server = Instantiate(serverObject).GetComponent<ShadowBoxServer>();
@@ -67,7 +75,8 @@ public class PlayerController : MonoBehaviour
             }
             wrapper.Connect(ipAddress, port);
 
-            
+            //スキンid
+            oldSkinID = skinID;
         }
         
     }
@@ -80,6 +89,15 @@ public class PlayerController : MonoBehaviour
             firstUpdate = false;
             wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x, transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock);
         }
+        //スキンID変更時処理
+        if(oldSkinID != skinID) {
+            string sid = Enum.GetName(typeof(Skins), skinID);
+            anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load("Characters/Animator/error_man/error_man_entity");
+            oldSkinID = skinID;
+        }
+
+
+
         //移動
         //(ミスによりrunLが右移動、runRが左移動になっています)
         runR = false;
@@ -178,12 +196,8 @@ public class PlayerController : MonoBehaviour
                 gt.inPos = transform.position;
                 gt.actState = actState;
             }
-            
             syncCnt = 0;
         }
-
-
-
     }
 
 
@@ -195,7 +209,6 @@ public class PlayerController : MonoBehaviour
                 movedir.x += 20 * Time.deltaTime;//0.5秒かけて秒速10/sまで加速
                 anim.SetBool("run", true);
 
-                
             }
             //actStateセット
             actState = actState / 10 * 10;
@@ -287,11 +300,6 @@ public class PlayerController : MonoBehaviour
         //移動反映
         controller.Move(movedir * Time.deltaTime);
 
-        
-
     }
-
-
-
 
 }

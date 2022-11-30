@@ -380,6 +380,10 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         return player;
     }
 
+    public bool SetWorldData() {
+    
+    }
+
 #nullable enable
     /// <summary>
     /// 接続中のプレイヤーをすべて取得する。SetPlayerData()の未実行等で登録がない場合はnull。

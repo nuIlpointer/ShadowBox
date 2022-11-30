@@ -24,8 +24,9 @@ public class GenerateTerrain : MonoBehaviour
     /// <param name="chunkWidth">1チャンクあたりの横幅</param>
     /// <param name="chunkHeight">1チャンクあたりの高さ</param>
     /// <param name="heightRange">高度差</param>
+    /// <param name="seed">シード値</param>
     /// <returns></returns>
-    public int[][][] Generate(int width, int chunkWidth, int chunkHeight, int heightRange) {
+    public int[][][] Generate(int width, int chunkWidth, int chunkHeight, int heightRange, int seed) {
         int heightBase = new System.Random().Next(heightRange, chunkHeight - heightRange);
         List<int[][]> chunks = new List<int[][]>();
         for (int i = 0; i < width; i++) {
@@ -34,7 +35,7 @@ public class GenerateTerrain : MonoBehaviour
             for (int j = 0; j < chunkWidth; j++) {
                 int x = i * chunkWidth + j;
                 List<int> column = new List<int>();
-                int noise = (int)Mathf.Floor(Mathf.PerlinNoise(x * 0.1f, 0f) * heightRange) + heightBase;
+                int noise = (int)Mathf.Floor(Mathf.PerlinNoise(x * 0.1f, seed * 0.1f) * heightRange) + heightBase;
                 for (int k = 0; k < chunkHeight; k++)
                     column.Add(k<noise?0:k==noise?10:12);
                 row.Add(column.ToArray());

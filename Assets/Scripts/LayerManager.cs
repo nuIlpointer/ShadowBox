@@ -125,15 +125,23 @@ public class LayerManager : MonoBehaviour
 
             chunks = new Chunk[cNumX * cNumY];
             chunkFrame = new GameObject[chunks.Length];
+            
 
 
             for (int i = 0; i < chunks.Length; i++) {
                 if (!insTestCase) chunks[i].blocks = blocks;
                 else chunks[i].blocks = testcase1;
 
+                chunks[i].blockObj = new GameObject[cSize][];
+                for(int j = 0; j < cSize; j++) {
+                    chunks[i].blockObj[j] = new GameObject[cSize];
+                }
+
                 chunkFrame[i] = Instantiate(CHUNK_FRAME);
                 chunkFrame[i].transform.parent = this.gameObject.transform;
                 chunkFrame[i].name = "chunk" + i;
+
+
 
                 Vector2Int posBase = new Vector2Int(i % cNumX * cSize, i / cNumX * cSize);
                 chunkFrame[i].transform.localPosition = new Vector3(posBase.x, posBase.y, 0);
@@ -141,6 +149,7 @@ public class LayerManager : MonoBehaviour
             //chunks初期化ここまで
 
             //CHUNK_FRAME = new GameObject();
+
 
 
 

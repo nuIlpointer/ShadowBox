@@ -75,7 +75,13 @@ public class WorldInfo {
     /// 現在の内容でworldinfo.datを上書きする
     /// </summary>
     public void SaveWorldData() {
-
+        if (!Directory.Exists("./worlddata/")) {
+            Directory.CreateDirectory("./worlddata");
+        }
+        string fileName = $"./worlddata/worldinfo.dat";
+        using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
+            writer.WriteLine($"{worldSizeX},{worldSizeY},{chunkSizeX},{chunkSizeY},{seed},{worldName}");
+        }
     }
 
 #nullable enable

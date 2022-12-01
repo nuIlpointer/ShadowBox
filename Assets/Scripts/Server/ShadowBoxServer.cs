@@ -325,9 +325,21 @@ public class ShadowBoxServer : MonoBehaviour {
                             int x = Int32.Parse(dataArr[1]);
                             int y = Int32.Parse(dataArr[2]);
                             int blockId = Int32.Parse(dataArr[3]);
-                            
-                            int chunkNum = CoordinateToChunkNo(x, y, )
+                            if(worldInfo != null) {
+                                int chunkNum = CoordinateToChunkNo(x, y, worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetWorldSizeX());
+                                var oldChunk = LoadChunk(layer, chunkNum);
+                                oldChunk[x % worldInfo.GetChunkSizeX()][y % worldInfo.GetWorldSizeY()] = blockId;
+                                SaveChunk(layer, chunkNum, oldChunk);
+                            }
+                                
                             //全ユーザに移動情報を通知
+                            foreach(NetworkConnection conn in connectionList) {
+                                if(conn.IsCreated) {
+                                    var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
+                                    dsw.WriteFixedString4096($"BCB,{receivedData}");
+                                    this.driver.EndSend(dsw);
+                                }
+                            }
                         }
 
                         //ワールドのconfigを設定するやつ

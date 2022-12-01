@@ -212,6 +212,12 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     }
                 }
 
+                if(receivedData.StartsWith("BCB")) {
+                    receivedData = receivedData.Replace("BCB,", "");
+                    var dataArr = receivedData.Split(',');
+                    worldLoader.BlockUpdate(Int32.Parse(dataArr[3]), (int)(BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]), Int32.Parse(dataArr[1]), Int32.Parse(dataArr[2]));
+                }
+
                 if(receivedData.StartsWith("UDC")) { //他のユーザーが切断したときの処理
                     Guid targetId = Guid.Parse(receivedData.Split(',')[1]);
                     if (debugMode) Debug.Log($"[WRAPPER]User {receivedData.Replace("UDC,", "")} has disconnected from server");

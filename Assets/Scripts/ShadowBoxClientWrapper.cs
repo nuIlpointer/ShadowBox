@@ -386,8 +386,20 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         return player;
     }
 
-    public bool SetWorldData() {
-    
+    public bool SetWorldData(int worldSizeX, int worldSizeY, int chunkSizeX, int chunkSizeY, int seed, string worldName) {
+        if (this.connection.IsCreated) {
+            string sendDataTemp = $"SWD,{worldSizeX},{worldSizeY},{chunkSizeX},{chunkSizeY},{seed},{worldName}";
+
+            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
+            if (writer >= 0) {
+                dsw.WriteFixedString4096(new FixedString4096Bytes());
+                if (debugMode) Debug.Log("[WRAPPER]Sending world data:\n" + sendDataTemp);
+                this.driver.EndSend(dsw);
+            }
+            else return false;
+            return true;
+        }
+        return false;
     }
 
 #nullable enable

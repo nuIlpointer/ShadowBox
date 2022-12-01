@@ -9,7 +9,6 @@ using Unity.Mathematics;
 using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.Assertions;
-using static InitialProcess;
 using static ShadowBoxClientWrapper;
 
 public class ShadowBoxServer : MonoBehaviour {
@@ -324,7 +323,7 @@ public class ShadowBoxServer : MonoBehaviour {
                             BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
                             int x = Int32.Parse(dataArr[1]);
                             int y = Int32.Parse(dataArr[2]);
-                            int blockId = Int32.Parse(dataArr[3]);
+                            int blockId = Int32.Parse(dataArr[3]); 
                             if(worldInfo != null) {
                                 int chunkNum = CoordinateToChunkNo(x, y, worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetWorldSizeX());
                                 var oldChunk = LoadChunk(layer, chunkNum);
@@ -396,9 +395,8 @@ public class ShadowBoxServer : MonoBehaviour {
     /// <param name="chunkID">チャンクのID</param>
     /// <param name="chunkData">保存するデータ</param>
     void SaveChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
-        if (!Directory.Exists("./worlddata/")) {
+        if (!Directory.Exists("./worlddata/"))
             Directory.CreateDirectory("./worlddata");
-        }
         string fileName = $"./worlddata/{layerID}.chunk{chunkID}.dat";
         using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
             foreach (int[] row in chunkData)

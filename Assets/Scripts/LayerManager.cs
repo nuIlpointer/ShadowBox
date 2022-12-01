@@ -37,6 +37,7 @@ public class LayerManager : MonoBehaviour
 
     struct Chunk {
         public int[][] blocks;
+        public GameObject[][] blockObj;
         bool live;
         
     }
@@ -124,15 +125,23 @@ public class LayerManager : MonoBehaviour
 
             chunks = new Chunk[cNumX * cNumY];
             chunkFrame = new GameObject[chunks.Length];
+            
 
 
             for (int i = 0; i < chunks.Length; i++) {
                 if (!insTestCase) chunks[i].blocks = blocks;
                 else chunks[i].blocks = testcase1;
 
+                chunks[i].blockObj = new GameObject[cSize][];
+                for(int j = 0; j < cSize; j++) {
+                    chunks[i].blockObj[j] = new GameObject[cSize];
+                }
+
                 chunkFrame[i] = Instantiate(CHUNK_FRAME);
                 chunkFrame[i].transform.parent = this.gameObject.transform;
                 chunkFrame[i].name = "chunk" + i;
+
+
 
                 Vector2Int posBase = new Vector2Int(i % cNumX * cSize, i / cNumX * cSize);
                 chunkFrame[i].transform.localPosition = new Vector3(posBase.x, posBase.y, 0);
@@ -140,6 +149,7 @@ public class LayerManager : MonoBehaviour
             //chunks初期化ここまで
 
             //CHUNK_FRAME = new GameObject();
+
 
 
 
@@ -206,18 +216,22 @@ public class LayerManager : MonoBehaviour
             {
                 for (int py = 0; py < cSize; py++)
                 {
-                    if (chunks[chunkNumber].blocks[py][ px] == id && id != 0)
+                    if (chunks[chunkNumber].blocks[py][px] == id && id != 0)
                     {
                         pos.x = px;
                         pos.y = py;
                         block = Instantiate(block, frame);
                         block.transform.localPosition = pos;
                         block.name = px + "_" + py + "_" + Enum.GetName(typeof(BLOCK_ID), id);
+                        
+                        
                         block.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
                         if (isWall) {
                             bcl = block.GetComponent<BoxCollider>();
                             if (bcl != null) Destroy(bcl);
                         }
+
+                        chunks[chunkNumber].blockObj[px][py] = block;
                         //block.transform.SetParent(this.gameObject.transform);
                     }
                 }
@@ -245,6 +259,47 @@ public class LayerManager : MonoBehaviour
         catch(Exception e) {
             //Debug.Log(e);
         }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="blockID"></param>
+    /// <param name="chunkNumber"></param>
+    /// <param name="x">！チャンク内の座標</param>
+    /// <param name="y">！チャンク内の座標</param>
+    public void BlockChange(int id, int chunkNumber, int x, int y) {
+
+        chunks[chunkNumber].blocks[y][x] = id;
+
+
+        if (!checkAir(chunkNumber, x,y)) {      //指定位置にブロックが存在
+
+            Destroy(chunks[chunkNumber].blockObj[y][x]);
+        
+        }
+        if (id != 0) {                          //指定IDがair以外
+
+            block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));
+            if (block == null) { block = (GameObject)Resources.Load("Blocks/unknown"); }
+
+            Transform frame = chunkFrame[chunkNumber].transform;
+            block = Instantiate(block, frame);
+            block.transform.localPosition = new Vector3(x, y, 0);
+            block.name = x + "_" + y + "_" + Enum.GetName(typeof(BLOCK_ID), id);
+            block.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
+            BoxCollider bcl;
+            if (isWall) {
+                bcl = block.GetComponent<BoxCollider>();
+                if (bcl != null) Destroy(bcl);
+            }
+
+            chunks[chunkNumber].blockObj[y][x] = block;
+
+        }
+
+
+
     }
 
     /// <summary>

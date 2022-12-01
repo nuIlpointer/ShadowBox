@@ -222,6 +222,19 @@ public class WorldLoader : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// 指定座標のブロックを置き換えます
+    /// </summary>
+    /// <param name="blockID">置き換えるブロックのブロックid</param>
+    /// <param name="LayerNumber">対象のレイヤー</param>
+    /// <param name="x">置き換える位置（絶対座標）</param>
+    /// <param name="y">置き換える位置（絶対座標）</param>
+    /// <returns></returns>
+    public bool BlockUpdate(int blockID, int layerNumber, int x, int y) {
+        layers[layerNumber].BlockChange(blockID, PosToChunkNum(x, y), x - ChunkNumToOriginPos(PosToChunkNum(x, y))[0], y - ChunkNumToOriginPos(PosToChunkNum(x, y))[1]);
+        return true;
+    }
+
 
     /// <summary>
     /// ワールド座標をチャンクナンバーに変換して返します
@@ -268,4 +281,6 @@ public class WorldLoader : MonoBehaviour
         int y = (int)pos.y % cSize;
         return layers[1].checkAir(cn, x, y) && layers[2].checkAir(cn, x, y);
     }
+
+
 }

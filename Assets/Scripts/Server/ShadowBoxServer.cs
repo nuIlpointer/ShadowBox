@@ -308,11 +308,7 @@ public class ShadowBoxServer : MonoBehaviour {
 
                             //全ユーザに移動情報を通知する
                             foreach (NetworkConnection conn in connectionList) {
-                                if (conn.IsCreated) {
-                                    var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                                    dsw.WriteFixedString4096(new FixedString4096Bytes($"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}"));
-                                    this.driver.EndSend(dsw);
-                                }
+                                Send(conn, $"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}"))
                             }
                         }
 
@@ -333,11 +329,7 @@ public class ShadowBoxServer : MonoBehaviour {
                                 
                             //全ユーザに移動情報を通知
                             foreach(NetworkConnection conn in connectionList) {
-                                if(conn.IsCreated) {
-                                    var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                                    dsw.WriteFixedString4096($"BCB,{receivedData}");
-                                    this.driver.EndSend(dsw);
-                                }
+                                Send(conn, $"BCB,{receivedData}");
                             }
                         }
 
@@ -345,6 +337,13 @@ public class ShadowBoxServer : MonoBehaviour {
 
 
                         //ワールドを再生成するやつ
+                        if(receivedData.StartsWith("RGN")) {
+                            if(worldInfo != null) {
+                                
+                            } else {
+
+                            }
+                        }
 
                         // 切断処理...なんでDisconnectイベント拾ってくれないんや！
                         if (receivedData.StartsWith("DCN")) {
@@ -357,6 +356,14 @@ public class ShadowBoxServer : MonoBehaviour {
         }
     }
 
+    //なんで作らなかったんだ？
+    private bool Send(NetworkConnection connection, string sendData) {
+        if (connection.IsCreated) {
+            var writer = this.driver.BeginSend(NetworkPipeline.Null, connection, out DataStreamWriter dsw);
+            dsw.WriteFixedString4096(new WriteFixedString4096(sendData));
+            this.driver.EndSend(dsw);
+        } else return false;
+    }
     /// <summary>
     /// 内部サーバー(127.0.0.1:11781)を作成する
     /// </summary>

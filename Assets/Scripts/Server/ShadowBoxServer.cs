@@ -8,7 +8,6 @@ using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.Assertions;
-using static InitialProcess;
 using static ShadowBoxClientWrapper;
 
 public class ShadowBoxServer : MonoBehaviour {
@@ -43,16 +42,18 @@ public class ShadowBoxServer : MonoBehaviour {
     private Dictionary<Guid, PlayerData> userList;
     private Dictionary<int, Guid> guidConnectionList;
     private Dictionary<int, float> lastCommandSend;
+    private bool isWorldGenerated = false;
     private bool active = false;
+    private WorldInfo worldInfo;
     // Start is called before the first frame update
     void Start() {
         userList = new Dictionary<Guid, PlayerData>();
         guidConnectionList = new Dictionary<int, Guid>();
         lastCommandSend = new Dictionary<int, float>();
         terrainGenerator = terrainGeneratorObj.GetComponent<GenerateTerrain>();
-        // OutsideWallのチャンク番号96を64x64チャンク1つを生成した配列0番目で保存...何言ってんだ？ サンプルなのでコメントアウト
-        // SaveChunk(BlockLayer.OutsideWall, 96, terrainGenerator.Generate(1, 64, 64, 6)[0]);
-        
+        if((worldInfo = WorldInfo.LoadWorldData()) != null) {
+            isWorldGenerated = true;
+        }
     }
 
     /// <summary>
@@ -85,6 +86,34 @@ public class ShadowBoxServer : MonoBehaviour {
         if(debugMode) Debug.Log("[SERVER]Listen on " + port);
         active = true;
         return true;
+    }
+
+    //TODO
+    void GenerateWorld(int width, int height, int chunkWidth, int chunkHeight, int heightRange, int seed) {
+
+        // SaveChunk(BlockLayer.OutsideWall, 96, terrainGenerator.Generate(1, 64, 64, 6, new System.Random().Next(0, Int32.MaxValue))[0]);
+        int chunkNum = 0;
+        foreach (int[][] chunkData in terrainGenerator.Generate(width, height, chunkWidth, chunkHeight, heightRange, seed)) {
+            SaveChunk(BlockLayer.InsideWall, chunkNum, chunkData);
+            SaveChunk(BlockLayer.InsideBlock, chunkNum, chunkData);
+            SaveChunk(BlockLayer.OutsideWall, chunkNum, chunkData);
+            SaveChunk(BlockLayer.OutsideBlock, chunkNum, chunkData);
+            chunkNum++;
+        }
+    }
+
+    /// <summary>
+    /// 座標からチャンク番号を返す
+    /// </summary>
+    /// <param name="x">計算する座標X</param>
+    /// <param name="y">計算する座標Y</param>
+    /// <param name="chunkWidth">チャンク当たりの横ブロック数</param>
+    /// <param name="chunkHeight">チャンク当たりの縦ブロック数</param>
+    /// <param name="worldXChunkSize">ワールドの横幅(チャンク単位)</param>
+    /// <returns>チャンク番号</returns>
+    int CoordinateToChunkNo(int x, int y, int chunkWidth, int chunkHeight, int worldXChunkSize) {
+        int chunkNum = (x / chunkWidth) + worldXChunkSize * (y / chunkHeight);
+        return chunkNum;
     }
 
     // Update is called once per frame
@@ -203,7 +232,7 @@ public class ShadowBoxServer : MonoBehaviour {
                             var dataArr = receivedData.Split(',');
                             BlockLayer blockLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
                             int chunkID = Int32.Parse(dataArr[1]);
-                            var sendChunkData = this.LoadChunk(blockLayer, chunkID);
+                            var sendChunkData = isWorldGenerated ? LoadChunk(blockLayer, chunkID) : LoadDefaultChunk();
                             var sendChunkStr = $"CKD,{blockLayer},{chunkID},";
                             foreach (int[] chunkLine in sendChunkData)
                                 sendChunkStr += string.Join(",", chunkLine) + "\n";
@@ -212,6 +241,12 @@ public class ShadowBoxServer : MonoBehaviour {
                             this.driver.EndSend(dsw);
                         }
 
+                        if(receivedData.StartsWith("WGC")) {
+                            Send(connectionList[i], $"WST,{isWorldGenerated}");
+                        }
+
+                        /*
+                        
                         if (receivedData.StartsWith("SBF")) { //チャンクバッファを受け取ったとき
                             if (debugMode) Debug.Log("[SERVER]Receive chunk buffer data");
                             receivedData = receivedData.Replace("SBF,", "");
@@ -238,7 +273,8 @@ public class ShadowBoxServer : MonoBehaviour {
                             SaveChunkBuffer(workspaceId, layer, chunkId, LoadChunkBuffer(workspaceId, layer, chunkId));
                             //TODO 一斉送信
 
-                        }
+                        } */
+
 
 
 
@@ -281,11 +317,56 @@ public class ShadowBoxServer : MonoBehaviour {
 
                             //全ユーザに移動情報を通知する
                             foreach (NetworkConnection conn in connectionList) {
-                                if (conn.IsCreated) {
-                                    var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                                    dsw.WriteFixedString4096(new FixedString4096Bytes($"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}"));
-                                    this.driver.EndSend(dsw);
-                                }
+                                Send(conn, $"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}");
+                            }
+                        }
+
+                        //ブロック単位の更新を受け取った時のやつ
+                        if(receivedData.StartsWith("SBC")) {
+                            receivedData = receivedData.Replace("SBC,", "");
+                            var dataArr = receivedData.Split(',');
+                            BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
+                            int x = Int32.Parse(dataArr[1]);
+                            int y = Int32.Parse(dataArr[2]);
+                            int blockId = Int32.Parse(dataArr[3]); 
+                            if(worldInfo != null) {
+                                int chunkNum = CoordinateToChunkNo(x, y, worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetWorldSizeX());
+                                var oldChunk = LoadChunk(layer, chunkNum);
+                                oldChunk[x % worldInfo.GetChunkSizeX()][y % worldInfo.GetWorldSizeY()] = blockId;
+                                SaveChunk(layer, chunkNum, oldChunk);
+                            }
+                                
+                            //全ユーザに移動情報を通知
+                            foreach(NetworkConnection conn in connectionList) {
+                                Send(conn, $"BCB,{receivedData}");
+                            }
+                        }
+
+                        //ワールドのconfigを設定するやつ
+                        if(receivedData.StartsWith("SWD")) {
+                            Debug.Log("SWD");
+                            receivedData = receivedData.Replace("SWD,", "");
+                            var dataArr = receivedData.Split(',');
+                            Debug.Log(string.Join(",", dataArr));
+                            int worldSizeX = Int32.Parse(dataArr[0]);
+                            int worldSizeY = Int32.Parse(dataArr[1]);
+                            int chunkSizeX = Int32.Parse(dataArr[2]);
+                            int chunkSizeY = Int32.Parse(dataArr[3]);
+                            int heightRange = Int32.Parse(dataArr[4]);
+                            int seed = Int32.Parse(dataArr[5]);
+                            string worldName = dataArr[6];
+
+                            worldInfo = new WorldInfo(worldSizeX, worldSizeY, chunkSizeX, chunkSizeY, heightRange, seed, worldName);
+                            worldInfo.SaveWorldData();
+                        }
+
+                        //ワールドを再生成するやつ
+                        if (receivedData.StartsWith("RGN")) {
+                            Debug.Log("AAAAAAA");
+                            if(worldInfo != null) {
+                                GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
+                            } else {
+                                Send(connectionList[i], "FGN");
                             }
                         }
 
@@ -300,6 +381,15 @@ public class ShadowBoxServer : MonoBehaviour {
         }
     }
 
+    //なんで作らなかったんだ？
+    private bool Send(NetworkConnection connection, string sendData) {
+        if (connection.IsCreated) {
+            var writer = this.driver.BeginSend(NetworkPipeline.Null, connection, out DataStreamWriter dsw);
+            dsw.WriteFixedString4096(new FixedString4096Bytes(sendData));
+            this.driver.EndSend(dsw);
+            return true;
+        } else return false;
+    }
     /// <summary>
     /// 内部サーバー(127.0.0.1:11781)を作成する
     /// </summary>
@@ -307,40 +397,6 @@ public class ShadowBoxServer : MonoBehaviour {
         StartServer(11781);
     }
 
-    /// <summary>
-    /// レイヤーデータを保存する
-    /// </summary>
-    /// <param name="layerID">レイヤーのID</param>
-    /// <param name="chunkID">チャンクのID</param>
-    /// <param name="chunkData">保存するデータ</param>
-    void SaveChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
-        if (!Directory.Exists("./worlddata/")) {
-            Directory.CreateDirectory("./worlddata");
-        }
-        string fileName = $"./worlddata/{layerID}.chunk{chunkID}.dat";
-        using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
-            foreach (int[] row in chunkData)
-                writer.WriteLine(string.Join(",", row));
-        }
-    }
-
-    /// <summary>
-    /// チャンクのバッファーデータを保存する。tempだから削除部分も実装しないとな...
-    /// </summary>
-    /// <param name="workspaceID">ワークスペースのID</param>
-    /// <param name="layerID">レイヤーのID</param>
-    /// <param name="chunkID">チャンクのID</param>
-    /// <param name="chunkData">保存するデータ</param>
-    void SaveChunkBuffer(Guid workspaceID, BlockLayer layerID, int chunkID, int[][] chunkData) {
-        if (!Directory.Exists("./worlddata/")) {
-            Directory.CreateDirectory("./worlddata");
-        }
-        string fileName = $"./worlddata/{workspaceID}.{layerID}.chunk{chunkID}.dat";
-        using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
-            foreach (int[] row in chunkData)
-                writer.WriteLine(string.Join(",", row));
-        }
-    }
 #nullable enable
     /// <summary>
     /// レイヤーデータをファイルから読み込む
@@ -357,13 +413,31 @@ public class ShadowBoxServer : MonoBehaviour {
                     tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
                 return tempList.ToArray();
             }
-        } else {
+        }
+        else {
             var chunkData = LoadDefaultChunk();
             SaveChunk(layerID, chunkID, chunkData);
             return chunkData;
         }
     }
 
+    /// <summary>
+    /// レイヤーデータを保存する
+    /// </summary>
+    /// <param name="layerID">レイヤーのID</param>
+    /// <param name="chunkID">チャンクのID</param>
+    /// <param name="chunkData">保存するデータ</param>
+    void SaveChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
+        if (!Directory.Exists("./worlddata/"))
+            Directory.CreateDirectory("./worlddata");
+        string fileName = $"./worlddata/{layerID}.chunk{chunkID}.dat";
+        using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
+            foreach (int[] row in chunkData)
+                writer.WriteLine(string.Join(",", row));
+        }
+    }
+
+    /*
     /// <summary>
     /// 保存されたチャンクのバッファを読み込む
     /// </summary>
@@ -387,6 +461,24 @@ public class ShadowBoxServer : MonoBehaviour {
             return chunkData;
         }
     }
+
+    /// <summary>
+    /// チャンクのバッファーデータを保存する。tempだから削除部分も実装しないとな...
+    /// </summary>
+    /// <param name="workspaceID">ワークスペースのID</param>
+    /// <param name="layerID">レイヤーのID</param>
+    /// <param name="chunkID">チャンクのID</param>
+    /// <param name="chunkData">保存するデータ</param>
+    void SaveChunkBuffer(Guid workspaceID, BlockLayer layerID, int chunkID, int[][] chunkData) {
+        if (!Directory.Exists("./worlddata/")) {
+            Directory.CreateDirectory("./worlddata");
+        }
+        string fileName = $"./worlddata/{workspaceID}.{layerID}.chunk{chunkID}.dat";
+        using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
+            foreach (int[] row in chunkData)
+                writer.WriteLine(string.Join(",", row));
+        }
+    }*/
 
     int[][] LoadDefaultChunk() {
         List<int[]> tempList = new List<int[]>();

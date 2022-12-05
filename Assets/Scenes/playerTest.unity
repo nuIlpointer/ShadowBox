@@ -235,6 +235,7 @@ MonoBehaviour:
   playerName: test_kun
   skinID: 1
   createServer: 1
+  pointerLayer: 0
   syncTimeLate: 0.1
   actState: 0
   testUseWrapper: 1
@@ -289,6 +290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   worldLoader: {fileID: 1724355517}
+  wrapper: {fileID: 946281864}
   useBlock: 0
   lineWidth: 0
 --- !u!1 &270579208

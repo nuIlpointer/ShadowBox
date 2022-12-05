@@ -9,9 +9,10 @@ public class PlayerController : MonoBehaviour
         error_man = 0,
         test_kun_1 = 1
     }
-    
-    
-    
+
+
+
+    public GameObject cameraObj;
     public GameObject wrapperObject;
     public GameObject serverObject;
     public ShadowBoxServer server;
@@ -25,6 +26,12 @@ public class PlayerController : MonoBehaviour
     public int skinID;
     private int oldSkinID;
     public bool createServer = false;
+
+    //マウス系
+    private Vector3 pointerPos;
+    private Vector3 mouse;
+
+    private GameObject pointer;
 
     /// <summary>
     /// プレイヤーデータ送信レート
@@ -77,7 +84,18 @@ public class PlayerController : MonoBehaviour
 
             //スキンid
             oldSkinID = skinID;
+
+            //ポインタ
+            pointer = (GameObject)Resources.Load("Generic/Pointer");
+            //Debug.Log("====================================" + pointer);
+            pointer = Instantiate(pointer);
+            mouse = Input.mousePosition;
+
+
+
         }
+
+
         
     }
 
@@ -198,6 +216,20 @@ public class PlayerController : MonoBehaviour
             }
             syncCnt = 0;
         }
+
+        //建築操作
+        //pointer
+        mouse = Input.mousePosition;
+        Debug.Log("mouse " + mouse);
+        mouse.z = 20;
+        pointerPos = Camera.main.ScreenToWorldPoint(mouse);
+
+        pointerPos = new Vector3((float)Mathf.Floor(pointerPos.x), (float)Mathf.Floor(pointerPos.y), transform.position.z);
+
+        pointer.transform.position = new Vector3(pointerPos.x, pointerPos.y, 0);
+
+
+
     }
 
 

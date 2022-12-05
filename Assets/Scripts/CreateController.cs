@@ -6,6 +6,7 @@ using UnityEngine;
 public class CreateController : MonoBehaviour
 {
     public WorldLoader worldLoader;
+    public ShadowBoxClientWrapper wrapper;
 
     //操作する変数
     public int useBlock;
@@ -19,8 +20,11 @@ public class CreateController : MonoBehaviour
     /// <param name="y"></param>
     /// <param name="leyerNumber"></param>
     public void DrawBlock(int x, int y, int leyerNumber) {
-        worldLoader.BlockUpdate(useBlock, leyerNumber, x, y);
+        if (wrapper.IsConnectionActive()) {
 
+        }
+        worldLoader.BlockUpdate(useBlock, leyerNumber, x, y);
+        //wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)leyerNumber, x, y, useBlock);
     }
 
 

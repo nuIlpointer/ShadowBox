@@ -11,7 +11,6 @@ public class PlayerController : MonoBehaviour
     }
 
 
-
     public GameObject cameraObj;
     public GameObject wrapperObject;
     public GameObject serverObject;
@@ -31,6 +30,7 @@ public class PlayerController : MonoBehaviour
     //マウス系
     private Vector3 pointerPos;
     private Vector3 mouse;
+    public float pointerLayer;
 
     private GameObject pointer;
 
@@ -88,9 +88,9 @@ public class PlayerController : MonoBehaviour
 
             //ポインタ
             pointer = (GameObject)Resources.Load("Generic/Pointer");
-            //Debug.Log("====================================" + pointer);
             pointer = Instantiate(pointer);
             mouse = Input.mousePosition;
+            pointerLayer = 1;
 
 
 
@@ -108,6 +108,8 @@ public class PlayerController : MonoBehaviour
             firstUpdate = false;
             wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x, transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock);
         }
+
+
         //スキンID変更時処理
         if(oldSkinID != skinID) {
             string sid = Enum.GetName(typeof(Skins), skinID);
@@ -210,7 +212,7 @@ public class PlayerController : MonoBehaviour
 
                 //wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, (float)2.0, (float)2.0);
             }
-            else {
+            else {//generaTesterを使った仮テスト用のやーつ
                 gt.inLayer = inLayer;
                 gt.inPos = transform.position;
                 gt.actState = actState;
@@ -218,8 +220,10 @@ public class PlayerController : MonoBehaviour
             syncCnt = 0;
         }
 
+
         //建築操作
         //ポインタ
+
         mouse = Input.mousePosition;
         Debug.Log("mouse " + mouse);
         mouse.z = 20;
@@ -229,9 +233,15 @@ public class PlayerController : MonoBehaviour
 
         pointer.transform.position = new Vector3(pointerPos.x, pointerPos.y, 0);
 
+        pointerLayer += Input.GetAxis("Mouse ScrollWheel") * 3;
+
+        if (pointerLayer > 4) pointerLayer = 4;
+        else if (pointerLayer < 1) pointerLayer = 1;
+
         //建築
+
         if(Input.GetMouseButton(0)){
-            creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, inLayer);
+            creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
         }
 
 

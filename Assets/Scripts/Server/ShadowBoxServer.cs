@@ -308,7 +308,7 @@ public class ShadowBoxServer : MonoBehaviour {
 
                             //全ユーザに移動情報を通知する
                             foreach (NetworkConnection conn in connectionList) {
-                                Send(conn, $"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}"))
+                                Send(conn, $"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}");
                             }
                         }
 
@@ -360,8 +360,9 @@ public class ShadowBoxServer : MonoBehaviour {
     private bool Send(NetworkConnection connection, string sendData) {
         if (connection.IsCreated) {
             var writer = this.driver.BeginSend(NetworkPipeline.Null, connection, out DataStreamWriter dsw);
-            dsw.WriteFixedString4096(new WriteFixedString4096(sendData));
+            dsw.WriteFixedString4096(new FixedString4096Bytes(sendData));
             this.driver.EndSend(dsw);
+            return true;
         } else return false;
     }
     /// <summary>

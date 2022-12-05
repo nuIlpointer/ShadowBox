@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     public WorldLoader worldLoader;
     public CharacterController controller;
     public Animator anim;
+    public CreateController creater;
     public string ipAddress = "127.0.0.1";
     public int port = 11781;
     public string playerName = "Player";
@@ -218,7 +219,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //建築操作
-        //pointer
+        //ポインタ
         mouse = Input.mousePosition;
         Debug.Log("mouse " + mouse);
         mouse.z = 20;
@@ -228,6 +229,10 @@ public class PlayerController : MonoBehaviour
 
         pointer.transform.position = new Vector3(pointerPos.x, pointerPos.y, 0);
 
+        //建築
+        if(Input.GetMouseButton(0)){
+            creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, inLayer);
+        }
 
 
     }

@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 142052764}
   - component: {fileID: 142052763}
   - component: {fileID: 142052762}
+  - component: {fileID: 142052765}
   m_Layer: 0
   m_Name: player
   m_TagString: Untagged
@@ -228,6 +229,7 @@ MonoBehaviour:
   worldLoader: {fileID: 1724355517}
   controller: {fileID: 142052764}
   anim: {fileID: 142052763}
+  creater: {fileID: 142052765}
   ipAddress: 127.0.0.1
   port: 11781
   playerName: test_kun
@@ -274,6 +276,21 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: -0.1, y: 0, z: 0}
+--- !u!114 &142052765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 142052759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b4bcdb746bda264e804b82e68d4342f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldLoader: {fileID: 1724355517}
+  useBlock: 0
+  lineWidth: 0
 --- !u!1 &270579208
 GameObject:
   m_ObjectHideFlags: 0

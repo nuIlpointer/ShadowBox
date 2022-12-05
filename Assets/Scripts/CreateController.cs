@@ -6,13 +6,30 @@ using UnityEngine;
 public class CreateController : MonoBehaviour
 {
     public WorldLoader worldLoader;
-    // 処理に使うプロパティを定義する
+
+    //操作する変数
     public int useBlock;
+    public int lineWidth;
+
+
+    /// <summary>
+    /// useBlockとlineWidthの値に応じてブロックを設置します。
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="leyerNumber"></param>
+    public void DrawBlock(int x, int y, int leyerNumber) {
+        worldLoader.BlockUpdate(useBlock, leyerNumber, x, y);
+
+    }
+
+
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        useBlock = 0;
+        lineWidth = 1;
     }
 
     // Update is called once per frame

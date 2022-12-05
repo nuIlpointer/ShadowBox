@@ -5,7 +5,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 using Unity.Collections;
-using Unity.Mathematics;
 using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -55,9 +54,6 @@ public class ShadowBoxServer : MonoBehaviour {
         if((worldInfo = WorldInfo.LoadWorldData()) != null) {
             isWorldGenerated = true;
         }
-        // OutsideWallのチャンク番号96を64x64チャンク1つを生成した配列0番目で保存...何言ってんだ？ サンプルなのでコメントアウト
-        // SaveChunk(BlockLayer.OutsideWall, 96, terrainGenerator.Generate(1, 64, 64, 6, new System.Random().Next(0, Int32.MaxValue))[0]);
-
     }
 
     /// <summary>
@@ -92,8 +88,18 @@ public class ShadowBoxServer : MonoBehaviour {
         return true;
     }
 
+    //TODO
     void GenerateWorld(int width, int height, int chunkWidth, int chunkHeight, int heightRange, int seed) {
-    
+
+        // SaveChunk(BlockLayer.OutsideWall, 96, terrainGenerator.Generate(1, 64, 64, 6, new System.Random().Next(0, Int32.MaxValue))[0]);
+        int chunkNum = 0;
+        foreach (int[][] chunkData in terrainGenerator.Generate(width, height, chunkWidth, chunkHeight, heightRange, seed)) {
+            SaveChunk(BlockLayer.InsideWall, chunkNum, chunkData);
+            SaveChunk(BlockLayer.InsideBlock, chunkNum, chunkData);
+            SaveChunk(BlockLayer.OutsideWall, chunkNum, chunkData);
+            SaveChunk(BlockLayer.OutsideBlock, chunkNum, chunkData);
+            chunkNum++;
+        }
     }
 
     /// <summary>
@@ -235,6 +241,9 @@ public class ShadowBoxServer : MonoBehaviour {
                             this.driver.EndSend(dsw);
                         }
 
+                        if(receivedData.StartsWith("WGC")) {
+                            Send(connectionList[i], $"WST,{isWorldGenerated}");
+                        }
 
                         /*
                         
@@ -334,14 +343,30 @@ public class ShadowBoxServer : MonoBehaviour {
                         }
 
                         //ワールドのconfigを設定するやつ
+                        if(receivedData.StartsWith("SWD")) {
+                            Debug.Log("SWD");
+                            receivedData = receivedData.Replace("SWD,", "");
+                            var dataArr = receivedData.Split(',');
+                            Debug.Log(string.Join(",", dataArr));
+                            int worldSizeX = Int32.Parse(dataArr[0]);
+                            int worldSizeY = Int32.Parse(dataArr[1]);
+                            int chunkSizeX = Int32.Parse(dataArr[2]);
+                            int chunkSizeY = Int32.Parse(dataArr[3]);
+                            int heightRange = Int32.Parse(dataArr[4]);
+                            int seed = Int32.Parse(dataArr[5]);
+                            string worldName = dataArr[6];
 
+                            worldInfo = new WorldInfo(worldSizeX, worldSizeY, chunkSizeX, chunkSizeY, heightRange, seed, worldName);
+                            worldInfo.SaveWorldData();
+                        }
 
                         //ワールドを再生成するやつ
-                        if(receivedData.StartsWith("RGN")) {
+                        if (receivedData.StartsWith("RGN")) {
+                            Debug.Log("AAAAAAA");
                             if(worldInfo != null) {
-                                
+                                GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
                             } else {
-
+                                Send(connectionList[i], "FGN");
                             }
                         }
 

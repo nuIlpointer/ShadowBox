@@ -12,13 +12,15 @@ public class WorldInfo {
     int worldSizeY;
     int chunkSizeX;
     int chunkSizeY;
+    int heightRange;
     int seed;
     string worldName;
-    WorldInfo(int worldSizeX, int worldSizeY, int chunkSizeX, int chunkSizeY, int seed, string worldName) {
+    public WorldInfo(int worldSizeX, int worldSizeY, int chunkSizeX, int chunkSizeY, int heightRange, int seed, string worldName) {
         this.worldSizeX = worldSizeX;
         this.worldSizeY = worldSizeY;
         this.chunkSizeX = chunkSizeX;
         this.chunkSizeY = chunkSizeY;
+        this.heightRange = heightRange;
         this.seed = seed;
         this.worldName = worldName;
     }
@@ -54,7 +56,16 @@ public class WorldInfo {
     public int GetChunkSizeY() {
         return chunkSizeY;
     }
-    
+
+
+    /// <summary>
+    /// ワールドの高低差を取得する
+    /// </summary>
+    /// <returns>ワールドの高低差</returns>
+    public int GetHeightRange() {
+        return heightRange;
+    }
+
     /// <summary>
     /// このワールドのシード値を取得
     /// </summary>
@@ -80,7 +91,7 @@ public class WorldInfo {
         }
         string fileName = $"./worlddata/worldinfo.dat";
         using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
-            writer.WriteLine($"{worldSizeX},{worldSizeY},{chunkSizeX},{chunkSizeY},{seed},{worldName}");
+            writer.WriteLine($"{worldSizeX},{worldSizeY},{chunkSizeX},{chunkSizeY},{heightRange},{seed},{worldName}");
         }
     }
 
@@ -92,8 +103,7 @@ public class WorldInfo {
             using (var reader = new StreamReader(fileName, Encoding.UTF8)) {
                 var line = reader.ReadLine();
                 var lineArr = line.Split(',');
-                //int worldSizeX, int worldSizeY, int chunkSizeX, int chunkSizeY, int seed, string worldName
-                return new WorldInfo(Int32.Parse(lineArr[0]), Int32.Parse(lineArr[1]), Int32.Parse(lineArr[2]), Int32.Parse(lineArr[3]), Int32.Parse(lineArr[4]), lineArr[5]);
+                return new WorldInfo(Int32.Parse(lineArr[0]), Int32.Parse(lineArr[1]), Int32.Parse(lineArr[2]), Int32.Parse(lineArr[3]), Int32.Parse(lineArr[4]), Int32.Parse(lineArr[5]), lineArr[6]);
             }
         } else return null;
     }

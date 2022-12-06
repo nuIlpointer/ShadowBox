@@ -220,6 +220,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
 
                 if (receivedData.StartsWith("RCP")) {
                     if (debugMode) Debug.Log("[WRAPPER]World regenerate finished.");
+                    worldLoader.OnWorldRegenerateFinish();
                     worldRegenFinish = true;
                 }
 
@@ -239,6 +240,8 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
 
                 if(receivedData.StartsWith("WST")) {
                     worldGenerated = Boolean.Parse(receivedData.Split(',')[1]);
+                    if (!worldGenerated) worldLoader.OnWorldNeedRegenerate();
+                    else worldLoader.OnWorldNoNeedRegenerate();
                 }
             } else if (cmd == NetworkEvent.Type.Disconnect) {
                 if (debugMode) Debug.Log("[WRAPPER]Disconnect.");

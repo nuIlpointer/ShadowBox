@@ -82,7 +82,32 @@ public class WorldLoader : MonoBehaviour
         }
     }
 
-    /*public bool WakeUp() {
+    /// <summary>
+    /// 再生成に成功したときにWrapperから呼び出されます。
+    /// </summary>
+    public void OnWorldRegenerateFinish() {
+        // do something when world regenerate finished 
+        Debug.Log("ワールドが再生成されました。");
+    }
+
+    /// <summary>
+    /// 再生成が必要な時にWrapperから呼び出されます。
+    /// </summary>
+    public void OnWorldNeedRegenerate() {
+        Debug.Log("サーバー側に地形データが存在しません。再生成が必要です。");
+        wrapper.SetWorldData(cNumX, cNumY, cSize, cSize, heightRange, new System.Random().Next(0, Int32.MaxValue), "new_World");
+        wrapper.RequestWorldRegenerate();
+    }
+
+    /// <summary>
+    /// 沙う背う背うが不要な時にWrapperから呼び出されます。
+    /// </summary>
+    public void OnWorldNoNeedRegenerate() {
+        Debug.Log("ワールドの再生成は不要です。");
+    }
+
+
+    public bool WakeUp() {
         if (!wrapper.IsConnectionActive()) {
             Debug.LogWarning("[WorldLoader] > 地形の初期生成に失敗（接続が確認できない）");
             return false;
@@ -90,10 +115,7 @@ public class WorldLoader : MonoBehaviour
         if (wrapper.IsWorldRegenerateFinished()) {
             Debug.Log("[WorldLoader] > 地形はすでに生成されています");
             return false;
-        }
-        wrapper.SetWorldData(cNumX, cNumY, cSize, cSize, heightRange, new System.Random().Next(0, Int32.MaxValue), "new_World");
-        wrapper.GetWorldGenerated();
-        wrapper.RequestWorldRegenerate();
+        }*/
         float timer = 0;
         int sec = 0;
         do {

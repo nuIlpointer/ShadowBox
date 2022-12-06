@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour
             if(createServer) {
                 server = Instantiate(serverObject).GetComponent<ShadowBoxServer>();
                 server.CreateInternalServer();
-                ipAddress = "172.16.103.111";
+                //ipAddress = "127.0.0.1";
             }
             wrapper.Connect(ipAddress, port);
 
@@ -225,7 +225,7 @@ public class PlayerController : MonoBehaviour
         //ポインタ
 
         mouse = Input.mousePosition;
-        Debug.Log("mouse " + mouse);
+        //Debug.Log("mouse " + mouse);
         mouse.z = 20;
         pointerPos = Camera.main.ScreenToWorldPoint(mouse);
 

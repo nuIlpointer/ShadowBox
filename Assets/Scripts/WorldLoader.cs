@@ -75,12 +75,12 @@ public class WorldLoader : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    /*void Update()
     {
         if (wakeUpSetting) {
 
         }
-    }
+    }*/
 
     /// <summary>
     /// 再生成に成功したときにWrapperから呼び出されます。
@@ -88,6 +88,8 @@ public class WorldLoader : MonoBehaviour
     public void OnWorldRegenerateFinish() {
         // do something when world regenerate finished 
         Debug.Log("ワールドが再生成されました。");
+        for (int i = 0; i < visit.Length; i++) visit[i] = false;        //visitを初期化し、再度読み込むようにする
+
     }
 
     /// <summary>
@@ -107,7 +109,7 @@ public class WorldLoader : MonoBehaviour
     }
 
 
-    public bool WakeUp() {
+    /*public bool WakeUp() {
         if (!wrapper.IsConnectionActive()) {
             Debug.LogWarning("[WorldLoader] > 地形の初期生成に失敗（接続が確認できない）");
             return false;
@@ -115,7 +117,7 @@ public class WorldLoader : MonoBehaviour
         if (wrapper.IsWorldRegenerateFinished()) {
             Debug.Log("[WorldLoader] > 地形はすでに生成されています");
             return false;
-        }*/
+        }
         float timer = 0;
         int sec = 0;
         do {
@@ -135,10 +137,10 @@ public class WorldLoader : MonoBehaviour
         Debug.Log("[WorldLoader] > サーバ側生成完了を確認　地形ロード履歴をリセットしました");
 
         return true;
-    }*/
+    }
     public void WakeUp() {
         wakeUpSetting = true;
-    }
+    }*/
 
     /// <summary>
     ///指定位置周辺のチャンクを生成

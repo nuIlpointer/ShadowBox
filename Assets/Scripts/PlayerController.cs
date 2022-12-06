@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour
 
 
             //初期地形生成処理
-            if (wrapper.IsConnectionActive()) {
+            /*if (wrapper.IsConnectionActive()) {
                 Debug.LogWarning("/////////////////////////////////////////////////////////1");
                 if (!wrapper.IsWorldRegenerateFinished()) {
                     Debug.LogWarning("/////////////////////////////////////////////////////////2");
@@ -118,7 +118,7 @@ public class PlayerController : MonoBehaviour
 
                     worldLoader.LoadChunks(transform.position);
                 }
-            }
+            }*/
         }
 
         

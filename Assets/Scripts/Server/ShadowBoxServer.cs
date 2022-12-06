@@ -139,16 +139,13 @@ public class ShadowBoxServer : MonoBehaviour {
             if (lastCommandSend[connectionId] >= timeout) {
                 foreach (NetworkConnection conn in connectionList) {
                     if (conn.IsCreated) {
-                        if (guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != connectionId) {
-                            var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                            dsw.WriteFixedString4096(new FixedString4096Bytes($"UDC,{guidConnectionList[connectionId]}"));
-                            this.driver.EndSend(dsw);
-                        }
+                        if (guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != connectionId)
+                            Send(conn, $"UDC,{guidConnectionList[connectionId]}");
 
                     }
                 }
 
-                if(debugMode) Debug.Log($"User {guidConnectionList[connectionId]} has disconnected.");
+                if(debugMode) Debug.Log($"[Server]User {guidConnectionList[connectionId]} has disconnected.");
                 userList.Remove(guidConnectionList[connectionId]);
                 lastCommandSend.Remove(connectionId);
                 guidConnectionList.Remove(connectionId);
@@ -206,23 +203,16 @@ public class ShadowBoxServer : MonoBehaviour {
 
                             //プレイヤー情報を周知する
                             foreach (NetworkConnection conn in connectionList) {
-                                if (conn.IsCreated) {
-                                    var writer = this.driver.BeginSend(NetworkPipeline.Null, conn, out DataStreamWriter dsw);
-                                    dsw.WriteFixedString4096(new FixedString4096Bytes($"NPD,{newPlayer.ToString()}"));
-                                    this.driver.EndSend(dsw);
-                                }
+                                if (conn.IsCreated)
+                                    Send(conn, $"NPD,{newPlayer.ToString()}");
                             }
 
                             //当該ユーザに現在のユーザ一覧を送信する
                             var sendPListStr = "PDL,";
                             foreach (PlayerData data in userList.Values)
                                 sendPListStr += data.ToString() + "\n";
-                            var writer2 = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw2);
-                            if (writer2 >= 0) {
-                                dsw2.WriteFixedString4096(new FixedString4096Bytes(sendPListStr));
-                                this.driver.EndSend(dsw2);
-                            }
-                            if (debugMode) Debug.Log("USERS:" + string.Join(",", userList.Values));
+                            Send(connectionList[i], sendPListStr);
+                            if (debugMode) Debug.Log("[SERVER]USERS:" + string.Join(",", userList.Values));
                         }
 
                         //送出
@@ -236,9 +226,7 @@ public class ShadowBoxServer : MonoBehaviour {
                             var sendChunkStr = $"CKD,{blockLayer},{chunkID},";
                             foreach (int[] chunkLine in sendChunkData)
                                 sendChunkStr += string.Join(",", chunkLine) + "\n";
-                            var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
-                            dsw.WriteFixedString4096(new FixedString4096Bytes(sendChunkStr));
-                            this.driver.EndSend(dsw);
+                            Send(connectionList[i], sendChunkStr);
                         }
 
                         if(receivedData.StartsWith("WGC")) {
@@ -283,20 +271,13 @@ public class ShadowBoxServer : MonoBehaviour {
                             var sendPListStr = "PDL,";
                             foreach (PlayerData data in userList.Values)
                                 sendPListStr += data.ToString() + "\n";
-                            var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
-                            if (writer >= 0) {
-                                dsw.WriteFixedString4096(new FixedString4096Bytes(sendPListStr));
-                                this.driver.EndSend(dsw);
-                            }
+                            Send(connectionList[i], sendPListStr);
                             if (debugMode) Debug.Log("USERS:" + string.Join(",", userList.Values));
                         }
 
                         // プレイヤーのデータ
-                        if (receivedData.StartsWith("RPD")) {
-                            var writer = this.driver.BeginSend(NetworkPipeline.Null, this.connectionList[i], out DataStreamWriter dsw);
-                            dsw.WriteFixedString4096(new FixedString4096Bytes($"PLD,{userList[Guid.Parse(receivedData.Replace("RPD,", ""))]}"));
-                            this.driver.EndSend(dsw);
-                        }
+                        if (receivedData.StartsWith("RPD"))
+                            Send(connectionList[i], $"PLD,{userList[Guid.Parse(receivedData.Replace("RPD,", ""))]}");
 
                         //プレイヤーの移動データ受信 
                         if (receivedData.StartsWith("PMV")) {
@@ -337,9 +318,8 @@ public class ShadowBoxServer : MonoBehaviour {
                             }
                                 
                             //全ユーザに移動情報を通知
-                            foreach(NetworkConnection conn in connectionList) {
+                            foreach(NetworkConnection conn in connectionList)
                                 Send(conn, $"BCB,{receivedData}");
-                            }
                         }
 
                         //ワールドのconfigを設定するやつ
@@ -358,11 +338,14 @@ public class ShadowBoxServer : MonoBehaviour {
 
                             worldInfo = new WorldInfo(worldSizeX, worldSizeY, chunkSizeX, chunkSizeY, heightRange, seed, worldName);
                             worldInfo.SaveWorldData();
+                            Debug.Log("[SERVER]World regenerate complete.");
+                            foreach (NetworkConnection conn in connectionList)
+                                Send(conn, "RCP");
                         }
 
                         //ワールドを再生成するやつ
                         if (receivedData.StartsWith("RGN")) {
-                            Debug.Log("AAAAAAA");
+                            if (debugMode) Debug.Log("[SERVER]Start world regenerate...");   
                             if(worldInfo != null) {
                                 GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
                             } else {

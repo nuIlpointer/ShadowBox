@@ -74,11 +74,11 @@ public class GenericEntityManager : MonoBehaviour
         }
         
 
-        //移動
+        //移動（補完機能）
         foreach (Guid id in players.Keys) {
-            //Debug.Log((Time.deltaTime / players[id].moveTime));
-            players[id].sprite.transform.localPosition = players[id].sprite.transform.localPosition + (players[id].movement * (Time.deltaTime / players[id].moveTime == 0 ? 0.1f     : players[id].moveTime));
-
+            float ls = players[id].sprite.transform.localPosition.z;//zが処理に巻きこまれないよう退避
+            players[id].sprite.transform.localPosition = players[id].sprite.transform.localPosition + (players[id].movement * (Time.deltaTime / players[id].moveTime == 0 ? 0.1f : players[id].moveTime));
+            players[id].sprite.transform.localPosition = new Vector3(players[id].sprite.transform.localPosition.x, players[id].sprite.transform.localPosition.y, ls);
 
         }
     }

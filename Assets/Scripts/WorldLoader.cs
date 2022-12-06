@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class WorldLoader : MonoBehaviour
@@ -15,8 +16,10 @@ public class WorldLoader : MonoBehaviour
     private int cNumX;
     private int cNumY;
     private int cSize;
+    private int heightRange;
     public InitialProcess ip;
     public GameObject wObj;
+
     private ShadowBoxClientWrapper wrapper;
     int lastMakePoint = -1;
 
@@ -52,6 +55,7 @@ public class WorldLoader : MonoBehaviour
             cNumX = ip.chunksNumX;
             cNumY = ip.chunksNumY;
             cSize = ip.chunkSize;
+            heightRange = ip.heightRange;
 
             liveChunk = new int[] { -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 
@@ -74,6 +78,38 @@ public class WorldLoader : MonoBehaviour
 
     }*/
 
+    public bool WakeUp() {
+        if (!wrapper.IsConnectionActive()) {
+            Debug.LogWarning("[WorldLoader] > 地形の初期生成に失敗（接続が確認できない）");
+            return false;
+        }
+        /*if (wrapper.GetWorldGenerated()) {
+            Debug.Log("[WorldLoader] > 地形はすでに生成されています");
+            return false;
+        }*/
+        wrapper.SetWorldData(cNumX, cNumY, cSize, cSize, heightRange, new System.Random().Next(0, Int32.MaxValue), "new_World");
+        wrapper.RequestWorldRegenerate();
+        float timer = 0;
+        int sec = 0;
+        while (wrapper.IsWorldRegenerateFinished()) {
+            timer += Time.deltaTime;
+
+            if (timer > sec) {
+                sec++;
+                Debug.Log($"[WorldLoader] >　サーバーからの生成完了応答を待っています({sec}s)");
+            }
+            if (sec > 10) {
+                Debug.LogWarning("[WorldLoader] > 地形の初期生成リクエストの応答が１０秒間返ってきませんでした。");
+                return false;
+            }
+        }
+
+        for(int i = 0; i < visit.Length; i++) visit[i] = false;
+        Debug.Log("[WorldLoader] > サーバ側生成完了を確認　地形ロード履歴をリセットしました");
+
+        return true;
+    }
+    
 
     /// <summary>
     ///指定位置周辺のチャンクを生成
@@ -139,7 +175,7 @@ public class WorldLoader : MonoBehaviour
                 //UnityEngine.Debug.Log("生成　チャンクナンバー:" + loaded[i]);
                 for (int j = 1; j <= 4; j++){
                     if (!visit[loaded[i]]) {
-                        //Debug.Log($"チャンクデータ要求 {loaded[i]}");
+                        Debug.Log($"チャンクデータ要求 {loaded[i]}");
                         
                         wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
 

@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour
             if(createServer) {
                 server = Instantiate(serverObject).GetComponent<ShadowBoxServer>();
                 server.CreateInternalServer();
-                ipAddress = "127.0.0.1";
+                //ipAddress = "172.16.103.111";
             }
             wrapper.Connect(ipAddress, port);
 
@@ -107,8 +107,18 @@ public class PlayerController : MonoBehaviour
         {
             firstUpdate = false;
             wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x, transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock);
+            
         }
 
+        //初期地形生成処理
+        if (wrapper.IsConnectionActive()) {
+            if (!wrapper.IsWorldRegenerateFinished()) {
+                //wrapper.SetWorldData(cNumx,)
+                Debug.LogWarning("/////////////////////////////////////////////////////////");
+                worldLoader.WakeUp();
+                worldLoader.LoadChunks(transform.position);
+            }
+        }
 
         //スキンID変更時処理
         if(oldSkinID != skinID) {
@@ -225,7 +235,7 @@ public class PlayerController : MonoBehaviour
         //ポインタ
 
         mouse = Input.mousePosition;
-        Debug.Log("mouse " + mouse);
+        //Debug.Log("mouse " + mouse);
         mouse.z = 20;
         pointerPos = Camera.main.ScreenToWorldPoint(mouse);
 

@@ -65,7 +65,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     private bool active = false;
     private PlayerData player;
     private GenericEntityManager entityManager;
-
+    private bool worldRegenFinish = false;
     void Start() {
         // TODO さっさとやれ
         userList = new Dictionary<Guid, PlayerData>();
@@ -213,9 +213,16 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                         }
                     }
                 }
-                if(receivedData.StartsWith("FGN")) {
-                    Debug.Log("Failed to regenerate World");
+
+
+                if(receivedData.StartsWith("FGN"))
+                    Debug.LogWarning("[WRAPPER]Failed to regenerate World");
+
+                if (receivedData.StartsWith("RCP")) {
+                    if (debugMode) Debug.Log("[WRAPPER]World regenerate finished.");
+                    worldRegenFinish = true;
                 }
+
                 if (receivedData.StartsWith("BCB")) {
                     receivedData = receivedData.Replace("BCB,", "");
                     var dataArr = receivedData.Split(',');
@@ -421,6 +428,10 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
             Send(this.connection, "RGN");
             worldGenerated = true;
         }
+    }
+
+    public bool IsWorldRegenerateFinished() {
+        return worldRegenFinish;
     }
 
     public bool GetWorldGenerated() {

@@ -107,8 +107,18 @@ public class PlayerController : MonoBehaviour
         {
             firstUpdate = false;
             wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x, transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock);
+            
         }
 
+        //初期地形生成処理
+        if (wrapper.IsConnectionActive()) {
+            if (!wrapper.IsWorldRegenerateFinished()) {
+                //wrapper.SetWorldData(cNumx,)
+                Debug.LogWarning("/////////////////////////////////////////////////////////");
+                worldLoader.WakeUp();
+                worldLoader.LoadChunks(transform.position);
+            }
+        }
 
         //スキンID変更時処理
         if(oldSkinID != skinID) {

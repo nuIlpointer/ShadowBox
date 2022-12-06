@@ -1318,8 +1318,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   noNetMode: 0
   chunkSize: 25
-  chunksNumX: 4
-  chunksNumY: 2
+  chunksNumX: 8
+  chunksNumY: 4
+  heightRange: 6
 --- !u!4 &1724355515
 Transform:
   m_ObjectHideFlags: 0

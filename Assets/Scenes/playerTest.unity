@@ -309,9 +309,9 @@ MonoBehaviour:
   controller: {fileID: 142052764}
   anim: {fileID: 142052763}
   creater: {fileID: 142052765}
-  ipAddress: 127.0.0.1
+  ipAddress: 172.16.103.111
   port: 11781
-  playerName: test_kun
+  playerName: tatugamizero
   skinID: 1
   createServer: 1
   pointerLayer: 0
@@ -495,12 +495,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 49009508}
-  m_Father: {fileID: 1512701879}
-  m_RootOrder: 1
+  m_Father: {fileID: 770486608}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -20, y: 90}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -25, y: 90}
   m_SizeDelta: {x: 50, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &312580106
@@ -546,7 +546,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 312580107}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1902337582}
+        m_TargetAssemblyTypeName: sousa, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &312580107
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -709,6 +721,7 @@ RectTransform:
   - {fileID: 270579209}
   - {fileID: 1062971517}
   - {fileID: 1512701879}
+  - {fileID: 312580105}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1196,7 +1209,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1733044396}
-  - {fileID: 312580105}
   m_Father: {fileID: 770486608}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1621,6 +1633,50 @@ MonoBehaviour:
   CHUNK_FRAME: {fileID: 1926622003}
   chunkFrame:
   - {fileID: 0}
+--- !u!1 &1902337580
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1902337581}
+  - component: {fileID: 1902337582}
+  m_Layer: 0
+  m_Name: Sousa
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1902337581
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902337580}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 83.67707, y: 308.83087, z: -17.894257}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1902337582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902337580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd6beb8d0ba28794bbb35e0d73e3d977, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  image: {fileID: 1512701878}
 --- !u!1 &1906975256
 GameObject:
   m_ObjectHideFlags: 0

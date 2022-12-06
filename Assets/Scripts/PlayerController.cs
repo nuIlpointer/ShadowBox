@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour
             if(createServer) {
                 server = Instantiate(serverObject).GetComponent<ShadowBoxServer>();
                 server.CreateInternalServer();
-                //ipAddress = "127.0.0.1";
+                //ipAddress = "172.16.103.111";
             }
             wrapper.Connect(ipAddress, port);
 

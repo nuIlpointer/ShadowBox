@@ -32,7 +32,7 @@ public class WorldLoader : MonoBehaviour
     bool[] visit;
 
     private bool started = false;
-
+    private bool wakeUpSetting;
     
 
 
@@ -69,29 +69,34 @@ public class WorldLoader : MonoBehaviour
             }
 
             started = true;
+
+
         }
     }
 
     // Update is called once per frame
-    /*void Update()
+    void Update()
     {
+        if (wakeUpSetting) {
 
-    }*/
+        }
+    }
 
-    public bool WakeUp() {
+    /*public bool WakeUp() {
         if (!wrapper.IsConnectionActive()) {
             Debug.LogWarning("[WorldLoader] > 地形の初期生成に失敗（接続が確認できない）");
             return false;
         }
-        /*if (wrapper.GetWorldGenerated()) {
+        if (wrapper.IsWorldRegenerateFinished()) {
             Debug.Log("[WorldLoader] > 地形はすでに生成されています");
             return false;
-        }*/
+        }
         wrapper.SetWorldData(cNumX, cNumY, cSize, cSize, heightRange, new System.Random().Next(0, Int32.MaxValue), "new_World");
+        wrapper.GetWorldGenerated();
         wrapper.RequestWorldRegenerate();
         float timer = 0;
         int sec = 0;
-        while (wrapper.IsWorldRegenerateFinished()) {
+        do {
             timer += Time.deltaTime;
 
             if (timer > sec) {
@@ -102,14 +107,16 @@ public class WorldLoader : MonoBehaviour
                 Debug.LogWarning("[WorldLoader] > 地形の初期生成リクエストの応答が１０秒間返ってきませんでした。");
                 return false;
             }
-        }
+        } while (!wrapper.IsWorldRegenerateFinished());
 
-        for(int i = 0; i < visit.Length; i++) visit[i] = false;
+        for (int i = 0; i < visit.Length; i++) visit[i] = false;
         Debug.Log("[WorldLoader] > サーバ側生成完了を確認　地形ロード履歴をリセットしました");
 
         return true;
+    }*/
+    public void WakeUp() {
+        wakeUpSetting = true;
     }
-    
 
     /// <summary>
     ///指定位置周辺のチャンクを生成

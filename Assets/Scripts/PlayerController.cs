@@ -107,18 +107,21 @@ public class PlayerController : MonoBehaviour
         {
             firstUpdate = false;
             wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x, transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock);
-            
-        }
 
-        //初期地形生成処理
-        if (wrapper.IsConnectionActive()) {
-            if (!wrapper.IsWorldRegenerateFinished()) {
-                //wrapper.SetWorldData(cNumx,)
-                Debug.LogWarning("/////////////////////////////////////////////////////////");
-                worldLoader.WakeUp();
-                worldLoader.LoadChunks(transform.position);
+
+            //初期地形生成処理
+            if (wrapper.IsConnectionActive()) {
+                Debug.LogWarning("/////////////////////////////////////////////////////////1");
+                if (!wrapper.IsWorldRegenerateFinished()) {
+                    Debug.LogWarning("/////////////////////////////////////////////////////////2");
+                    worldLoader.WakeUp();
+
+                    worldLoader.LoadChunks(transform.position);
+                }
             }
         }
+
+        
 
         //スキンID変更時処理
         if(oldSkinID != skinID) {
@@ -214,7 +217,7 @@ public class PlayerController : MonoBehaviour
         syncCnt += Time.deltaTime;
         if(syncCnt > syncTimeLate) {
             if (testUseWrapper) {
-                Debug.Log(wrapper.IsConnectionActive());
+                //Debug.Log(wrapper.IsConnectionActive());
                 if (wrapper.IsConnectionActive())
                 {
                     wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, transform.position.x, transform.position.y, actState);

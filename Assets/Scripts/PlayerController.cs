@@ -9,9 +9,9 @@ public class PlayerController : MonoBehaviour
         error_man = 0,
         test_kun_1 = 1
     }
-    
-    
-    
+
+
+    public GameObject cameraObj;
     public GameObject wrapperObject;
     public GameObject serverObject;
     public ShadowBoxServer server;
@@ -19,12 +19,20 @@ public class PlayerController : MonoBehaviour
     public WorldLoader worldLoader;
     public CharacterController controller;
     public Animator anim;
+    public CreateController creater;
     public string ipAddress = "127.0.0.1";
     public int port = 11781;
     public string playerName = "Player";
     public int skinID;
     private int oldSkinID;
     public bool createServer = false;
+
+    //マウス系
+    private Vector3 pointerPos;
+    private Vector3 mouse;
+    public float pointerLayer;
+
+    private GameObject pointer;
 
     /// <summary>
     /// プレイヤーデータ送信レート
@@ -77,7 +85,18 @@ public class PlayerController : MonoBehaviour
 
             //スキンid
             oldSkinID = skinID;
+
+            //ポインタ
+            pointer = (GameObject)Resources.Load("Generic/Pointer");
+            pointer = Instantiate(pointer);
+            mouse = Input.mousePosition;
+            pointerLayer = 1;
+
+
+
         }
+
+
         
     }
 
@@ -89,6 +108,8 @@ public class PlayerController : MonoBehaviour
             firstUpdate = false;
             wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x, transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock);
         }
+
+
         //スキンID変更時処理
         if(oldSkinID != skinID) {
             string sid = Enum.GetName(typeof(Skins), skinID);
@@ -191,13 +212,39 @@ public class PlayerController : MonoBehaviour
 
                 //wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, (float)2.0, (float)2.0);
             }
-            else {
+            else {//generaTesterを使った仮テスト用のやーつ
                 gt.inLayer = inLayer;
                 gt.inPos = transform.position;
                 gt.actState = actState;
             }
             syncCnt = 0;
         }
+
+
+        //建築操作
+        //ポインタ
+
+        mouse = Input.mousePosition;
+        Debug.Log("mouse " + mouse);
+        mouse.z = 20;
+        pointerPos = Camera.main.ScreenToWorldPoint(mouse);
+
+        pointerPos = new Vector3((float)Mathf.Floor(pointerPos.x), (float)Mathf.Floor(pointerPos.y), transform.position.z);
+
+        pointer.transform.position = new Vector3(pointerPos.x, pointerPos.y, 0);
+
+        pointerLayer += Input.GetAxis("Mouse ScrollWheel") * 3;
+
+        if (pointerLayer > 4) pointerLayer = 4;
+        else if (pointerLayer < 1) pointerLayer = 1;
+
+        //建築
+
+        if(Input.GetMouseButton(0)){
+            creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+        }
+
+
     }
 
 

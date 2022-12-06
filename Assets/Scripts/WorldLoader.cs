@@ -95,6 +95,14 @@ public class WorldLoader : MonoBehaviour
         wrapper.RequestWorldRegenerate();
     }
 
+    /// <summary>
+    /// 沙う背う背うが不要な時にWrapperから呼び出されます。
+    /// </summary>
+    public void OnWorldNoNeedRegenerate() {
+        Debug.Log("ワールドの再生成は不要です。");
+    }
+
+
     public bool WakeUp() {
         if (!wrapper.IsConnectionActive()) {
             Debug.LogWarning("[WorldLoader] > 地形の初期生成に失敗（接続が確認できない）");

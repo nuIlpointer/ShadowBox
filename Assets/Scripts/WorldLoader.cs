@@ -32,7 +32,7 @@ public class WorldLoader : MonoBehaviour
     bool[] visit;
 
     private bool started = false;
-    private bool wakeUpSetting;
+    private bool waking;
     
 
 
@@ -75,12 +75,18 @@ public class WorldLoader : MonoBehaviour
     }
 
     // Update is called once per frame
-    /*void Update()
+    void Update()
     {
-        if (wakeUpSetting) {
+        if (waking) {
+            if (wrapper.IsConnectionActive() && !wrapper.IsWorldRegenerateFinished()) {
+                wrapper.SetWorldData(cNumX, cNumY, cSize, cSize, heightRange, new System.Random().Next(0, Int32.MaxValue), "new_World");
+                wrapper.RequestWorldRegenerate();
 
+                waking = false;
+                Debug.Log("[WorldLoader] > waked");
+            }
         }
-    }*/
+    }
 
     /// <summary>
     /// 再生成に成功したときにWrapperから呼び出されます。
@@ -137,10 +143,10 @@ public class WorldLoader : MonoBehaviour
         Debug.Log("[WorldLoader] > サーバ側生成完了を確認　地形ロード履歴をリセットしました");
 
         return true;
-    }
-    public void WakeUp() {
-        wakeUpSetting = true;
     }*/
+    public void WakeUp() {
+        waking = true;
+    }
 
     /// <summary>
     ///指定位置周辺のチャンクを生成
@@ -205,7 +211,7 @@ public class WorldLoader : MonoBehaviour
             if(loaded[i] != -1){
                 //UnityEngine.Debug.Log("生成　チャンクナンバー:" + loaded[i]);
                 for (int j = 1; j <= 4; j++){
-                    if (!visit[loaded[i]]) {
+                    if (/*!visit[loaded[i]]*/true) {
                         Debug.Log($"チャンクデータ要求 {loaded[i]}");
                         
                         wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);

@@ -8,7 +8,7 @@ public class generaTester : MonoBehaviour
     WorldLoader wl;
     LayerManager[] layers;
     public int chunkNumber = 3;
-
+    public ShadowBoxClientWrapper wrapper;
     //playertest
     public int inLayer = 2;
     public Vector3 inPos;
@@ -174,6 +174,7 @@ public class generaTester : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.J)) {
             UnityEngine.Debug.Log("入力J　ろーど2");
+
             wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(左から3番目下から１番目)
             wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(左から3番目下から１番目)
         }

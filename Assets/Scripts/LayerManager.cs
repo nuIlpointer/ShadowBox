@@ -310,6 +310,7 @@ public class LayerManager : MonoBehaviour
     public void UpdateChunk(int[][] blocks, int chunkNumber) {
         if (!started) Start();
         chunks[chunkNumber].blocks = blocks;
+        Debug.LogWarning(blocks);
     }
 
     public bool checkAir(int cn, int x, int y) {

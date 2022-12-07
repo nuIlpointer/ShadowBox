@@ -26,6 +26,10 @@ public class PlayerController : MonoBehaviour
     public int skinID;
     private int oldSkinID;
     public bool createServer = false;
+    /// <summary>
+    /// true時、ゲーム起動時にサーバにワールド再生成リクエストを送ります
+    /// </summary>
+    public bool wakeUpWithWorldRegenerate = false;
 
     //マウス系
     private Vector3 pointerPos;
@@ -108,7 +112,9 @@ public class PlayerController : MonoBehaviour
             firstUpdate = false;
             wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x, transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock);
 
-
+            if (wakeUpWithWorldRegenerate) {
+                worldLoader.WakeUp();
+            }
             //初期地形生成処理
             /*if (wrapper.IsConnectionActive()) {
                 Debug.LogWarning("/////////////////////////////////////////////////////////1");

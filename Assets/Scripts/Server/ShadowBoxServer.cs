@@ -223,7 +223,7 @@ public class ShadowBoxServer : MonoBehaviour {
                             BlockLayer blockLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
                             int chunkID = Int32.Parse(dataArr[1]);
                             var sendChunkData = isWorldGenerated ? LoadChunk(blockLayer, chunkID) : LoadDefaultChunk();
-                            var sendChunkStr = $"CKD,{blockLayer},{chunkID},";
+                            var sendChunkStr = $"CKD,{blockLayer},{string.Format("{0:00}", chunkID)},";
                             foreach (int[] chunkLine in sendChunkData)
                                 sendChunkStr += string.Join(",", chunkLine) + "\n";
                             if (debugMode) Debug.Log($"Sending data {sendChunkStr}");

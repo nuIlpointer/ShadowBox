@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f0a767e7c815ce4893ee8570c94f109, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugMode: 0
+  debugMode: 1
   terrainGeneratorObj: {fileID: 2859619196047104019}
   timeout: 0.5
 --- !u!114 &1951639090243056316

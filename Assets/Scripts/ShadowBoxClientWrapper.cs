@@ -100,7 +100,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                 }
             } else if (cmd == NetworkEvent.Type.Data) {
                 String receivedData = ("" + stream.ReadFixedString4096());
-                Debug.Log(receivedData);
+                //Debug.Log(receivedData);
                 if (receivedData.StartsWith("CKD")) { //チャンクデータを受信したときの処理
                     receivedData = receivedData.Replace("CKD,", "");
                     var dataArr = receivedData.Split(',');
@@ -152,7 +152,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                             newPlayer.actState = userList[playerId].actState;
                         }
                         userList[playerId] = newPlayer;
-                        if (debugMode) Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
+                        //if (debugMode) Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
                         if (!entityManager.HasPlayer(playerId)) {
                             entityManager.AddPlayer(newPlayer.playerID, newPlayer.name, newPlayer.skinType);
                         }

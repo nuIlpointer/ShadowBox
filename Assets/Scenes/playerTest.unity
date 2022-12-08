@@ -309,9 +309,9 @@ MonoBehaviour:
   controller: {fileID: 142052764}
   anim: {fileID: 142052763}
   creater: {fileID: 142052765}
-  ipAddress: 172.16.103.111
+  ipAddress: 127.0.0.1
   port: 11781
-  playerName: tatugamizero
+  playerName: testPlayer
   skinID: 1
   createServer: 1
   pointerLayer: 0

@@ -100,6 +100,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                 }
             } else if (cmd == NetworkEvent.Type.Data) {
                 String receivedData = ("" + stream.ReadFixedString4096());
+                Debug.Log(receivedData);
                 if (receivedData.StartsWith("CKD")) { //チャンクデータを受信したときの処理
                     receivedData = receivedData.Replace("CKD,", "");
                     var dataArr = receivedData.Split(',');
@@ -117,7 +118,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     foreach (int[] arrLine in chunkTemp.ToArray())
                         chunkStr += string.Join(",", arrLine) + "\n";
 
-                    if (debugMode) Debug.Log("[WRAPPER]Received chunk data:\n" + chunkStr);
+                    if (debugMode) Debug.Log($"[WRAPPER]Received chunk data of {blockLayer}.{chunkID}:\n{chunkStr}");
                 }
                 if (receivedData.StartsWith("PLM")) { //プレイヤーの移動情報を受信したときの処理
                     receivedData = receivedData.Replace("PLM,", "");
@@ -272,10 +273,11 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <returns>送信に成功したかを示すbool値</returns>
     public bool GetChunk(BlockLayer layerID, int chunkID) {
         if (this.connection.IsCreated) {
+            Debug.Log(layerID);
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes($"RQC,{layerID},{chunkID}"));
-                if (debugMode) Debug.Log("[WRAPPER]Requesting chunk data");
+                if (debugMode) Debug.Log($"[WRAPPER]Requesting chunk data in {layerID}.{chunkID}")  ; 
                 this.driver.EndSend(dsw);
             } else return false;
             return true;

@@ -134,7 +134,7 @@ public class ShadowBoxServer : MonoBehaviour {
 
         // なんかDisconnectイベントを拾ってくれないので一定時間何のパケットも送信しなかった時切断とみなすよう変更。
         // 原因不明の為少し不安要素。まあいいや。
-        if(debugMode) Debug.Log(string.Join(",", lastCommandSend.Values));
+        //if(debugMode) Debug.Log(string.Join(",", lastCommandSend.Values));
         foreach (int connectionId in new List<int>(lastCommandSend.Keys)) {
             if (lastCommandSend[connectionId] >= timeout) {
                 foreach (NetworkConnection conn in connectionList) {
@@ -226,6 +226,7 @@ public class ShadowBoxServer : MonoBehaviour {
                             var sendChunkStr = $"CKD,{blockLayer},{chunkID},";
                             foreach (int[] chunkLine in sendChunkData)
                                 sendChunkStr += string.Join(",", chunkLine) + "\n";
+                            if (debugMode) Debug.Log($"Sending data {sendChunkStr}");
                             Send(connectionList[i], sendChunkStr);
                         }
 
@@ -294,7 +295,7 @@ public class ShadowBoxServer : MonoBehaviour {
                             userList[newPlayer.playerID] = newPlayer;
 
                             //仮 ログ出力
-                            if (debugMode) Debug.Log($"[SERVER]Player {userList[newPlayer.playerID].name} moving to {newPlayer.playerX}, {newPlayer.playerY}");
+                            // if (debugMode) Debug.Log($"[SERVER]Player {userList[newPlayer.playerID].name} moving to {newPlayer.playerX}, {newPlayer.playerY}");
 
                             //全ユーザに移動情報を通知する
                             foreach (NetworkConnection conn in connectionList) {
@@ -388,6 +389,7 @@ public class ShadowBoxServer : MonoBehaviour {
     /// <param name="chunkID">読み込むチャンクのID</param>
     /// <returns></returns>
     public int[][]? LoadChunk(BlockLayer layerID, int chunkID) {
+        Debug.Log($"Loading ./worlddata/{layerID}.chunk{chunkID}.dat");
         string fileName = $"./worlddata/{layerID}.chunk{chunkID}.dat";
         if (File.Exists(fileName)) {
             List<int[]> tempList = new List<int[]>();

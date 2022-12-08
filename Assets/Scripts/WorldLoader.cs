@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class WorldLoader : MonoBehaviour
@@ -33,6 +35,8 @@ public class WorldLoader : MonoBehaviour
 
     private bool started = false;
     private bool waking;
+
+    Queue<Vector2Int> chunkGetQueue = new Queue<Vector2Int>();
     
 
 
@@ -71,7 +75,16 @@ public class WorldLoader : MonoBehaviour
             started = true;
 
 
+
+
         }
+    }
+    private void FixedUpdate() {
+        Vector2Int gc = new Vector2Int();
+        chunkGetQueue.Enqueue(gc);
+        wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
+        layers[j].MakeChunk(gc.y);
+
     }
 
     // Update is called once per frame
@@ -211,14 +224,14 @@ public class WorldLoader : MonoBehaviour
             if(loaded[i] != -1){
                 //UnityEngine.Debug.Log("生成　チャンクナンバー:" + loaded[i]);
                 for (int j = 1; j <= 4; j++){
-                    if (/*!visit[loaded[i]]*/true) {
+                    if (!visit[loaded[i]]) {
                         Debug.Log($"チャンクデータ要求 {loaded[i]}");
                         
-                        wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
-
+                        //wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
+                        chunkGetQueue.Enqueue(new Vector2Int(j, loaded[i]));
                         visit[loaded[i]] = true;
                     }
-                    layers[j].MakeChunk(loaded[i]);
+                    //layers[j].MakeChunk(loaded[i]);
                 }
             }
         }
@@ -353,6 +366,14 @@ public class WorldLoader : MonoBehaviour
         int x = (int)pos.x % cSize;
         int y = (int)pos.y % cSize;
         return layers[1].checkAir(cn, x, y) && layers[2].checkAir(cn, x, y);
+    }
+
+    public int GetBlock(int x, int y, int layerNumber) {
+        int cn = PosToChunkNum(x, y);
+        int dx = x - ChunkNumToOriginPos(cn)[0];
+        int dy = y - ChunkNumToOriginPos(cn)[1];
+        
+        return layers[layerNumber].GetBlock(cn, dx, dy);
     }
 
 

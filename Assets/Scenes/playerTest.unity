@@ -282,7 +282,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 142052759}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 20, y: 15, z: 0.4}
+  m_LocalPosition: {x: 40, y: 15, z: 0.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1724355515}
@@ -826,6 +826,7 @@ MonoBehaviour:
   makeTest: 0
   insTestCase: 0
   transparency: 0
+  DebugChunkAct: 0
   CHUNK_FRAME: {fileID: 684850218}
   chunkFrame:
   - {fileID: 0}
@@ -878,6 +879,7 @@ MonoBehaviour:
   makeTest: 0
   insTestCase: 0
   transparency: 0
+  DebugChunkAct: 0
   CHUNK_FRAME: {fileID: 1621712934}
   chunkFrame:
   - {fileID: 0}
@@ -1382,6 +1384,7 @@ MonoBehaviour:
   ip: {fileID: 1724355513}
   wObj: {fileID: 946281863}
   autoSetCompnents: 1
+  getChunkFromServer: 1
 --- !u!1 &1733044395
 GameObject:
   m_ObjectHideFlags: 0
@@ -1633,6 +1636,7 @@ MonoBehaviour:
   makeTest: 0
   insTestCase: 0
   transparency: 0
+  DebugChunkAct: 0
   CHUNK_FRAME: {fileID: 1926622003}
   chunkFrame:
   - {fileID: 0}
@@ -1759,7 +1763,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1906975256}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 20, y: 15, z: -30}
+  m_LocalPosition: {x: 20, y: 15, z: -20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1724355515}
@@ -1873,6 +1877,7 @@ MonoBehaviour:
   makeTest: 0
   insTestCase: 0
   transparency: 0
+  DebugChunkAct: 0
   CHUNK_FRAME: {fileID: 1075138319}
   chunkFrame:
   - {fileID: 0}

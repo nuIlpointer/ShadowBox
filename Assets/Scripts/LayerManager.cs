@@ -324,8 +324,7 @@ public class LayerManager : MonoBehaviour
             }
         }
         
-        Debug.LogWarning(ch);
-
+        
 
 
 

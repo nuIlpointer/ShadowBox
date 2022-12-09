@@ -37,8 +37,8 @@ public class WorldLoader : MonoBehaviour
     private bool waking;
 
     Queue<Vector2Int> chunkGetQueue = new Queue<Vector2Int>();
-    
 
+    public bool getChunkFromServer = true; 
 
     // Start is called before the first frame update
     void Start()
@@ -82,9 +82,12 @@ public class WorldLoader : MonoBehaviour
     private void FixedUpdate() {
         Vector2Int gc = new Vector2Int();
         chunkGetQueue.Enqueue(gc);
-        wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
-        layers[j].MakeChunk(gc.y);
-
+        if(gc.x != 0) {
+            if(getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
+            layers[gc.x].MakeChunk(gc.y);
+            Debug.Log("[WorldLoader] > チャンクデータ要求 : {loaded[i]}");
+        }
+        
     }
 
     // Update is called once per frame
@@ -225,7 +228,7 @@ public class WorldLoader : MonoBehaviour
                 //UnityEngine.Debug.Log("生成　チャンクナンバー:" + loaded[i]);
                 for (int j = 1; j <= 4; j++){
                     if (!visit[loaded[i]]) {
-                        Debug.Log($"チャンクデータ要求 {loaded[i]}");
+                        Debug.Log($"[WorldLoader] > チャンクデータ要求キューに追加 : {loaded[i]}");
                         
                         //wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
                         chunkGetQueue.Enqueue(new Vector2Int(j, loaded[i]));
@@ -297,7 +300,7 @@ public class WorldLoader : MonoBehaviour
     {
         if (!started) { Start();}
         //UnityEngine.Debug.Log($"{layers[1]} {layers[2]} {layers[3]} {layers[4]} {layerNumber}");
-
+        Debug.LogWarning("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber);
         layers[layerNumber].UpdateChunk(blocks, chunkNumber);
         
         //UnityEngine.Debug.Log($"checkLive({chunkNumber}):"+checkLive(chunkNumber));

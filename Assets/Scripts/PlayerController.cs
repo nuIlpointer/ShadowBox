@@ -63,7 +63,9 @@ public class PlayerController : MonoBehaviour
     /// プレイヤーのアクションによって変動する値です（ 1の位{ 0:Standby 1:run 3:jump 4:fall } 10の位{ 0:右 1:左} ）
     /// </summary>
     public int actState;
-    
+
+    private Vector2Int worldSize;
+
 
     bool started = false;
 
@@ -137,6 +139,15 @@ public class PlayerController : MonoBehaviour
         }
 
 
+        //ワールド外判定
+        if(transform.position.y < 0.5) {
+            for(int i = 20; i < 100) {
+
+            }
+            
+            Vector3 p = transform.position;
+            transform.position = new Vector3(p.x, 20, p.z);
+        }
 
         //移動
         //(ミスによりrunLが右移動、runRが左移動になっています)

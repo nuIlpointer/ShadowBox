@@ -381,13 +381,22 @@ public class PlayerController : MonoBehaviour
             inLayer = 2;
         }
 
+        //Z軸ズレ補正
+        if(inLayer == 2) {
+            Vector3 motion = new Vector3(transform.position.x, transform.position.y, 0.4f);
+            controller.Move(motion - transform.position);
+        } else {
+            Vector3 motion = new Vector3(transform.position.x, transform.position.y, 1.2f);
+            controller.Move(motion - transform.position);
+        }
+
         //ワールド外判定
         if (underTheWorld) {
             controller.Move(safePos - transform.position);
             underTheWorld = false;
         }
 
-
+        
         //移動反映
         controller.Move(movedir * Time.deltaTime);
 

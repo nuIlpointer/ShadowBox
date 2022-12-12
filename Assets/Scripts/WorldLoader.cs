@@ -365,9 +365,26 @@ public class WorldLoader : MonoBehaviour
     }
 
     public bool CheckToBack(Vector3 pos) {
-        int cn = PosToChunkNum((int)pos.x, (int)pos.y);
+        
         int x = (int)pos.x % cSize;
         int y = (int)pos.y % cSize;
+        int cn = 0;
+        bool isSafe = true;
+
+        for(int i = -1; i < 2; i++) {
+            for(int j = -1; j < 2; j++) {
+                cn = PosToChunkNum(x + i, y + j);
+                int chx = x - ChunkNumToOriginPos(cn)[0];
+                int chy = y - ChunkNumToOriginPos(cn)[1];
+                if (layers[1].checkAir(cn, chx, chy) || layers[2].checkAir(cn, chx, chy)) isSafe = false;
+            }
+        }
+
+        return isSafe;
+
+        // = PosToChunkNum((int)pos.x, (int)pos.y);
+
+
         return layers[1].checkAir(cn, x, y) && layers[2].checkAir(cn, x, y);
     }
 

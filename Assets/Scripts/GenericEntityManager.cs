@@ -150,8 +150,6 @@ public class GenericEntityManager : MonoBehaviour
         players[id].sprite.GetComponent<SpriteRenderer>().sortingLayerName = Enum.GetName(typeof(ShadowBoxClientWrapper.BlockLayer), layer);
         Vector3 p = new Vector3(players[id].sprite.transform.position.x, players[id].sprite.transform.position.y, players[id].sprite.transform.position.z);
         players[id].sprite.transform.position = new Vector3(p.x, p.y, (float)((layer - 1) * 0.4));
-        
-        Debug.LogWarning("[レイヤー同期部]>" + players[id].sprite.transform.position + $" layer : {layer}" );
 
         //アニメーション同期
         anim = players[id].sprite.GetComponent<Animator>();

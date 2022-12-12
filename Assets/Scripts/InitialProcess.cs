@@ -4,13 +4,13 @@ using System.IO;
 using System;
 using UnityEngine;
 /// <summary>
-/// ƒQ[ƒ€ŠJnˆ—
+/// ã‚²ãƒ¼ãƒ é–‹å§‹æ™‚å‡¦ç†
 /// </summary>
 public class InitialProcess : MonoBehaviour
 {
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     /// <summary>
-    /// ƒuƒƒbƒNIDƒŠƒXƒg
+    /// ãƒ–ãƒ­ãƒƒã‚¯IDãƒªã‚¹ãƒˆ
     /// </summary>
     public enum BLOCK_ID : int{
         air             = 0,
@@ -22,11 +22,11 @@ public class InitialProcess : MonoBehaviour
     }
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     /// <summary>
-    /// ƒ`ƒƒƒ“ƒN\‘¢‘Ì@‰Šú‰»ƒTƒCƒY‚ÍInitialProcess.chunkSize‚ğQÆ
+    /// ãƒãƒ£ãƒ³ã‚¯æ§‹é€ ä½“ã€€åˆæœŸåŒ–ã‚µã‚¤ã‚ºã¯InitialProcess.chunkSizeã‚’å‚ç…§
     /// </summary>
     public struct Chunk {
         /// <summary>
-        /// ƒ`ƒƒƒ“ƒNƒf[ƒ^
+        /// ãƒãƒ£ãƒ³ã‚¯ãƒ‡ãƒ¼ã‚¿
         /// </summary>
         int[][] blocks;
     }
@@ -36,13 +36,14 @@ public class InitialProcess : MonoBehaviour
     public int chunkSize = 25;
     public int chunksNumX = 4;
     public int chunksNumY = 2;
+    public int heightRange = 6;
     
 
     void Awake()
     {
-        chunkSize = 25;
-        chunksNumX = 4;
-        chunksNumY = 2;
+        //chunkSize = 25;
+        //chunksNumX = 4;
+        //chunksNumY = 2;
 
         if (noNetMode) { GetBlockIDReference(); } else {
 
@@ -62,9 +63,9 @@ public class InitialProcess : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ}ƒbƒv‚Ìx—ñ‚Ìƒ`ƒƒƒ“ƒN”‚ğ•Ô‚·
+    /// ãƒãƒƒãƒ—ã®xåˆ—ã®ãƒãƒ£ãƒ³ã‚¯æ•°ã‚’è¿”ã™
     /// </summary>
-    /// <returns>x—ñ‚Ìƒ`ƒƒƒ“ƒN”</returns>
+    /// <returns>xåˆ—ã®ãƒãƒ£ãƒ³ã‚¯æ•°</returns>
     public int GetChunksNumX()
     {
         return chunksNumX;
@@ -72,57 +73,57 @@ public class InitialProcess : MonoBehaviour
 
 
     /// <summary>
-    /// ƒ}ƒbƒv‚Ìy—ñ‚Ìƒ`ƒƒƒ“ƒN”‚ğ•Ô‚·
+    /// ãƒãƒƒãƒ—ã®yåˆ—ã®ãƒãƒ£ãƒ³ã‚¯æ•°ã‚’è¿”ã™
     /// </summary>
-    /// <returns>y—ñ‚Ìƒ`ƒƒƒ“ƒN”</returns>
+    /// <returns>yåˆ—ã®ãƒãƒ£ãƒ³ã‚¯æ•°</returns>
     public int GetChunksNumY()
     {
         return chunksNumY;
     }
 
     /// <summary>
-    /// ƒ`ƒƒƒ“ƒN1‚Â‚ ‚½‚è‚ÌƒuƒƒbƒNƒTƒCƒY‚ğ•Ô‚·
+    /// ãƒãƒ£ãƒ³ã‚¯1ã¤ã‚ãŸã‚Šã®ãƒ–ãƒ­ãƒƒã‚¯ã‚µã‚¤ã‚ºã‚’è¿”ã™
     /// </summary>
-    /// <returns>ƒ`ƒƒƒ“ƒN‚Ì‚P•Ó‚Ì’·‚³</returns>
+    /// <returns>ãƒãƒ£ãƒ³ã‚¯ã®ï¼‘è¾ºã®é•·ã•</returns>
     public int GetChunkSize() {
         return chunkSize;
     }
 
     /// <summary>
-    /// ƒeƒXƒg—p
+    /// ãƒ†ã‚¹ãƒˆç”¨
     /// </summary>
     void GetBlockIDReference()
     {/*
 
-        //reference‘¶İŠm”F
+        //referenceå­˜åœ¨ç¢ºèª
 
         if (!Directory.Exists(Application.persistentDataPath + "/reference"))
         {
-            Debug.LogWarning("ƒfƒBƒŒƒNƒgƒŠ‚ª‚ ‚è‚Ü‚¹‚ñBV‹Kì¬‚µ‚Ü‚·B:" + Application.persistentDataPath + " /reference");
+            Debug.LogWarning("ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒã‚ã‚Šã¾ã›ã‚“ã€‚æ–°è¦ä½œæˆã—ã¾ã™ã€‚:" + Application.persistentDataPath + " /reference");
             try
             {
                 Directory.CreateDirectory(Application.persistentDataPath + "/reference");
             }
-            catch (Exception e) { Debug.LogError("ƒfƒBƒŒƒNƒgƒŠì¬’†‚É–â‘è‚ª”­¶‚µ‚Ü‚µ‚½B\n" + e); }
+            catch (Exception e) { Debug.LogError("ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆä¸­ã«å•é¡ŒãŒç™ºç”Ÿã—ã¾ã—ãŸã€‚\n" + e); }
         }
-        else { Debug.Log("ƒfƒBƒŒƒNƒgƒŠ‘¶İ‚ğŠm”FF" + Application.persistentDataPath + " / reference"); }
+        else { Debug.Log("ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå­˜åœ¨ã‚’ç¢ºèªï¼š" + Application.persistentDataPath + " / reference"); }
 
 
-        //ƒuƒƒbƒNidƒŠƒXƒgQÆ
+        //ãƒ–ãƒ­ãƒƒã‚¯idãƒªã‚¹ãƒˆå‚ç…§
 
         if (!File.Exists(Application.persistentDataPath + "/reference/blockID.dat"))
         {
-            Debug.LogWarning("ƒtƒ@ƒCƒ‹‚ª‚ ‚è‚Ü‚¹‚ñBV‹Kì¬‚µ‚Ü‚·B:" + Application.persistentDataPath + " /reference/blockID.dat");
+            Debug.LogWarning("ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã‚Šã¾ã›ã‚“ã€‚æ–°è¦ä½œæˆã—ã¾ã™ã€‚:" + Application.persistentDataPath + " /reference/blockID.dat");
             try
             {
                 File.Create(Application.persistentDataPath + "/reference/blockID.dat");
             }
-            catch (Exception e) { Debug.LogError("ƒtƒ@ƒCƒ‹ì¬‚É¸”s‚µ‚Ü‚µ‚½B\n" + e); }
+            catch (Exception e) { Debug.LogError("ãƒ•ã‚¡ã‚¤ãƒ«ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸã€‚\n" + e); }
         }
-        else { Debug.Log("ƒtƒ@ƒCƒ‹‘¶İ‚ğŠm”FF" + Application.persistentDataPath + " /reference/blockID.dat"); }
+        else { Debug.Log("ãƒ•ã‚¡ã‚¤ãƒ«å­˜åœ¨ã‚’ç¢ºèªï¼š" + Application.persistentDataPath + " /reference/blockID.dat"); }
 
 
-        //ƒuƒƒbƒNIDƒŠƒXƒgì¬
+        //ãƒ–ãƒ­ãƒƒã‚¯IDãƒªã‚¹ãƒˆä½œæˆ
 
         try
         {
@@ -139,13 +140,13 @@ public class InitialProcess : MonoBehaviour
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("ƒuƒƒbƒNIDQÆ‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½BLine:" + lineIdx + "\n" + e);
+                    Debug.LogError("ãƒ–ãƒ­ãƒƒã‚¯IDå‚ç…§ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸã€‚Line:" + lineIdx + "\n" + e);
                 }
                 lineIdx++;
             }
 
 
-            //”z—ñ’·‚ğŒˆ‚ß‚é‚½‚ßkey‚ÌÅ‘å’l‚ğæ“¾
+            //é…åˆ—é•·ã‚’æ±ºã‚ã‚‹ãŸã‚keyã®æœ€å¤§å€¤ã‚’å–å¾—
 
             int keyMax = 0;
             foreach (KeyValuePair<int, string> data in read)
@@ -157,7 +158,7 @@ public class InitialProcess : MonoBehaviour
             }
 
 
-            //”z—ñ‚É‘}“ü
+            //é…åˆ—ã«æŒ¿å…¥
 
             String listMakeLog = "";
 
@@ -175,7 +176,7 @@ public class InitialProcess : MonoBehaviour
                     listMakeLog += i + " : " + BLOCK_ID_LIST[i] + "\n";
                 }
             }
-            Debug.Log("ƒuƒƒbƒNIDQÆƒŠƒXƒg‚ğ¶¬‚µ‚Ü‚µ‚½B\n" + listMakeLog);
+            Debug.Log("ãƒ–ãƒ­ãƒƒã‚¯IDå‚ç…§ãƒªã‚¹ãƒˆã‚’ç”Ÿæˆã—ã¾ã—ãŸã€‚\n" + listMakeLog);
 
         }
         catch (Exception e) { Debug.LogError(e); }

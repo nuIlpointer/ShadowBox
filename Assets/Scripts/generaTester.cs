@@ -141,15 +141,15 @@ public class generaTester : MonoBehaviour
         //wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(左から3番目下から１番目)
         */
         
+        
+        UnityEngine.Debug.Log("generaTester > ロードチャンク　chunkNumber : " + 0);
+        wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
         for (int i = 0; i < 4; i++) {
             UnityEngine.Debug.Log("generaTester > グラウンド入れる　chunkNumber : " + i);
             for (int j = 1; j <= 4; j++) {
                 wl.ChunkUpdate(ground, j, i);
             }
         }
-        UnityEngine.Debug.Log("generaTester > ロードチャンク　chunkNumber : " + 0);
-        wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
-
 
         wl.ChunkUpdate(hut1, 1, 1);
         wl.ChunkUpdate(hut2, 3, 1);

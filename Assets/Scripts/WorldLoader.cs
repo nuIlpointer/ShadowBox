@@ -85,7 +85,7 @@ public class WorldLoader : MonoBehaviour
         if(gc.x != 0) {
             if(getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
             layers[gc.x].MakeChunk(gc.y);
-            Debug.Log("[WorldLoader] > チャンクデータ要求 : {loaded[i]}");
+            Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
         }
         
     }
@@ -228,7 +228,7 @@ public class WorldLoader : MonoBehaviour
                 //UnityEngine.Debug.Log("生成　チャンクナンバー:" + loaded[i]);
                 for (int j = 1; j <= 4; j++){
                     if (!visit[loaded[i]]) {
-                        Debug.Log($"[WorldLoader] > チャンクデータ要求キューに追加 : {loaded[i]}");
+                        Debug.Log($"[WorldLoader] > チャンクデータ要求キューに追加 chunkNumber : {loaded[i]}  layer : {j}");
                         
                         //wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
                         chunkGetQueue.Enqueue(new Vector2Int(j, loaded[i]));
@@ -356,12 +356,23 @@ public class WorldLoader : MonoBehaviour
         return pos;
     }
 
-
     public bool CheckToFront(Vector3 pos) {
-        int cn = PosToChunkNum((int)pos.x, (int)pos.y);
+
         int x = (int)pos.x % cSize;
         int y = (int)pos.y % cSize;
-        return layers[3].checkAir(cn, x, y) && layers[4].checkAir(cn, x, y);
+        int cn = 0;
+        bool isSafe = true;
+
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                cn = PosToChunkNum(x + i, y + j);
+                int chx = x - ChunkNumToOriginPos(cn)[0];
+                int chy = y - ChunkNumToOriginPos(cn)[1];
+                if (layers[3].checkAir(cn, chx, chy) || layers[4].checkAir(cn, chx, chy)) isSafe = false;
+            }
+        }
+
+        return isSafe;
     }
 
     public bool CheckToBack(Vector3 pos) {
@@ -381,11 +392,6 @@ public class WorldLoader : MonoBehaviour
         }
 
         return isSafe;
-
-        // = PosToChunkNum((int)pos.x, (int)pos.y);
-
-
-        return layers[1].checkAir(cn, x, y) && layers[2].checkAir(cn, x, y);
     }
 
     public int GetBlock(int x, int y, int layerNumber) {

@@ -291,6 +291,7 @@ GameObject:
   - component: {fileID: 142052763}
   - component: {fileID: 142052762}
   - component: {fileID: 142052765}
+  - component: {fileID: 142052766}
   m_Layer: 0
   m_Name: player
   m_TagString: Untagged
@@ -425,13 +426,13 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2.8
+  m_Height: 2.5
   m_Radius: 0.6
   m_SlopeLimit: 45
   m_StepOffset: 0.3
-  m_SkinWidth: 0.08
+  m_SkinWidth: 0.1
   m_MinMoveDistance: 0.001
-  m_Center: {x: -0.1, y: 0, z: 0}
+  m_Center: {x: 0, y: -0.1, z: 0}
 --- !u!114 &142052765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,6 +449,19 @@ MonoBehaviour:
   wrapper: {fileID: 946281864}
   useBlock: 0
   lineWidth: 0
+--- !u!65 &142052766
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 142052759}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 1.2, y: 2.6, z: 0.6}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &167003480
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2716,7 +2730,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkNumber: 0
-  wrapper: {fileID: 0}
+  wrapper: {fileID: 946281864}
   inLayer: 2
   inPos: {x: 0, y: 0, z: 0}
   actState: 0

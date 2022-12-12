@@ -201,14 +201,16 @@ public class PlayerController : MonoBehaviour
 
         //レイヤー移動
         if (Input.GetKeyDown(KeyCode.W)) {
+            UnityEngine.Debug.Log(worldLoader.CheckToBack(transform.position));
             if (worldLoader.CheckToBack(transform.position)) {
-                UnityEngine.Debug.Log(worldLoader.CheckToBack(transform.position));
+                
                 moveB = true;
             }
         }
         if (Input.GetKeyDown(KeyCode.S)) {
+
+            UnityEngine.Debug.Log(worldLoader.CheckToFront(transform.position));
             if (worldLoader.CheckToFront(transform.position)) {
-                UnityEngine.Debug.Log(worldLoader.CheckToFront(transform.position));
                 moveF = true;
             }
         }
@@ -269,7 +271,7 @@ public class PlayerController : MonoBehaviour
 
         //ワールド外判定
         safePos = transform.position;
-        if (transform.position.y < 0.5) {
+        if (transform.position.y < 0.8) {
             for (int i = 20; i < 100; i++) {
                 safePos.y = (float)i;
                 if (this.inLayer == 2) {
@@ -383,10 +385,10 @@ public class PlayerController : MonoBehaviour
 
         //Z軸ズレ補正
         if(inLayer == 2) {
-            Vector3 motion = new Vector3(transform.position.x, transform.position.y, 0.4f);
+            Vector3 motion = new Vector3(transform.position.x, transform.position.y, 0.8f);
             controller.Move(motion - transform.position);
         } else {
-            Vector3 motion = new Vector3(transform.position.x, transform.position.y, 1.2f);
+            Vector3 motion = new Vector3(transform.position.x, transform.position.y, 0f);
             controller.Move(motion - transform.position);
         }
 

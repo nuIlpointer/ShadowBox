@@ -91,6 +91,8 @@ public class LayerManager : MonoBehaviour
         new int[] { 5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5 }
     };
 
+    public bool DebugChunkAct = false;
+
     public GameObject CHUNK_FRAME;
     public GameObject[] chunkFrame;
 
@@ -310,6 +312,22 @@ public class LayerManager : MonoBehaviour
     public void UpdateChunk(int[][] blocks, int chunkNumber) {
         if (!started) Start();
         chunks[chunkNumber].blocks = blocks;
+
+        String ch = $"cn : {chunkNumber}\n";
+
+        if (DebugChunkAct) {
+            for (int i = 0; i < blocks.Length; i++) {
+                for (int j = 0; j < blocks[i].Length; j++) {
+                    ch += blocks[i][j].ToString() + ",";
+                }
+                ch += "\n";
+            }
+        }
+        
+        
+
+
+
     }
 
     public bool checkAir(int cn, int x, int y) {
@@ -319,5 +337,9 @@ public class LayerManager : MonoBehaviour
         else {
             return false;
         }
+    }
+
+    public int GetBlock(int chunkNumber, int x, int y) {
+        return chunks[chunkNumber].blocks[y][x];
     }
 }   

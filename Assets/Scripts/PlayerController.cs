@@ -26,6 +26,10 @@ public class PlayerController : MonoBehaviour
     public int skinID;
     private int oldSkinID;
     public bool createServer = false;
+    /// <summary>
+    /// true時、ゲーム起動時にサーバにワールド再生成リクエストを送ります
+    /// </summary>
+    public bool wakeUpWithWorldRegenerate = false;
 
     //マウス系
     private Vector3 pointerPos;
@@ -59,7 +63,9 @@ public class PlayerController : MonoBehaviour
     /// プレイヤーのアクションによって変動する値です（ 1の位{ 0:Standby 1:run 3:jump 4:fall } 10の位{ 0:右 1:左} ）
     /// </summary>
     public int actState;
-    
+
+    private Vector2Int worldSize;
+
 
     bool started = false;
 
@@ -107,18 +113,23 @@ public class PlayerController : MonoBehaviour
         {
             firstUpdate = false;
             wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x, transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock);
-            
+
+            if (wakeUpWithWorldRegenerate) {
+                worldLoader.WakeUp();
+            }
+            //初期地形生成処理
+            /*if (wrapper.IsConnectionActive()) {
+                Debug.LogWarning("/////////////////////////////////////////////////////////1");
+                if (!wrapper.IsWorldRegenerateFinished()) {
+                    Debug.LogWarning("/////////////////////////////////////////////////////////2");
+                    worldLoader.WakeUp();
+
+                    worldLoader.LoadChunks(transform.position);
+                }
+            }*/
         }
 
-        //初期地形生成処理
-        if (wrapper.IsConnectionActive()) {
-            if (!wrapper.IsWorldRegenerateFinished()) {
-                //wrapper.SetWorldData(cNumx,)
-                Debug.LogWarning("/////////////////////////////////////////////////////////");
-                worldLoader.WakeUp();
-                worldLoader.LoadChunks(transform.position);
-            }
-        }
+        
 
         //スキンID変更時処理
         if(oldSkinID != skinID) {
@@ -128,6 +139,15 @@ public class PlayerController : MonoBehaviour
         }
 
 
+        //ワールド外判定
+        if(transform.position.y < 0.5) {
+            for(int i = 20; i < 100) {
+
+            }
+            
+            Vector3 p = transform.position;
+            transform.position = new Vector3(p.x, 20, p.z);
+        }
 
         //移動
         //(ミスによりrunLが右移動、runRが左移動になっています)
@@ -214,7 +234,7 @@ public class PlayerController : MonoBehaviour
         syncCnt += Time.deltaTime;
         if(syncCnt > syncTimeLate) {
             if (testUseWrapper) {
-                Debug.Log(wrapper.IsConnectionActive());
+                //Debug.Log(wrapper.IsConnectionActive());
                 if (wrapper.IsConnectionActive())
                 {
                     wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, transform.position.x, transform.position.y, actState);

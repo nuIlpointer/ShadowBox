@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class WorldLoader : MonoBehaviour
@@ -32,9 +34,11 @@ public class WorldLoader : MonoBehaviour
     bool[] visit;
 
     private bool started = false;
+    private bool waking;
 
-    
+    Queue<Vector2Int> chunkGetQueue = new Queue<Vector2Int>();
 
+    public bool getChunkFromServer = true; 
 
     // Start is called before the first frame update
     void Start()
@@ -69,14 +73,36 @@ public class WorldLoader : MonoBehaviour
             }
 
             started = true;
+
+
+
+
         }
+    }
+    private void FixedUpdate() {
+        Vector2Int gc = new Vector2Int();
+        chunkGetQueue.Enqueue(gc);
+        if(gc.x != 0) {
+            if(getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
+            layers[gc.x].MakeChunk(gc.y);
+            Debug.Log("[WorldLoader] > チャンクデータ要求 : {loaded[i]}");
+        }
+        
     }
 
     // Update is called once per frame
-    /*void Update()
+    void Update()
     {
+        if (waking) {
+            if (wrapper.IsConnectionActive() && !wrapper.IsWorldRegenerateFinished()) {
+                wrapper.SetWorldData(cNumX, cNumY, cSize, cSize, heightRange, new System.Random().Next(0, Int32.MaxValue), "new_World");
+                wrapper.RequestWorldRegenerate();
 
-    }*/
+                waking = false;
+                Debug.Log("[WorldLoader] > waked");
+            }
+        }
+    }
 
     /// <summary>
     /// 再生成に成功したときにWrapperから呼び出されます。
@@ -84,6 +110,8 @@ public class WorldLoader : MonoBehaviour
     public void OnWorldRegenerateFinish() {
         // do something when world regenerate finished 
         Debug.Log("ワールドが再生成されました。");
+        for (int i = 0; i < visit.Length; i++) visit[i] = false;        //visitを初期化し、再度読み込むようにする
+
     }
 
     /// <summary>
@@ -103,18 +131,18 @@ public class WorldLoader : MonoBehaviour
     }
 
 
-    public bool WakeUp() {
+    /*public bool WakeUp() {
         if (!wrapper.IsConnectionActive()) {
             Debug.LogWarning("[WorldLoader] > 地形の初期生成に失敗（接続が確認できない）");
             return false;
         }
-        /*if (wrapper.GetWorldGenerated()) {
+        if (wrapper.IsWorldRegenerateFinished()) {
             Debug.Log("[WorldLoader] > 地形はすでに生成されています");
             return false;
-        }*/
+        }
         float timer = 0;
         int sec = 0;
-        while (wrapper.IsWorldRegenerateFinished()) {
+        do {
             timer += Time.deltaTime;
 
             if (timer > sec) {
@@ -125,14 +153,16 @@ public class WorldLoader : MonoBehaviour
                 Debug.LogWarning("[WorldLoader] > 地形の初期生成リクエストの応答が１０秒間返ってきませんでした。");
                 return false;
             }
-        }
+        } while (!wrapper.IsWorldRegenerateFinished());
 
-        for(int i = 0; i < visit.Length; i++) visit[i] = false;
+        for (int i = 0; i < visit.Length; i++) visit[i] = false;
         Debug.Log("[WorldLoader] > サーバ側生成完了を確認　地形ロード履歴をリセットしました");
 
         return true;
+    }*/
+    public void WakeUp() {
+        waking = true;
     }
-    
 
     /// <summary>
     ///指定位置周辺のチャンクを生成
@@ -198,13 +228,13 @@ public class WorldLoader : MonoBehaviour
                 //UnityEngine.Debug.Log("生成　チャンクナンバー:" + loaded[i]);
                 for (int j = 1; j <= 4; j++){
                     if (!visit[loaded[i]]) {
-                        Debug.Log($"チャンクデータ要求 {loaded[i]}");
+                        Debug.Log($"[WorldLoader] > チャンクデータ要求キューに追加 : {loaded[i]}");
                         
-                        wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
-
+                        //wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
+                        chunkGetQueue.Enqueue(new Vector2Int(j, loaded[i]));
                         visit[loaded[i]] = true;
                     }
-                    layers[j].MakeChunk(loaded[i]);
+                    //layers[j].MakeChunk(loaded[i]);
                 }
             }
         }
@@ -270,7 +300,7 @@ public class WorldLoader : MonoBehaviour
     {
         if (!started) { Start();}
         //UnityEngine.Debug.Log($"{layers[1]} {layers[2]} {layers[3]} {layers[4]} {layerNumber}");
-
+        Debug.LogWarning("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber);
         layers[layerNumber].UpdateChunk(blocks, chunkNumber);
         
         //UnityEngine.Debug.Log($"checkLive({chunkNumber}):"+checkLive(chunkNumber));
@@ -339,6 +369,14 @@ public class WorldLoader : MonoBehaviour
         int x = (int)pos.x % cSize;
         int y = (int)pos.y % cSize;
         return layers[1].checkAir(cn, x, y) && layers[2].checkAir(cn, x, y);
+    }
+
+    public int GetBlock(int x, int y, int layerNumber) {
+        int cn = PosToChunkNum(x, y);
+        int dx = x - ChunkNumToOriginPos(cn)[0];
+        int dy = y - ChunkNumToOriginPos(cn)[1];
+        
+        return layers[layerNumber].GetBlock(cn, dx, dy);
     }
 
 

@@ -169,7 +169,8 @@ public class ShadowBoxServer : MonoBehaviour {
                     } else if (cmd == NetworkEvent.Type.Data) {
                         //データを受信したとき
                         String receivedData = ("" + stream.ReadFixedString4096());
-                        if (stream.HasFailedReads) Debug.Log("読み取りに失敗したデータがあります。");
+                        if (stream.HasFailedReads) Debug.Log("[SERVER]Failed to read data");
+                        if (debugMode) Debug.Log($"[SERVER]Received data: {receivedData}");
                         lastCommandSend[this.connectionList[i].InternalId] = 0.0f;
                         if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
                             receivedData = receivedData.Replace("SCH,", "");
@@ -232,39 +233,6 @@ public class ShadowBoxServer : MonoBehaviour {
                         if(receivedData.StartsWith("WGC")) {
                             Send(connectionList[i], $"WST,{isWorldGenerated}");
                         }
-
-                        /*
-                        
-                        if (receivedData.StartsWith("SBF")) { //チャンクバッファを受け取ったとき
-                            if (debugMode) Debug.Log("[SERVER]Receive chunk buffer data");
-                            receivedData = receivedData.Replace("SBF,", "");
-                            Guid workspaceId = Guid.Parse(receivedData.Split(',')[0]);
-                            BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[1]);
-                            int chunkId = Int32.Parse(receivedData.Split(',')[2]);
-                            receivedData = receivedData.Replace($"{workspaceId.ToString("N")},{layer},{chunkId},", "");
-                            List<int[]> bufferLineList = new List<int[]>();
-                            foreach (string bufferLine in receivedData.Split('\n'))
-                                if (bufferLine != "")
-                                    bufferLineList.Add(Array.ConvertAll(bufferLine.Split(','), int.Parse));
-                            SaveChunkBuffer(workspaceId, layer, chunkId, bufferLineList.ToArray());
-                            //TODO 該当するworkspaceIdの編集者に対して一斉送信
-                        }
-
-                        //バッファの適用要求
-                        if (receivedData.StartsWith("BRQ")) {
-                            if (debugMode) Debug.Log("[SERVER]Receive buffer applying request");
-                            receivedData = receivedData.Replace("BRQ", "");
-                            var dataArr = receivedData.Split(',');
-                            Guid workspaceId = Guid.Parse(dataArr[0]);
-                            BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
-                            int chunkId = Int32.Parse(dataArr[2]);
-                            SaveChunkBuffer(workspaceId, layer, chunkId, LoadChunkBuffer(workspaceId, layer, chunkId));
-                            //TODO 一斉送信
-
-                        } */
-
-
-
 
                         //プレイヤー一覧の取得要求
                         if (receivedData.StartsWith("RPL")) {
@@ -369,25 +337,15 @@ public class ShadowBoxServer : MonoBehaviour {
     private bool Send(NetworkConnection connection, string sendData) {
         if (connection.IsCreated) {
             var sendDataFS4096 = new FixedString4096Bytes(sendData);
-            if(debugMode) Debug.Log($"Sending {System.Text.ASCIIEncoding.Unicode.GetByteCount(sendDataFS4096.ToString())} bytes data");
+            if(debugMode) Debug.Log($"[SERVER]Sending {System.Text.ASCIIEncoding.Unicode.GetByteCount(sendDataFS4096.ToString())} bytes data");
             var writer = this.driver.BeginSend(NetworkPipeline.Null, connection, out DataStreamWriter dsw);
             
             dsw.WriteFixedString4096(sendDataFS4096);
             this.driver.EndSend(dsw);
-            if(debugMode) Debug.Log(dsw.HasFailedWrites);
+            if(dsw.HasFailedWrites) Debug.LogWarning($"[SERVER]Failed to sending data:\n{sendData}");
             return true;
         } else return false;
     }
-
-    // plz plz work as well...
-    /*
-    private bool SendBytes(NetworkConnection connection, byte[] sendData) {
-        if (!connection.IsCreated) return false;
-        var writer = this.driver.BeginSend(NetworkPipeline.Null, connection, out DataStreamWriter dsw);
-        dsw.WriteBytes(new NativeArray<byte>(sendData));
-
-    }*/
-
 
     /// <summary>
     /// 内部サーバー(127.0.0.1:11781)を作成する
@@ -436,49 +394,6 @@ public class ShadowBoxServer : MonoBehaviour {
                 writer.WriteLine(string.Join(",", row));
         }
     }
-
-    /*
-    /// <summary>
-    /// 保存されたチャンクのバッファを読み込む
-    /// </summary>
-    /// <param name="workspaceID"></param>
-    /// <param name="layerID"></param>
-    /// <param name="chunkID"></param>
-    /// <returns></returns>
-    public int[][]? LoadChunkBuffer(Guid workspaceID, BlockLayer layerID, int chunkID) {
-        string fileName = $"./worlddata/{workspaceID}.{layerID}.chunk{chunkID}.dat";
-        if (File.Exists(fileName)) {
-            List<int[]> tempList = new List<int[]>();
-            using (var reader = new StreamReader(fileName, Encoding.UTF8)) {
-                while (0 <= reader.Peek())
-                    tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
-                return tempList.ToArray();
-            }
-        }
-        else {
-            var chunkData = LoadDefaultChunk();
-            SaveChunk(layerID, chunkID, chunkData);
-            return chunkData;
-        }
-    }
-
-    /// <summary>
-    /// チャンクのバッファーデータを保存する。tempだから削除部分も実装しないとな...
-    /// </summary>
-    /// <param name="workspaceID">ワークスペースのID</param>
-    /// <param name="layerID">レイヤーのID</param>
-    /// <param name="chunkID">チャンクのID</param>
-    /// <param name="chunkData">保存するデータ</param>
-    void SaveChunkBuffer(Guid workspaceID, BlockLayer layerID, int chunkID, int[][] chunkData) {
-        if (!Directory.Exists("./worlddata/")) {
-            Directory.CreateDirectory("./worlddata");
-        }
-        string fileName = $"./worlddata/{workspaceID}.{layerID}.chunk{chunkID}.dat";
-        using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
-            foreach (int[] row in chunkData)
-                writer.WriteLine(string.Join(",", row));
-        }
-    }*/
 
     int[][] LoadDefaultChunk() {
         List<int[]> tempList = new List<int[]>();

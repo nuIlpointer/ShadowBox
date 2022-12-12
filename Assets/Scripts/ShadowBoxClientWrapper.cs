@@ -100,6 +100,8 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                 }
             } else if (cmd == NetworkEvent.Type.Data) {
                 String receivedData = ("" + stream.ReadFixedString4096());
+                if (stream.HasFailedReads) Debug.Log("[WRAPPER]Failed to read data");
+                if (debugMode) Debug.Log($"[WRAPPER]Received data: {receivedData}");
                 if (receivedData.StartsWith("CKD")) { //チャンクデータを受信したときの処理
                     receivedData = receivedData.Replace("CKD,", "");
                     var dataArr = receivedData.Split(',');
@@ -332,25 +334,6 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
         }
     }
 
-    /*
-
-    /// <summary>
-    /// 送信済のバッファをチャンクデータに反映、全体送信をする
-    /// </summary>
-    /// <param name="workspaceId">バッファデータを更新したいチャンクが含まれるワークスペースのID</param>
-    /// <param name="layer">更新するバッファの存在するレイヤー</param>
-    /// <param name="chunkId">更新するチャンクのID</param>
-    public void ApplyBuffer(Guid workspaceId, BlockLayer layer, int chunkId) {
-        if (this.connection.IsCreated) {
-            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
-            if (writer >= 0) {
-                dsw.WriteFixedString4096(new FixedString4096Bytes($"BRQ,{workspaceId.ToString("N")},{layer},{chunkId}"));
-                if (debugMode) Debug.Log("[WRAPPER]Requesting applying buffer data to chunk data");
-                this.driver.EndSend(dsw);
-            }
-        }
-    }*/
-
     /// <summary>
     /// 接続先のポート/IPアドレスを指定し、接続する。
     /// ポートが範囲外の時は自動的に「11781」。
@@ -499,33 +482,6 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
             }
         }
     }
-
-    /*
-    /// <summary>
-    /// ワークスペースの情報を送信する。存在するワークスペースの場合は上書きされる。
-    /// ワークスペース設定の変更もこのMethodを利用する。
-    /// </summary>
-    /// <param name="workspace">送信するWorkspace 構造体配列</param>
-    public void SendWorkspace(Workspace workspace) {
-
-    }
-
-    /// <summary>
-    /// ワークスペースを削除する
-    /// </summary>
-    /// <param name="removeWorkspaceGuid">削除するワークスペースのGuid</param>
-    public void SendWorkspaceRemove(Guid removeWorkspaceGuid) {
-
-    }
-
-    /// <summary>
-    /// ワールドに存在するすべてのワークスペースを取得する。
-    /// </summary>
-    /// <returns>存在するWorkspace 構造体配列(ワークスペースが存在しない場合はnull)</returns>
-    public Workspace[]? GetWorkspaces() {
-        return null;
-    }
-    */
     /// <summary>
     /// 接続が有効か確認する。
     /// </summary>
@@ -533,44 +489,4 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     public bool IsConnectionActive() {
         return active;
     }
-    /*
-    /// <summary>
-    /// 指定したプレイヤーが所有するワークスペースを取得する。
-    /// </summary>
-    /// <param name="wsOwnerGuid">検索するプレイヤーのGuid</param>
-    /// <returns>検索結果としてのWorkspace 構造体配列(ワークスペースが存在しない、プレイヤーが存在しない場合はnull</returns>
-    public Workspace[]? GetWorkspacesOfPlayer(Guid wsOwnerGuid) {
-        return null;
-    }
-
-    
-    /// <summary>
-    /// ブロック単位のWorkspaceに発生した変更を通知する。
-    /// </summary>
-    /// <param name="workspaceGuid">変更が発生したWorkspaceのGuid</param>
-    /// <param name="layer">変更が発生したEditBufferレイヤー</param>
-    /// <param name="relativeX">EditBufferの左上を起点とした変更点の相対座標X</param>
-    /// <param name="relativeY">EditBufferの左上を起点とした変更点の相対座標Y</param>
-    /// <param name="blockID">変更先のブロックID</param>
-    public void SendEditBufferBlockChange(Guid workspaceGuid, BlockLayer layer, int relativeX, int relativeY, int blockID) {
-        if (this.connection.IsCreated) {
-            var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
-            if (writer >= 0) {
-                dsw.WriteFixedString4096(new FixedString4096Bytes($"BBC,{workspaceGuid.ToString("N")},{layer},{relativeX},{relativeY},{blockID}"));
-                if(debugMode) Debug.Log("[WRAPPER]Sending buffer block data:\n" + $"BBC,{workspaceGuid.ToString("N")},{layer},{relativeX},{relativeY},{blockID}");
-                this.driver.EndSend(dsw);
-            }
-
-        }
-    }
-
-    /// <summary>
-    /// 手動でバッファの更新状況を取得する。
-    /// </summary>
-    /// <param name="workspaceGuid">変更を取得するWorkspaceのGuid</param>
-    /// <param name="layer">変更を取得するWorkspaceのレイヤー</param>
-    /// <returns>キャッシュされていない場合はnullを返し、取得要求を行う</returns>
-    public int[][]? GetEditBufferManual(Guid workspaceGuid, BlockLayer layer) {
-        return null;
-    }*/
 }

@@ -26,6 +26,10 @@ public class PlayerController : MonoBehaviour
     public int skinID;
     private int oldSkinID;
     public bool createServer = false;
+    /// <summary>
+    /// true時、ゲーム起動時にサーバにワールド再生成リクエストを送ります
+    /// </summary>
+    public bool wakeUpWithWorldRegenerate = false;
 
     //マウス系
     private Vector3 pointerPos;
@@ -51,15 +55,18 @@ public class PlayerController : MonoBehaviour
     private float loadCnt = 0;
 
     //移動制御等
-    private bool runR = false, runL = false, jump = false, moveB = false, moveF = false;
+    private bool runR = false, runL = false, jump = false, moveB = false, moveF = false, underTheWorld = false;
     private int inLayer = 2;
+    private Vector3 safePos;
 
     //プレイヤーstate
     /// <summary>
     /// プレイヤーのアクションによって変動する値です（ 1の位{ 0:Standby 1:run 3:jump 4:fall } 10の位{ 0:右 1:左} ）
     /// </summary>
     public int actState;
-    
+
+    private Vector2Int worldSize;
+
 
     bool started = false;
 
@@ -107,18 +114,23 @@ public class PlayerController : MonoBehaviour
         {
             firstUpdate = false;
             wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x, transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock);
-            
+
+            if (wakeUpWithWorldRegenerate) {
+                worldLoader.WakeUp();
+            }
+            //初期地形生成処理
+            /*if (wrapper.IsConnectionActive()) {
+                Debug.LogWarning("/////////////////////////////////////////////////////////1");
+                if (!wrapper.IsWorldRegenerateFinished()) {
+                    Debug.LogWarning("/////////////////////////////////////////////////////////2");
+                    worldLoader.WakeUp();
+
+                    worldLoader.LoadChunks(transform.position);
+                }
+            }*/
         }
 
-        //初期地形生成処理
-        if (wrapper.IsConnectionActive()) {
-            if (!wrapper.IsWorldRegenerateFinished()) {
-                //wrapper.SetWorldData(cNumx,)
-                Debug.LogWarning("/////////////////////////////////////////////////////////");
-                worldLoader.WakeUp();
-                worldLoader.LoadChunks(transform.position);
-            }
-        }
+        
 
         //スキンID変更時処理
         if(oldSkinID != skinID) {
@@ -189,14 +201,16 @@ public class PlayerController : MonoBehaviour
 
         //レイヤー移動
         if (Input.GetKeyDown(KeyCode.W)) {
+            UnityEngine.Debug.Log(worldLoader.CheckToBack(transform.position));
             if (worldLoader.CheckToBack(transform.position)) {
-                UnityEngine.Debug.Log(worldLoader.CheckToBack(transform.position));
+                
                 moveB = true;
             }
         }
         if (Input.GetKeyDown(KeyCode.S)) {
+
+            UnityEngine.Debug.Log(worldLoader.CheckToFront(transform.position));
             if (worldLoader.CheckToFront(transform.position)) {
-                UnityEngine.Debug.Log(worldLoader.CheckToFront(transform.position));
                 moveF = true;
             }
         }
@@ -214,7 +228,7 @@ public class PlayerController : MonoBehaviour
         syncCnt += Time.deltaTime;
         if(syncCnt > syncTimeLate) {
             if (testUseWrapper) {
-                Debug.Log(wrapper.IsConnectionActive());
+                //Debug.Log(wrapper.IsConnectionActive());
                 if (wrapper.IsConnectionActive())
                 {
                     wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, transform.position.x, transform.position.y, actState);
@@ -255,6 +269,20 @@ public class PlayerController : MonoBehaviour
         }
 
 
+        //ワールド外判定
+        safePos = transform.position;
+        if (transform.position.y < 0.8) {
+            for (int i = 20; i < 100; i++) {
+                safePos.y = (float)i;
+                if (this.inLayer == 2) {
+                    if (worldLoader.CheckToBack(safePos)) break;
+                } else {
+                    if (worldLoader.CheckToFront(safePos)) break;
+                }
+            }
+            // 上にあげる
+            underTheWorld = true;
+        }
     }
 
 
@@ -336,7 +364,7 @@ public class PlayerController : MonoBehaviour
         else {
             anim.SetBool("jump", false);
         }
-
+        
         //レイヤー移動
         if (moveF) {
             float md = (float)0 - transform.position.z;
@@ -354,6 +382,23 @@ public class PlayerController : MonoBehaviour
             GetComponent<SpriteRenderer>().sortingLayerName = "InsideBlock";
             inLayer = 2;
         }
+
+        //Z軸ズレ補正
+        if(inLayer == 2) {
+            Vector3 motion = new Vector3(transform.position.x, transform.position.y, 0.8f);
+            controller.Move(motion - transform.position);
+        } else {
+            Vector3 motion = new Vector3(transform.position.x, transform.position.y, 0f);
+            controller.Move(motion - transform.position);
+        }
+
+        //ワールド外判定
+        if (underTheWorld) {
+            controller.Move(safePos - transform.position);
+            underTheWorld = false;
+        }
+
+        
         //移動反映
         controller.Move(movedir * Time.deltaTime);
 

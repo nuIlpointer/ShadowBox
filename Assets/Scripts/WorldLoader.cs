@@ -80,12 +80,15 @@ public class WorldLoader : MonoBehaviour
         }
     }
     private void FixedUpdate() {
+
         Vector2Int gc = new Vector2Int();
-        chunkGetQueue.Enqueue(gc);
-        if(gc.x != 0) {
-            if(getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
+        
+        if(chunkGetQueue.Count > 0) {
+            gc = chunkGetQueue.Dequeue();
+            Debug.Log($"gc内容 {gc.x} , {gc.y}");
+            if (getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
             layers[gc.x].MakeChunk(gc.y);
-            Debug.Log("[WorldLoader] > チャンクデータ要求 : {loaded[i]}");
+            Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
         }
         
     }
@@ -228,7 +231,7 @@ public class WorldLoader : MonoBehaviour
                 //UnityEngine.Debug.Log("生成　チャンクナンバー:" + loaded[i]);
                 for (int j = 1; j <= 4; j++){
                     if (!visit[loaded[i]]) {
-                        Debug.Log($"[WorldLoader] > チャンクデータ要求キューに追加 : {loaded[i]}");
+                        Debug.Log($"[WorldLoader] > チャンクデータ要求キューに追加 chunkNumber : {loaded[i]}  layer : {j}");
                         
                         //wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
                         chunkGetQueue.Enqueue(new Vector2Int(j, loaded[i]));
@@ -300,7 +303,7 @@ public class WorldLoader : MonoBehaviour
     {
         if (!started) { Start();}
         //UnityEngine.Debug.Log($"{layers[1]} {layers[2]} {layers[3]} {layers[4]} {layerNumber}");
-        Debug.LogWarning("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber);
+        Debug.Log("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber);
         layers[layerNumber].UpdateChunk(blocks, chunkNumber);
         
         //UnityEngine.Debug.Log($"checkLive({chunkNumber}):"+checkLive(chunkNumber));
@@ -356,19 +359,98 @@ public class WorldLoader : MonoBehaviour
         return pos;
     }
 
-
     public bool CheckToFront(Vector3 pos) {
-        int cn = PosToChunkNum((int)pos.x, (int)pos.y);
+        if (!started) Start();
         int x = (int)pos.x % cSize;
         int y = (int)pos.y % cSize;
-        return layers[3].checkAir(cn, x, y) && layers[4].checkAir(cn, x, y);
+        int cn = 0, chx = 0, chy = 0;
+        bool isSafe = true;
+
+        //判定する場所リストを設定
+
+        float mod = pos.x - x;
+        Vector2Int[] checkList;
+        if(mod < 0.5) {//横3ブロックにまたがっていなければ
+            checkList = new Vector2Int[6] {
+                new Vector2Int(x,y),
+                new Vector2Int(x+1,y),
+                new Vector2Int(x,y+1),
+                new Vector2Int(x+1,y+1),
+                new Vector2Int(x,y+2),
+                new Vector2Int(x+1,y+2)
+            };
+        } else {
+            checkList = new Vector2Int[6] {
+                new Vector2Int(x,y),
+                new Vector2Int(x+1,y),
+                //new Vector2Int(x+2,y),
+                new Vector2Int(x,y+1),
+                new Vector2Int(x+1,y+1),
+                //new Vector2Int(x+2,y+1),
+                new Vector2Int(x,y+2),
+                new Vector2Int(x+1,y+2),
+                //new Vector2Int(x+2,y+2)
+            };
+        }
+
+        for(int i = 0; i < checkList.Length; i++) {
+            cn = PosToChunkNum(checkList[i].x, checkList[i].y);
+            chx = checkList[i].x - ChunkNumToOriginPos(cn)[0];
+            chy = checkList[i].y - ChunkNumToOriginPos(cn)[1];
+            if (!layers[3].checkAir(cn, chx, chy) || !layers[3].checkAir(cn, chx, chy)) {
+                isSafe = false;
+            }
+        }
+
+        return isSafe;
     }
 
     public bool CheckToBack(Vector3 pos) {
-        int cn = PosToChunkNum((int)pos.x, (int)pos.y);
+
+        if (!started) Start();
         int x = (int)pos.x % cSize;
         int y = (int)pos.y % cSize;
-        return layers[1].checkAir(cn, x, y) && layers[2].checkAir(cn, x, y);
+        int cn = 0, chx = 0, chy = 0;
+        bool isSafe = true;
+
+        //判定する場所リストを設定
+
+        float mod = pos.x - x;
+        Vector2Int[] checkList;
+        if (mod < 0.5) {//横3ブロックにまたがっていなければ
+            checkList = new Vector2Int[6] {
+                new Vector2Int(x,y),
+                new Vector2Int(x+1,y),
+                new Vector2Int(x,y+1),
+                new Vector2Int(x+1,y+1),
+                new Vector2Int(x,y+2),
+                new Vector2Int(x+1,y+2)
+            };
+        } else {
+            checkList = new Vector2Int[6] {
+                new Vector2Int(x,y),
+                new Vector2Int(x+1,y),
+                //new Vector2Int(x+2,y),
+                new Vector2Int(x,y+1),
+                new Vector2Int(x+1,y+1),
+                //new Vector2Int(x+2,y+1),
+                new Vector2Int(x,y+2),
+                new Vector2Int(x+1,y+2),
+                //new Vector2Int(x+2,y+2)
+            };
+        }
+
+        for (int i = 0; i < checkList.Length; i++) {
+            cn = PosToChunkNum(checkList[i].x, checkList[i].y);
+            chx = checkList[i].x - ChunkNumToOriginPos(cn)[0];
+            chy = checkList[i].y - ChunkNumToOriginPos(cn)[1];
+            Debug.Log($">>>>>>cn{cn} chx{chx} chy{chy} clx{checkList[i].x} cly{checkList[i].y}    \n{ChunkNumToOriginPos(1)[0]} {ChunkNumToOriginPos(1)[1]}");
+            if (!layers[2].checkAir(cn, chx, chy) || !layers[3].checkAir(cn, chx, chy)) {
+                isSafe = false;
+            }
+        }
+
+        return isSafe;
     }
 
     public int GetBlock(int x, int y, int layerNumber) {

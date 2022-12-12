@@ -55,8 +55,9 @@ public class PlayerController : MonoBehaviour
     private float loadCnt = 0;
 
     //移動制御等
-    private bool runR = false, runL = false, jump = false, moveB = false, moveF = false;
+    private bool runR = false, runL = false, jump = false, moveB = false, moveF = false, underTheWorld = false;
     private int inLayer = 2;
+    private Vector3 safePos;
 
     //プレイヤーstate
     /// <summary>
@@ -139,15 +140,6 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        //ワールド外判定
-        if(transform.position.y < 0.5) {
-            for(int i = 20; i < 100) {
-
-            }
-            
-            Vector3 p = transform.position;
-            transform.position = new Vector3(p.x, 20, p.z);
-        }
 
         //移動
         //(ミスによりrunLが右移動、runRが左移動になっています)
@@ -209,14 +201,16 @@ public class PlayerController : MonoBehaviour
 
         //レイヤー移動
         if (Input.GetKeyDown(KeyCode.W)) {
+            UnityEngine.Debug.Log(worldLoader.CheckToBack(transform.position));
             if (worldLoader.CheckToBack(transform.position)) {
-                UnityEngine.Debug.Log(worldLoader.CheckToBack(transform.position));
+                
                 moveB = true;
             }
         }
         if (Input.GetKeyDown(KeyCode.S)) {
+
+            UnityEngine.Debug.Log(worldLoader.CheckToFront(transform.position));
             if (worldLoader.CheckToFront(transform.position)) {
-                UnityEngine.Debug.Log(worldLoader.CheckToFront(transform.position));
                 moveF = true;
             }
         }
@@ -275,6 +269,20 @@ public class PlayerController : MonoBehaviour
         }
 
 
+        //ワールド外判定
+        safePos = transform.position;
+        if (transform.position.y < 0.8) {
+            for (int i = 20; i < 100; i++) {
+                safePos.y = (float)i;
+                if (this.inLayer == 2) {
+                    if (worldLoader.CheckToBack(safePos)) break;
+                } else {
+                    if (worldLoader.CheckToFront(safePos)) break;
+                }
+            }
+            // 上にあげる
+            underTheWorld = true;
+        }
     }
 
 
@@ -356,7 +364,7 @@ public class PlayerController : MonoBehaviour
         else {
             anim.SetBool("jump", false);
         }
-
+        
         //レイヤー移動
         if (moveF) {
             float md = (float)0 - transform.position.z;
@@ -374,6 +382,23 @@ public class PlayerController : MonoBehaviour
             GetComponent<SpriteRenderer>().sortingLayerName = "InsideBlock";
             inLayer = 2;
         }
+
+        //Z軸ズレ補正
+        if(inLayer == 2) {
+            Vector3 motion = new Vector3(transform.position.x, transform.position.y, 0.8f);
+            controller.Move(motion - transform.position);
+        } else {
+            Vector3 motion = new Vector3(transform.position.x, transform.position.y, 0f);
+            controller.Move(motion - transform.position);
+        }
+
+        //ワールド外判定
+        if (underTheWorld) {
+            controller.Move(safePos - transform.position);
+            underTheWorld = false;
+        }
+
+        
         //移動反映
         controller.Move(movedir * Time.deltaTime);
 

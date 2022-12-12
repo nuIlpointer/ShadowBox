@@ -55,8 +55,9 @@ public class PlayerController : MonoBehaviour
     private float loadCnt = 0;
 
     //移動制御等
-    private bool runR = false, runL = false, jump = false, moveB = false, moveF = false;
+    private bool runR = false, runL = false, jump = false, moveB = false, moveF = false, underTheWorld = false;
     private int inLayer = 2;
+    private Vector3 safePos;
 
     //プレイヤーstate
     /// <summary>
@@ -139,21 +140,6 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        //ワールド外判定
-        Vector3 pos = transform.position;
-        if(transform.position.y < 0.5) {
-            for(int i = 20; i < 100; i++) {
-                pos.y = (float)i;
-                if(this.inLayer == 2) {
-                    if (worldLoader.CheckToBack(pos)) break;
-                } else {
-                    if(worldLoader.CheckToFront(pos)) break;
-                }
-            }
-            Debug.LogWarning(pos);
-            transform.position = pos;
-            Debug.LogWarning(transform.position);
-        }
 
         //移動
         //(ミスによりrunLが右移動、runRが左移動になっています)
@@ -281,6 +267,20 @@ public class PlayerController : MonoBehaviour
         }
 
 
+        //ワールド外判定
+        safePos = transform.position;
+        if (transform.position.y < 0.5) {
+            for (int i = 20; i < 100; i++) {
+                safePos.y = (float)i;
+                if (this.inLayer == 2) {
+                    if (worldLoader.CheckToBack(safePos)) break;
+                } else {
+                    if (worldLoader.CheckToFront(safePos)) break;
+                }
+            }
+            // 上にあげる
+            underTheWorld = true;
+        }
     }
 
 
@@ -380,6 +380,14 @@ public class PlayerController : MonoBehaviour
             GetComponent<SpriteRenderer>().sortingLayerName = "InsideBlock";
             inLayer = 2;
         }
+
+        //ワールド外判定
+        if (underTheWorld) {
+            controller.Move(safePos - transform.position);
+            underTheWorld = false;
+        }
+
+
         //移動反映
         controller.Move(movedir * Time.deltaTime);
 

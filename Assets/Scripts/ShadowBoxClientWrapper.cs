@@ -117,7 +117,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     foreach (int[] arrLine in chunkTemp.ToArray())
                         chunkStr += string.Join(",", arrLine) + "\n";
 
-                    if (debugMode) Debug.Log("[WRAPPER]Received chunk data:\n" + chunkStr);
+                    if (debugMode) Debug.Log($"[WRAPPER]Received chunk data of {blockLayer}.{chunkID}:\n{chunkStr}");
                 }
                 if (receivedData.StartsWith("PLM")) { //プレイヤーの移動情報を受信したときの処理
                     receivedData = receivedData.Replace("PLM,", "");
@@ -151,7 +151,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                             newPlayer.actState = userList[playerId].actState;
                         }
                         userList[playerId] = newPlayer;
-                        if (debugMode) Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
+                        //if (debugMode) Debug.Log($"[WRAPPER]Player {newPlayer.playerID} moving to {newPlayer.playerX}, {newPlayer.playerY}");
                         if (!entityManager.HasPlayer(playerId)) {
                             entityManager.AddPlayer(newPlayer.playerID, newPlayer.name, newPlayer.skinType);
                         }
@@ -275,7 +275,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
             var writer = this.driver.BeginSend(this.connection, out DataStreamWriter dsw);
             if (writer >= 0) {
                 dsw.WriteFixedString4096(new FixedString4096Bytes($"RQC,{layerID},{chunkID}"));
-                if (debugMode) Debug.Log("[WRAPPER]Requesting chunk data");
+                if (debugMode) Debug.Log($"[WRAPPER]Requesting chunk data in {layerID}.{chunkID}")  ; 
                 this.driver.EndSend(dsw);
             } else return false;
             return true;

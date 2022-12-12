@@ -140,13 +140,19 @@ public class PlayerController : MonoBehaviour
 
 
         //ワールド外判定
+        Vector3 pos = transform.position;
         if(transform.position.y < 0.5) {
-            for(int i = 20; i < 100) {
-
+            for(int i = 20; i < 100; i++) {
+                pos.y = (float)i;
+                if(this.inLayer == 2) {
+                    if (worldLoader.CheckToBack(pos)) break;
+                } else {
+                    if(worldLoader.CheckToFront(pos)) break;
+                }
             }
-            
-            Vector3 p = transform.position;
-            transform.position = new Vector3(p.x, 20, p.z);
+            Debug.LogWarning(pos);
+            transform.position = pos;
+            Debug.LogWarning(transform.position);
         }
 
         //移動
@@ -356,7 +362,7 @@ public class PlayerController : MonoBehaviour
         else {
             anim.SetBool("jump", false);
         }
-
+        
         //レイヤー移動
         if (moveF) {
             float md = (float)0 - transform.position.z;

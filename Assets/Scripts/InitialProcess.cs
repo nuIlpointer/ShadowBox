@@ -33,7 +33,7 @@ public class InitialProcess : MonoBehaviour
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
     public bool noNetMode = false;
-    public int chunkSize = 25;
+    public int chunkSize = 16;
     public int chunksNumX = 4;
     public int chunksNumY = 2;
     public int heightRange = 6;

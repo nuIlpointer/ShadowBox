@@ -412,7 +412,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 142052759}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 20, y: 15, z: 0.4}
+  m_LocalPosition: {x: 20, y: 15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1724355515}
@@ -430,7 +430,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5439f9de592b7074f85ba4952d6c1eca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraObj: {fileID: 1906975256}
+  cameraObj: {fileID: 0}
   wrapperObject: {fileID: 946281863}
   serverObject: {fileID: 2859619196047104019, guid: d43589cd0c43af4489247621eb05837e, type: 3}
   server: {fileID: 0}
@@ -439,9 +439,9 @@ MonoBehaviour:
   controller: {fileID: 142052764}
   anim: {fileID: 142052763}
   creater: {fileID: 142052765}
-  ipAddress: 127.0.0.1
+  ipAddress: 172.16.103.111
   port: 11781
-  playerName: player
+  playerName: tatugamizero
   skinID: 1
   createServer: 1
   pointerLayer: 0
@@ -479,13 +479,13 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2.5
+  m_Height: 2.8
   m_Radius: 0.6
   m_SlopeLimit: 45
   m_StepOffset: 0.3
-  m_SkinWidth: 0.2
+  m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: -0.1, y: 0, z: 0}
 --- !u!114 &142052765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3746,7 +3746,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   noNetMode: 0
-  chunkSize: 16
+  chunkSize: 25
   chunksNumX: 8
   chunksNumY: 4
   heightRange: 6
@@ -4269,7 +4269,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 100
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -4328,7 +4328,7 @@ MonoBehaviour:
   followTarget: {fileID: 142052759}
   follow: 1
   followingLevel: 3
-  cameraDist: -7
+  cameraDist: -20
   yCorrection: 3
 --- !u!1 &1926622003
 GameObject:

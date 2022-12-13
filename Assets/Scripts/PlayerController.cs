@@ -112,7 +112,7 @@ public class PlayerController : MonoBehaviour
 
         //初期地形生成処理
         if (wrapper.IsConnectionActive()) {
-            if (!wrapper.GetWorldGenerated()) {
+            if (!wrapper.IsWorldRegenerateFinished()) {
                 //wrapper.SetWorldData(cNumx,)
                 Debug.LogWarning("/////////////////////////////////////////////////////////");
                 worldLoader.WakeUp();
@@ -214,7 +214,7 @@ public class PlayerController : MonoBehaviour
         syncCnt += Time.deltaTime;
         if(syncCnt > syncTimeLate) {
             if (testUseWrapper) {
-                //Debug.Log(wrapper.IsConnectionActive());
+                Debug.Log(wrapper.IsConnectionActive());
                 if (wrapper.IsConnectionActive())
                 {
                     wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, transform.position.x, transform.position.y, actState);

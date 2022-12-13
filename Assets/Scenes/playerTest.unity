@@ -2672,6 +2672,7 @@ GameObject:
   - component: {fileID: 1724355513}
   - component: {fileID: 1724355516}
   - component: {fileID: 1724355517}
+  - component: {fileID: 1724355514}
   m_Layer: 0
   m_Name: Terrain
   m_TagString: Untagged
@@ -2692,10 +2693,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   noNetMode: 1
-  chunkSize: 25
+  chunkSize: 16
   chunksNumX: 8
   chunksNumY: 4
   heightRange: 6
+--- !u!114 &1724355514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724355512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43202d8c4cceac4478c9b19bc864c96f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1724355515
 Transform:
   m_ObjectHideFlags: 0

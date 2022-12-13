@@ -106,6 +106,8 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     foreach (String line in receivedData.Split('\n'))
                         if (line != "")
                             chunkTemp.Add(Array.ConvertAll(line.Split(','), int.Parse));
+
+                    Debug.Log($"[WRAPPER]{chunkTemp},{(int)blockLayer},{chunkID}");
                     try {
                         worldLoader.ChunkUpdate(chunkTemp.ToArray(), (int)blockLayer, chunkID);
                     } catch(Exception) {

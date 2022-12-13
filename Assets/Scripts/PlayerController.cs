@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
-{
+public class PlayerController : MonoBehaviour {
     enum Skins {
         error_man = 0,
         test_kun_1 = 1
@@ -43,13 +40,13 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public float syncTimeLate = (float)0.05;
     float syncCnt = 0;
-    
+
 
     /// <summary>
     /// 1秒あたりの移動量を記憶
     /// </summary>
-    private Vector3 movedir = new Vector3(0,0,0);
-    
+    private Vector3 movedir = new Vector3(0, 0, 0);
+
     private float jumpCnt = 0;
     private float fallCnt = 0;
     private float loadCnt = 0;
@@ -75,15 +72,13 @@ public class PlayerController : MonoBehaviour
     public generaTester gt;
 
     private bool firstUpdate = true;
-    
+
     // Start is called before the first frame update
-    void Start()
-    {
-        if (!started)
-        {
+    void Start() {
+        if (!started) {
             //クライアントサーバ系
             wrapper = wrapperObject.GetComponent<ShadowBoxClientWrapper>();
-            if(createServer) {
+            if (createServer) {
                 server = Instantiate(serverObject).GetComponent<ShadowBoxServer>();
                 server.CreateInternalServer();
                 //ipAddress = "172.16.103.111";
@@ -104,14 +99,12 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        
+
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        if (firstUpdate)
-        {
+    void Update() {
+        if (firstUpdate) {
             firstUpdate = false;
             wrapper.SetPlayerData(playerName, skinID, 0, transform.position.x, transform.position.y, ShadowBoxClientWrapper.BlockLayer.InsideBlock);
 
@@ -130,10 +123,10 @@ public class PlayerController : MonoBehaviour
             }*/
         }
 
-        
+
 
         //スキンID変更時処理
-        if(oldSkinID != skinID) {
+        if (oldSkinID != skinID) {
             string sid = Enum.GetName(typeof(Skins), skinID);
             anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load($"Characters/Animator/{sid}/{sid}_player");
             oldSkinID = skinID;
@@ -154,14 +147,13 @@ public class PlayerController : MonoBehaviour
         }
 
         //ジャンプ
-        if(Input.GetKey(KeyCode.Space)) {
+        if (Input.GetKey(KeyCode.Space)) {
             jumpCnt += Time.deltaTime;
-            if(jumpCnt < 0.4 ) {
+            if (jumpCnt < 0.4) {
                 if (controller.isGrounded) {
                     jump = true;
                 }
-            }
-            else {
+            } else {
                 jump = false;
             }
         }
@@ -174,13 +166,13 @@ public class PlayerController : MonoBehaviour
         }
 
         //キャラ反転
-        if(Input.GetKeyDown(KeyCode.D)) {
+        if (Input.GetKeyDown(KeyCode.D)) {
             transform.localScale = new Vector3(1, 1, 1);
             //actStateセット
             actState %= 10;
             actState += 0;
         }
-        if(Input.GetKeyDown(KeyCode.A)) {
+        if (Input.GetKeyDown(KeyCode.A)) {
             transform.localScale = new Vector3(-1, 1, 1);
             //actStateセット
             actState %= 10;
@@ -203,7 +195,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W)) {
             UnityEngine.Debug.Log(worldLoader.CheckToBack(transform.position));
             if (worldLoader.CheckToBack(transform.position)) {
-                
+
                 moveB = true;
             }
         }
@@ -218,7 +210,7 @@ public class PlayerController : MonoBehaviour
 
         //チャンクローディング
         loadCnt += Time.deltaTime;
-        if(loadCnt > 0.5) {
+        if (loadCnt > 0.5) {
             worldLoader.LoadChunks(transform.position);
             loadCnt = 0;
         }
@@ -226,17 +218,15 @@ public class PlayerController : MonoBehaviour
         //プレイヤーデータ送信
 
         syncCnt += Time.deltaTime;
-        if(syncCnt > syncTimeLate) {
+        if (syncCnt > syncTimeLate) {
             if (testUseWrapper) {
                 //Debug.Log(wrapper.IsConnectionActive());
-                if (wrapper.IsConnectionActive())
-                {
+                if (wrapper.IsConnectionActive()) {
                     wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, transform.position.x, transform.position.y, actState);
                 }
 
                 //wrapper.SendPlayerMove((ShadowBoxClientWrapper.BlockLayer)inLayer, (float)2.0, (float)2.0);
-            }
-            else {//generaTesterを使った仮テスト用のやーつ
+            } else {//generaTesterを使った仮テスト用のやーつ
                 gt.inLayer = inLayer;
                 gt.inPos = transform.position;
                 gt.actState = actState;
@@ -264,7 +254,7 @@ public class PlayerController : MonoBehaviour
 
         //建築
 
-        if(Input.GetMouseButton(0)){
+        if (Input.GetMouseButton(0)) {
             creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
         }
 
@@ -290,7 +280,7 @@ public class PlayerController : MonoBehaviour
 
         //移動
         if (runL) {
-            if(movedir.x < 10) {
+            if (movedir.x < 10) {
                 movedir.x += 20 * Time.deltaTime;//0.5秒かけて秒速10/sまで加速
                 anim.SetBool("run", true);
 
@@ -301,31 +291,29 @@ public class PlayerController : MonoBehaviour
 
         }
         if (runR) {
-            if(movedir.x > -10) {
+            if (movedir.x > -10) {
                 movedir.x -= 20 * Time.deltaTime;
-                anim.SetBool("run", true); 
-                
-                
+                anim.SetBool("run", true);
+
+
             }
             //actStateセット
             actState = actState / 10 * 10;
             actState += 1;
         }
-        if(((!runR && !runL)||(runR && runL)) && controller.isGrounded) {
+        if (((!runR && !runL) || (runR && runL)) && controller.isGrounded) {
             anim.SetBool("run", false);
-            
+
             //actStateセット
             actState = actState / 10 * 10;
             actState += 0;
-            
+
             if (Mathf.Abs(movedir.x) < 2) {
                 movedir.x = 0;
-            }
-            else {
-                if(movedir.x > 0) {
+            } else {
+                if (movedir.x > 0) {
                     movedir.x -= 40 * Time.deltaTime;
-                }
-                else {
+                } else {
                     movedir.x += 40 * Time.deltaTime;
                 }
             }
@@ -334,19 +322,18 @@ public class PlayerController : MonoBehaviour
         //落下
         if (!controller.isGrounded) {
             fallCnt += Time.deltaTime;
-            if(fallCnt > 0.1) {
+            if (fallCnt > 0.1) {
                 anim.SetBool("fall", true);
 
                 //actStateセット
                 actState = actState / 10 * 10;
                 actState += 3;
             }
-            
-            if(movedir.y > -9.8) {
+
+            if (movedir.y > -9.8) {
                 movedir.y -= (float)9.8 * 2 * Time.deltaTime;
             }
-        }
-        else {
+        } else {
             fallCnt = 0;
             anim.SetBool("fall", false);
             movedir.y = 0;
@@ -360,11 +347,10 @@ public class PlayerController : MonoBehaviour
             actState += 2;
 
             movedir.y = 9;
-        }
-        else {
+        } else {
             anim.SetBool("jump", false);
         }
-        
+
         //レイヤー移動
         if (moveF) {
             float md = (float)0 - transform.position.z;
@@ -384,7 +370,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //Z軸ズレ補正
-        if(inLayer == 2) {
+        if (inLayer == 2) {
             Vector3 motion = new Vector3(transform.position.x, transform.position.y, 0.8f);
             controller.Move(motion - transform.position);
         } else {
@@ -398,7 +384,7 @@ public class PlayerController : MonoBehaviour
             underTheWorld = false;
         }
 
-        
+
         //移動反映
         controller.Move(movedir * Time.deltaTime);
 

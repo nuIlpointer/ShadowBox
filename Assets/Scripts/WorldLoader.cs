@@ -85,7 +85,7 @@ public class WorldLoader : MonoBehaviour
 
         Vector2Int gc = new Vector2Int();
         
-        if(chunkGetQueue.Count > 0 && wrapper.IsConnectionActive() && wrapper.IsWorldRegenerateFinished()) {
+        if(chunkGetQueue.Count > 0 && wrapper.IsConnectionActive()) {
             gc = chunkGetQueue.Dequeue();
             //Debug.Log($"gc内容 {gc.x} , {gc.y}");
             if (getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
@@ -218,10 +218,9 @@ public class WorldLoader : MonoBehaviour
             if (lastLoad[i] != -1) {
                 if (checkDie(lastLoad[i])) {
                     //UnityEngine.Debug.Log("消去　チャンクナンバー:" + lastLoad[i]);
-                    for (int j = 1; j <= 4; j++) {
-                        layers[j].RemoveChunk(lastLoad[i]);
-                        
-                    }
+                    for (int j = 1; j <= 4; j++)
+                        if (lastLoad[i] != -1)
+                            layers[j].RemoveChunk(lastLoad[i]);
                 }
             }
         }
@@ -252,10 +251,10 @@ public class WorldLoader : MonoBehaviour
                         
                         //wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
                         chunkGetQueue.Enqueue(new Vector2Int(j, loaded[i]));
-                        visit[loaded[i]] = true;
                     }
                     //layers[j].MakeChunk(loaded[i]);
                 }
+                visit[loaded[i]] = true;
             }
         }
 

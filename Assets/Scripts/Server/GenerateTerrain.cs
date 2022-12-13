@@ -43,7 +43,6 @@ public class GenerateTerrain : MonoBehaviour
                         column.Add(k < noise ? 0 : k == noise ? 10 : 12);
                     row.Add(column.ToArray());
                 }
-
                 chunks.Add(Rotate(row.ToArray()));
             } else if(i / width < height - 1) {
                 chunks.Add(FillArray(0, chunkWidth, chunkHeight));
@@ -51,7 +50,6 @@ public class GenerateTerrain : MonoBehaviour
                 chunks.Add(FillArray(12, chunkWidth, chunkHeight));
             }
         }
-        chunks.Reverse();
         return chunks.ToArray();
     }
 
@@ -66,7 +64,6 @@ public class GenerateTerrain : MonoBehaviour
             }
             i++;
         }
-        resultArray.Reverse();
         return resultArray.ToArray();
     }
 

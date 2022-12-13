@@ -447,7 +447,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldLoader: {fileID: 1724355517}
   wrapper: {fileID: 946281864}
-  useBlock: 11
+  useBlock: 0
   lineWidth: 0
 --- !u!65 &142052766
 BoxCollider:

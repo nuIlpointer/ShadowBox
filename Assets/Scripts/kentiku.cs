@@ -5,13 +5,18 @@ using UnityEngine;
 public class kentiku : MonoBehaviour
 {
     // Start is called before the first frame update
-    public GameObject image1;
-    public GameObject image2;
+    
+    public GameObject image;
     private bool flg = true;
     public void Onclick() {
         flg = !flg;
-        image2.SetActive(flg);
-        image1.SetActive(!flg);
+        //image2.SetActive(flg);
+        if (flg) {
+            image.transform.position = new Vector3(image.transform.position.x, image.transform.position.y + 300, image.transform.position.z);
+        } else {
+            image.transform.position = new Vector3(image.transform.position.x, image.transform.position.y - 300, image.transform.position.z);
+        }
+        
     }
     void Start()
     {

@@ -12,6 +12,8 @@ public class CreateController : MonoBehaviour
     public int useBlock;
     public int lineWidth;
 
+    private int toBlock = -1;
+
 
     /// <summary>
     /// useBlockとlineWidthの値に応じてブロックを設置します。
@@ -19,12 +21,20 @@ public class CreateController : MonoBehaviour
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <param name="leyerNumber"></param>
-    public void DrawBlock(int x, int y, int leyerNumber) {
-        if (wrapper.IsConnectionActive()) {
+    public void DrawBlock(int x, int y, int layerNumber) {
+        if(worldLoader.GetBlock(x, y, layerNumber) != useBlock) {
+            if (wrapper.IsConnectionActive()) {
 
+                wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x, y, useBlock);
+
+            } else {
+
+                worldLoader.BlockUpdate(useBlock, layerNumber, x, y); worldLoader.BlockUpdate(useBlock, layerNumber, x, y);
+
+            }
         }
-        worldLoader.BlockUpdate(useBlock, leyerNumber, x, y);
-        //wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)leyerNumber, x, y, useBlock);
+        
+        
     }
 
 

@@ -236,7 +236,7 @@ public class PlayerController : MonoBehaviour
 
         mouse = Input.mousePosition;
         //Debug.Log("mouse " + mouse);
-        mouse.z = 20;
+        mouse.z = -(cameraObj.transform.position.z + (1.2f - (float)(pointerLayer * 0.4)));
         pointerPos = Camera.main.ScreenToWorldPoint(mouse);
 
         pointerPos = new Vector3((float)Mathf.Floor(pointerPos.x), (float)Mathf.Floor(pointerPos.y), transform.position.z);

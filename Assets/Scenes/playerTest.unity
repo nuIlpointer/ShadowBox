@@ -504,6 +504,19 @@ MonoBehaviour:
   wrapper: {fileID: 946281864}
   useBlock: 11
   lineWidth: 0
+--- !u!65 &142052766
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 142052759}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 1.2, y: 2.6, z: 0.6}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &142999343
 GameObject:
   m_ObjectHideFlags: 0
@@ -549,19 +562,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pl: 0
   pc: {fileID: 142052762}
---- !u!65 &142052766
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 142052759}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 1.2, y: 2.6, z: 0.6}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &167003480
 PrefabInstance:
   m_ObjectHideFlags: 0

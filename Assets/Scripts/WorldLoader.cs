@@ -102,7 +102,7 @@ public class WorldLoader : MonoBehaviour
             if (wrapper.IsConnectionActive() && !wrapper.IsWorldRegenerateFinished()) {
                 wrapper.SetWorldData(cNumX, cNumY, cSize, cSize, heightRange, new System.Random().Next(0, Int32.MaxValue), "new_World");
                 wrapper.RequestWorldRegenerate();
-                visit = new bool[cNumX * cNumY];
+                for (int i = 0; i < visit.Length; i++) visit[i] = false;
                 waking = false;
                 Debug.Log("[WorldLoader] > waked");
             }

@@ -447,7 +447,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldLoader: {fileID: 1724355517}
   wrapper: {fileID: 946281864}
-  useBlock: 0
+  useBlock: 11
   lineWidth: 0
 --- !u!65 &142052766
 BoxCollider:
@@ -1446,8 +1446,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e6e47b112fe39c43976ef87e79998e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  image1: {fileID: 1512701878}
-  image2: {fileID: 1315296761}
+  image: {fileID: 0}
 --- !u!4 &699086681
 Transform:
   m_ObjectHideFlags: 0
@@ -3278,7 +3277,7 @@ MonoBehaviour:
   follow: 1
   followingLevel: 3
   cameraDist: -7
-  yCorrection: 4
+  yCorrection: 3
 --- !u!1 &1926622003
 GameObject:
   m_ObjectHideFlags: 0

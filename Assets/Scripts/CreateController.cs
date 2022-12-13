@@ -42,7 +42,7 @@ public class CreateController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        useBlock = 0;
+        useBlock = 10;
         lineWidth = 1;
     }
 

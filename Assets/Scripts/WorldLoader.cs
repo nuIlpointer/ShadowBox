@@ -89,7 +89,7 @@ public class WorldLoader : MonoBehaviour
             gc = chunkGetQueue.Dequeue();
             //Debug.Log($"gc内容 {gc.x} , {gc.y}");
             if (getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
-            layers[gc.x].MakeChunk(gc.y);
+            //layers[gc.x].MakeChunk(gc.y);
             Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
         }
         
@@ -102,7 +102,7 @@ public class WorldLoader : MonoBehaviour
             if (wrapper.IsConnectionActive() && !wrapper.IsWorldRegenerateFinished()) {
                 wrapper.SetWorldData(cNumX, cNumY, cSize, cSize, heightRange, new System.Random().Next(0, Int32.MaxValue), "new_World");
                 wrapper.RequestWorldRegenerate();
-
+                visit = new bool[cNumX * cNumY];
                 waking = false;
                 Debug.Log("[WorldLoader] > waked");
             }
@@ -244,15 +244,15 @@ public class WorldLoader : MonoBehaviour
 
         for(int i = 0; i < 9; i++){
             if(loaded[i] != -1){
-                //UnityEngine.Debug.Log("生成　チャンクナンバー:" + loaded[i]);
+                
                 for (int j = 1; j <= 4; j++){
                     if (!visit[loaded[i]]) {
                         Debug.Log($"[WorldLoader] > チャンクデータ要求キューに追加 chunkNumber : {loaded[i]}  layer : {j}");
                         
-                        //wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
+                        
                         chunkGetQueue.Enqueue(new Vector2Int(j, loaded[i]));
                     }
-                    //layers[j].MakeChunk(loaded[i]);
+                    layers[j].MakeChunk(loaded[i]);
                 }
                 visit[loaded[i]] = true;
             }

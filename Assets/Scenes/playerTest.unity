@@ -376,7 +376,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5439f9de592b7074f85ba4952d6c1eca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraObj: {fileID: 0}
+  cameraObj: {fileID: 1906975256}
   wrapperObject: {fileID: 946281863}
   serverObject: {fileID: 2859619196047104019, guid: d43589cd0c43af4489247621eb05837e, type: 3}
   server: {fileID: 0}
@@ -2672,7 +2672,6 @@ GameObject:
   - component: {fileID: 1724355513}
   - component: {fileID: 1724355516}
   - component: {fileID: 1724355517}
-  - component: {fileID: 1724355514}
   m_Layer: 0
   m_Name: Terrain
   m_TagString: Untagged
@@ -2692,23 +2691,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4019d97245d6cf43be304f432f5d8bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  noNetMode: 1
+  noNetMode: 0
   chunkSize: 16
   chunksNumX: 8
   chunksNumY: 4
   heightRange: 6
---- !u!114 &1724355514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1724355512}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43202d8c4cceac4478c9b19bc864c96f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1724355515
 Transform:
   m_ObjectHideFlags: 0
@@ -3231,7 +3218,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 100
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -3290,8 +3277,8 @@ MonoBehaviour:
   followTarget: {fileID: 142052759}
   follow: 1
   followingLevel: 3
-  cameraDist: -20
-  yCorrection: 3
+  cameraDist: -7
+  yCorrection: 4
 --- !u!1 &1926622003
 GameObject:
   m_ObjectHideFlags: 0

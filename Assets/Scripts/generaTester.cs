@@ -8,7 +8,7 @@ public class generaTester : MonoBehaviour
     WorldLoader wl;
     LayerManager[] layers;
     public int chunkNumber = 3;
-    public ShadowBoxClientWrapper wrapper;
+
     //playertest
     public int inLayer = 2;
     public Vector3 inPos;
@@ -130,31 +130,26 @@ public class generaTester : MonoBehaviour
     float synclate = 0;
 
     int f = 0;
-    bool firstServerConnectFrame = true;
-
-    
     void Start()
     {
-
         //id = Guid.NewGuid() ;
         inPos = new Vector3(0, 0, 0);
         wl = GetComponent<WorldLoader>();
-
-
+        
+        /*
         //wl.LoadChunks(new Vector2((float)30.0,(float)10.0));//chunkNumber 1(左から2番目下から１番目)
         //wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(左から3番目下から１番目)
-
-
-        //----------------------------------------ここから
-
-        UnityEngine.Debug.Log("generaTester > ロードチャンク　chunkNumber : " + 0);
-        wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
+        */
+        
         for (int i = 0; i < 4; i++) {
             UnityEngine.Debug.Log("generaTester > グラウンド入れる　chunkNumber : " + i);
             for (int j = 1; j <= 4; j++) {
                 wl.ChunkUpdate(ground, j, i);
             }
         }
+        UnityEngine.Debug.Log("generaTester > ロードチャンク　chunkNumber : " + 0);
+        wl.LoadChunks(new Vector3((float)20.0, (float)20.0, 0));
+
 
         wl.ChunkUpdate(hut1, 1, 1);
         wl.ChunkUpdate(hut2, 3, 1);
@@ -163,48 +158,28 @@ public class generaTester : MonoBehaviour
 
         //em.AddPlayer(id, "mememe", 0);
         //Debug.LogError("");
-
-        //--------------------------------------ここまでコメントアウトで地形プリセットオフ
     }
 
     // Update is called once per frame
     void Update()
     {
-        //ワールド再生成前に呼ばれてしまうため没
-        /*if(firstServerConnectFrame && wrapper.IsConnectionActive()) {
-            Debug.Log($"[generaTester] >　サーバへ小屋を保存　chunkNunber : 0");
-            wrapper.SendChunk((ShadowBoxClientWrapper.BlockLayer)1, 0, hut1);
-            wrapper.SendChunk((ShadowBoxClientWrapper.BlockLayer)2, 0, ground);
-            wrapper.SendChunk((ShadowBoxClientWrapper.BlockLayer)3, 0, hut2);
-            wrapper.SendChunk((ShadowBoxClientWrapper.BlockLayer)4, 0, ground);
-            firstServerConnectFrame = false;
-        }*/
-
-
-
-
         if (Input.GetKeyDown(KeyCode.K)) {
             UnityEngine.Debug.Log("入力ｋ　てすとけーす");
             wl.ChunkUpdate(testcase1, 4, 0);
 
         }
         if (Input.GetKeyDown(KeyCode.L)) {
-            UnityEngine.Debug.Log("入力L　ろーど1");
-            wrapper.SendChunk((ShadowBoxClientWrapper.BlockLayer)1, 10, hut1);
-            wrapper.SendChunk((ShadowBoxClientWrapper.BlockLayer)2, 10, ground);
-            wrapper.SendChunk((ShadowBoxClientWrapper.BlockLayer)3, 10, hut2);
-            wrapper.SendChunk((ShadowBoxClientWrapper.BlockLayer)4, 10, ground);
+            UnityEngine.Debug.Log("入力ｌ　ろーど1");
+            wl.LoadChunks(new Vector2((float)30.0, (float)10.0));//chunkNumber 1(左から2番目下から１番目)
         }
         if (Input.GetKeyDown(KeyCode.J)) {
             UnityEngine.Debug.Log("入力J　ろーど2");
-
             wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(左から3番目下から１番目)
             wl.LoadChunks(new Vector2((float)55.0, (float)10.0));//chunkNumber 2(左から3番目下から１番目)
         }
         if (Input.GetKeyDown(KeyCode.B)) {
             UnityEngine.Debug.Log("入力B　ブロック変更11 4 20 20");
-            wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)2, 20, 18, 4);
-            //wl.BlockUpdate(11, 4, 20, 20);
+            wl.BlockUpdate(11, 4, 20, 20);
         }
 
 

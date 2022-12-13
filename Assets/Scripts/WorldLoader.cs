@@ -35,8 +35,10 @@ public class WorldLoader : MonoBehaviour
 
     private bool started = false;
     private bool waking;
+    private int loadChunksQueueID = 0;
 
     Queue<Vector2Int> chunkGetQueue = new Queue<Vector2Int>();
+    Queue<KeyValuePair<int, Vector3>> loadChunksQueue = new Queue<KeyValuePair<int, Vector3>>();
 
     public bool getChunkFromServer = true; 
 
@@ -83,9 +85,9 @@ public class WorldLoader : MonoBehaviour
 
         Vector2Int gc = new Vector2Int();
         
-        if(chunkGetQueue.Count > 0) {
+        if(chunkGetQueue.Count > 0 && wrapper.IsConnectionActive()) {
             gc = chunkGetQueue.Dequeue();
-            Debug.Log($"gc内容 {gc.x} , {gc.y}");
+            //Debug.Log($"gc内容 {gc.x} , {gc.y}");
             if (getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
             layers[gc.x].MakeChunk(gc.y);
             Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
@@ -175,6 +177,21 @@ public class WorldLoader : MonoBehaviour
     {
         //UnityEngine.Debug.LogWarning("ワーーーールドッッッ・ロォーーーーードッッッ！！");
         if (!started) { Start(); }
+        //サーバ非アクティブ時処理　叩いた内容をキューに保存し、次回実行時に呼び出す
+        if (!wrapper.IsConnectionActive()) {
+            Debug.Log($"[WorldLoader] > サーバが未接続な為、ロードチャンク待ちキューに引数を保存しました ID : {loadChunksQueueID}");
+            loadChunksQueue.Enqueue(new KeyValuePair<int, Vector3>(loadChunksQueueID, pos));
+            loadChunksQueueID++;
+            return;
+        }
+        if(loadChunksQueue.Count > 0) {
+            while(loadChunksQueue.Count <= 0) {
+                KeyValuePair<int, Vector3> lc = loadChunksQueue.Dequeue();
+                LoadChunks(lc.Value);
+                Debug.Log($"[WorldLoader] > ロードチャンク待ちキューからロードチャンクを実行しました。 ID : {lc.Key}");
+            }
+        }
+
         int chunkNumber = PosToChunkNum((int)pos.x, (int)pos.y);
         loaded[0] = chunkNumber;
         //UnityEngine.Debug.LogWarning(chunkNumber);
@@ -201,10 +218,9 @@ public class WorldLoader : MonoBehaviour
             if (lastLoad[i] != -1) {
                 if (checkDie(lastLoad[i])) {
                     //UnityEngine.Debug.Log("消去　チャンクナンバー:" + lastLoad[i]);
-                    for (int j = 1; j <= 4; j++) {
-                        layers[j].RemoveChunk(lastLoad[i]);
-                        
-                    }
+                    for (int j = 1; j <= 4; j++)
+                        if (lastLoad[i] != -1)
+                            layers[j].RemoveChunk(lastLoad[i]);
                 }
             }
         }
@@ -235,10 +251,10 @@ public class WorldLoader : MonoBehaviour
                         
                         //wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
                         chunkGetQueue.Enqueue(new Vector2Int(j, loaded[i]));
-                        visit[loaded[i]] = true;
                     }
                     //layers[j].MakeChunk(loaded[i]);
                 }
+                visit[loaded[i]] = true;
             }
         }
 
@@ -303,7 +319,9 @@ public class WorldLoader : MonoBehaviour
     {
         if (!started) { Start();}
         //UnityEngine.Debug.Log($"{layers[1]} {layers[2]} {layers[3]} {layers[4]} {layerNumber}");
-        Debug.Log("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber);
+
+
+        Debug.Log("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber + $"  \n{ChunkToString(blocks)}");
         layers[layerNumber].UpdateChunk(blocks, chunkNumber);
         
         //UnityEngine.Debug.Log($"checkLive({chunkNumber}):"+checkLive(chunkNumber));
@@ -444,7 +462,7 @@ public class WorldLoader : MonoBehaviour
             cn = PosToChunkNum(checkList[i].x, checkList[i].y);
             chx = checkList[i].x - ChunkNumToOriginPos(cn)[0];
             chy = checkList[i].y - ChunkNumToOriginPos(cn)[1];
-            Debug.Log($">>>>>>cn{cn} chx{chx} chy{chy} clx{checkList[i].x} cly{checkList[i].y}    \n{ChunkNumToOriginPos(1)[0]} {ChunkNumToOriginPos(1)[1]}");
+            //Debug.Log($">>>>>>cn{cn} chx{chx} chy{chy} clx{checkList[i].x} cly{checkList[i].y}    \n{ChunkNumToOriginPos(1)[0]} {ChunkNumToOriginPos(1)[1]}");
             if (!layers[2].checkAir(cn, chx, chy) || !layers[3].checkAir(cn, chx, chy)) {
                 isSafe = false;
             }
@@ -461,5 +479,14 @@ public class WorldLoader : MonoBehaviour
         return layers[layerNumber].GetBlock(cn, dx, dy);
     }
 
-
+    public String ChunkToString(int[][] blocks) {
+        String result = "";
+        for (int i = 0; i < blocks.Length; i++) {
+            for (int j = 0; j < blocks[i].Length; j++) {
+                result += blocks[i][j].ToString() + " ";
+            }
+            result += "\n";
+        }
+        return result;
+    }
 }

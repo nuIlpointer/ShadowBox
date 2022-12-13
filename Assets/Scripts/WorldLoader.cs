@@ -320,7 +320,9 @@ public class WorldLoader : MonoBehaviour
     {
         if (!started) { Start();}
         //UnityEngine.Debug.Log($"{layers[1]} {layers[2]} {layers[3]} {layers[4]} {layerNumber}");
-        Debug.Log("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber);
+
+
+        Debug.Log("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber + $"  \n{ChunkToString(blocks)}");
         layers[layerNumber].UpdateChunk(blocks, chunkNumber);
         
         //UnityEngine.Debug.Log($"checkLive({chunkNumber}):"+checkLive(chunkNumber));
@@ -478,5 +480,14 @@ public class WorldLoader : MonoBehaviour
         return layers[layerNumber].GetBlock(cn, dx, dy);
     }
 
-
+    public String ChunkToString(int[][] blocks) {
+        String result = "";
+        for (int i = 0; i < blocks.Length; i++) {
+            for (int j = 0; j < blocks[i].Length; j++) {
+                result += blocks[i][j].ToString() + " ";
+            }
+            result += "\n";
+        }
+        return result;
+    }
 }

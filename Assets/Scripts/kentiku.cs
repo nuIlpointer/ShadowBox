@@ -10,9 +10,8 @@ public class kentiku : MonoBehaviour
     private bool flg = true;
     public void Onclick() {
         flg = !flg;
-        image1.SetActive(flg);
         image2.SetActive(flg);
-
+        image1.SetActive(!flg);
     }
     void Start()
     {

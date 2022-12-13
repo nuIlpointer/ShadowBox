@@ -1,15 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
-using System.Net;
 using System.Text;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.Assertions;
-using static ShadowBoxClientWrapper;
 
 public class ShadowBoxServer : MonoBehaviour {
     public bool debugMode = false;
@@ -52,7 +48,7 @@ public class ShadowBoxServer : MonoBehaviour {
         guidConnectionList = new Dictionary<int, Guid>();
         lastCommandSend = new Dictionary<int, float>();
         terrainGenerator = terrainGeneratorObj.GetComponent<GenerateTerrain>();
-        if((worldInfo = WorldInfo.LoadWorldData()) != null) {
+        if ((worldInfo = WorldInfo.LoadWorldData()) != null) {
             isWorldGenerated = true;
         }
     }
@@ -81,10 +77,10 @@ public class ShadowBoxServer : MonoBehaviour {
         var endpoint = NetworkEndPoint.AnyIpv4;
         endpoint.Port = (ushort)port;
         if (this.driver.Bind(endpoint) != 0) {
-            if(debugMode) Debug.LogError("[SERVER]Failed to bind port " + port + ".");
+            if (debugMode) Debug.LogError("[SERVER]Failed to bind port " + port + ".");
             return false;
         } else this.driver.Listen();
-        if(debugMode) Debug.Log("[SERVER]Listen on " + port);
+        if (debugMode) Debug.Log("[SERVER]Listen on " + port);
         active = true;
         return true;
     }
@@ -124,7 +120,7 @@ public class ShadowBoxServer : MonoBehaviour {
         for (int i = 0; i < this.connectionList.Length; i++) {
             if (!this.connectionList[i].IsCreated) { //破棄されたコネクションを削除
                 this.connectionList.RemoveAtSwapBack(i);
-                i--; 
+                i--;
             }
         }
 
@@ -146,7 +142,7 @@ public class ShadowBoxServer : MonoBehaviour {
                     }
                 }
 
-                if(debugMode) Debug.Log($"[Server]User {guidConnectionList[connectionId]} has disconnected.");
+                if (debugMode) Debug.Log($"[Server]User {guidConnectionList[connectionId]} has disconnected.");
                 userList.Remove(guidConnectionList[connectionId]);
                 lastCommandSend.Remove(connectionId);
                 guidConnectionList.Remove(connectionId);
@@ -159,7 +155,7 @@ public class ShadowBoxServer : MonoBehaviour {
         DataStreamReader stream;
         for (int i = 0; i < this.connectionList.Length; i++) {
             //コネクションが作成されているかどうか
-            if(this.connectionList[i].IsCreated) {
+            if (this.connectionList[i].IsCreated) {
                 Assert.IsTrue(this.connectionList[i].IsCreated);
 
                 NetworkEvent.Type cmd;
@@ -170,7 +166,6 @@ public class ShadowBoxServer : MonoBehaviour {
                         //データを受信したとき
                         String receivedData = ("" + stream.ReadFixedString4096());
                         if (stream.HasFailedReads) Debug.Log("[SERVER]Failed to read data");
-                        if (debugMode) Debug.Log($"[SERVER]Received data: {receivedData}");
                         lastCommandSend[this.connectionList[i].InternalId] = 0.0f;
                         if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
                             receivedData = receivedData.Replace("SCH,", "");
@@ -227,10 +222,11 @@ public class ShadowBoxServer : MonoBehaviour {
                             var sendChunkStr = $"CKD,{blockLayer},{chunkID},";
                             foreach (int[] chunkLine in sendChunkData)
                                 sendChunkStr += string.Join(",", chunkLine) + "\n";
-                            if (debugMode) Debug.Log($"Sending data {sendChunkStr}");
+                            if (debugMode) Debug.Log($"[SERVER]Sending data {sendChunkStr}");
+                            Send(connectionList[i], sendChunkStr);
                         }
 
-                        if(receivedData.StartsWith("WGC")) {
+                        if (receivedData.StartsWith("WGC")) {
                             Send(connectionList[i], $"WST,{isWorldGenerated}");
                         }
 
@@ -266,33 +262,33 @@ public class ShadowBoxServer : MonoBehaviour {
 
                             //自身を除くユーザに移動情報を通知する
                             int senderConnectionID = connectionList[i].InternalId;
-                            foreach (NetworkConnection conn in connectionList) 
-                                if(conn.InternalId != senderConnectionID)
+                            foreach (NetworkConnection conn in connectionList)
+                                if (conn.InternalId != senderConnectionID)
                                     Send(conn, $"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}");
                         }
 
                         //ブロック単位の更新を受け取った時のやつ
-                        if(receivedData.StartsWith("SBC")) {
+                        if (receivedData.StartsWith("SBC")) {
                             receivedData = receivedData.Replace("SBC,", "");
                             var dataArr = receivedData.Split(',');
                             BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
                             int x = Int32.Parse(dataArr[1]);
                             int y = Int32.Parse(dataArr[2]);
-                            int blockId = Int32.Parse(dataArr[3]); 
-                            if(worldInfo != null) {
+                            int blockId = Int32.Parse(dataArr[3]);
+                            if (worldInfo != null) {
                                 int chunkNum = CoordinateToChunkNo(x, y, worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetWorldSizeX());
                                 var oldChunk = LoadChunk(layer, chunkNum);
                                 oldChunk[x % worldInfo.GetChunkSizeX()][y % worldInfo.GetWorldSizeY()] = blockId;
                                 SaveChunk(layer, chunkNum, oldChunk);
                             }
-                                
+
                             //全ユーザに移動情報を通知
-                            foreach(NetworkConnection conn in connectionList)
+                            foreach (NetworkConnection conn in connectionList)
                                 Send(conn, $"BCB,{receivedData}");
                         }
 
                         //ワールドのconfigを設定するやつ
-                        if(receivedData.StartsWith("SWD")) {
+                        if (receivedData.StartsWith("SWD")) {
                             receivedData = receivedData.Replace("SWD,", "");
                             var dataArr = receivedData.Split(',');
                             int worldSizeX = Int32.Parse(dataArr[0]);
@@ -305,15 +301,15 @@ public class ShadowBoxServer : MonoBehaviour {
 
                             worldInfo = new WorldInfo(worldSizeX, worldSizeY, chunkSizeX, chunkSizeY, heightRange, seed, worldName);
                             worldInfo.SaveWorldData();
-                            if(debugMode) Debug.Log("[SERVER]World regenerate complete.");
+                            if (debugMode) Debug.Log("[SERVER]World regenerate complete.");
                             foreach (NetworkConnection conn in connectionList)
                                 Send(conn, "RCP");
                         }
 
                         //ワールドを再生成するやつ
                         if (receivedData.StartsWith("RGN")) {
-                            if (debugMode) Debug.Log("[SERVER]Start world regenerate...");   
-                            if(worldInfo != null) {
+                            if (debugMode) Debug.Log("[SERVER]Start world regenerate...");
+                            if (worldInfo != null) {
                                 GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
                             } else {
                                 Send(connectionList[i], "FGN");
@@ -329,7 +325,7 @@ public class ShadowBoxServer : MonoBehaviour {
                     }
                 }
             }
-            
+
         }
     }
 
@@ -337,12 +333,14 @@ public class ShadowBoxServer : MonoBehaviour {
     private bool Send(NetworkConnection connection, string sendData) {
         if (connection.IsCreated) {
             var sendDataFS4096 = new FixedString4096Bytes(sendData);
-            if(debugMode) Debug.Log($"[SERVER]Sending {System.Text.ASCIIEncoding.Unicode.GetByteCount(sendDataFS4096.ToString())} bytes data");
+            //if(debugMode) Debug.Log($"[SERVER]Sending {System.Text.ASCIIEncoding.Unicode.GetByteCount(sendDataFS4096.ToString())} bytes data");
             var writer = this.driver.BeginSend(NetworkPipeline.Null, connection, out DataStreamWriter dsw);
-            
             dsw.WriteFixedString4096(sendDataFS4096);
             this.driver.EndSend(dsw);
-            if(dsw.HasFailedWrites) Debug.LogWarning($"[SERVER]Failed to sending data:\n{sendData}");
+            if (dsw.HasFailedWrites) {
+                Debug.LogWarning($"[SERVER]Failed to sending data:\n{sendData}");
+                return false;
+            }
             return true;
         } else return false;
     }
@@ -371,8 +369,7 @@ public class ShadowBoxServer : MonoBehaviour {
                     tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
                 return tempList.ToArray();
             }
-        }
-        else {
+        } else {
             var chunkData = LoadDefaultChunk();
             SaveChunk(layerID, chunkID, chunkData);
             return chunkData;
@@ -401,18 +398,6 @@ public class ShadowBoxServer : MonoBehaviour {
             while (0 <= reader.Peek())
                 tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
             return tempList.ToArray();
-        }
-    }
-
-    private byte[] Compress(string target) {
-        var targetBytes = Encoding.UTF8.GetBytes(target);
-        using(var mem = new MemoryStream(targetBytes))
-        using(var deflateStream = new DeflateStream(mem, CompressionMode.Compress, true)) {
-            deflateStream.Write(targetBytes, 0, targetBytes.Length);
-            mem.Position = 0;
-            var returnVal = new byte[mem.Length];
-            mem.Read(returnVal, 0, returnVal.Length);
-            return returnVal;
         }
     }
 }

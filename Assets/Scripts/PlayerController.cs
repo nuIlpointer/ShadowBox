@@ -244,6 +244,7 @@ public class PlayerController : MonoBehaviour {
         pointerPos = Camera.main.ScreenToWorldPoint(mouse);
 
         pointerPos = new Vector3((float)Mathf.Floor(pointerPos.x + 0.5f), (float)Mathf.Floor(pointerPos.y + 0.5f), 0);
+
         pointer.transform.position = new Vector3(pointerPos.x, pointerPos.y, 0);
 
         pointerLayer += Input.GetAxis("Mouse ScrollWheel") * 3;

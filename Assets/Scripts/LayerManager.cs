@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class LayerManager : MonoBehaviour
-{
+public class LayerManager : MonoBehaviour {
 
     /// <summary>
     /// ブロックIDリスト
@@ -15,22 +12,22 @@ public class LayerManager : MonoBehaviour
     public bool isWall = false;
 
     public enum BLOCK_ID {
-        unknown     = -1,
-        air         = 0,
-        cube_white  = 1,
-        cube_red    = 2,
-        cube_green  = 3,
-        cube_blue   = 4,
-        cube_black  = 5,
+        unknown = -1,
+        air = 0,
+        cube_white = 1,
+        cube_red = 2,
+        cube_green = 3,
+        cube_blue = 4,
+        cube_black = 5,
 
-        grass_0     = 10,
-        stone_0     = 11,
-        dirt_0      = 12,
+        grass_0 = 10,
+        stone_0 = 11,
+        dirt_0 = 12,
 
-        brick       = 20,
+        brick = 20,
 
-        door_0      = 30,
-        door_1      = 31
+        door_0 = 30,
+        door_1 = 31
 
     }
 
@@ -39,11 +36,11 @@ public class LayerManager : MonoBehaviour
         public int[][] blocks;
         public GameObject[][] blockObj;
         bool live;
-        
+
     }
 
     Chunk[] chunks;
-    
+
     GameObject block;
     InitialProcess ip;
     int cNumX, cNumY, cSize;
@@ -91,18 +88,19 @@ public class LayerManager : MonoBehaviour
         new int[] { 5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5 }
     };
 
+    public bool DebugChunkAct = false;
+
     public GameObject CHUNK_FRAME;
     public GameObject[] chunkFrame;
 
-    
-    
+
+
 
 
     // Start is called before the first frame update
 
 
-    void Start()
-    {
+    void Start() {
         if (!started) {
             ip = GetComponentInParent<InitialProcess>();
             blocks = new int[ip.chunkSize][];
@@ -125,7 +123,7 @@ public class LayerManager : MonoBehaviour
 
             chunks = new Chunk[cNumX * cNumY];
             chunkFrame = new GameObject[chunks.Length];
-            
+
 
 
             for (int i = 0; i < chunks.Length; i++) {
@@ -133,7 +131,7 @@ public class LayerManager : MonoBehaviour
                 else chunks[i].blocks = testcase1;
 
                 chunks[i].blockObj = new GameObject[cSize][];
-                for(int j = 0; j < cSize; j++) {
+                for (int j = 0; j < cSize; j++) {
                     chunks[i].blockObj[j] = new GameObject[cSize];
                 }
 
@@ -158,8 +156,7 @@ public class LayerManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
 
     }
 
@@ -184,19 +181,16 @@ public class LayerManager : MonoBehaviour
 
 
     }*/
-    public void MakeChunk(int chunkNumber)
-    {
-        if (!started)
-        {
+    public void MakeChunk(int chunkNumber) {
+        if (!started) {
             Start();
         }
 
         //テスト用ログ
-        if (makeTest)
-        {
+        if (makeTest) {
             //Debug.Log(this.gameObject.name + " > seisei:"+ chunkNumber + " ");
         }
-        
+
         Vector3Int pos = new Vector3Int(0, 0, 0);
         Transform frame = chunkFrame[chunkNumber].transform;
 
@@ -204,27 +198,23 @@ public class LayerManager : MonoBehaviour
 
         BoxCollider bcl;
 
-        foreach (int id in Enum.GetValues(typeof(BLOCK_ID)))
-        {
+        foreach (int id in Enum.GetValues(typeof(BLOCK_ID))) {
             //Debug.Log(" id:"+Enum.GetName(typeof(BLOCK_ID), id));
 
             //ブロックプレハブ取得
             block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));
             if (block == null) { block = (GameObject)Resources.Load("Blocks/unknown"); }
 
-            for (int px = 0; px < cSize; px++)
-            {
-                for (int py = 0; py < cSize; py++)
-                {
-                    if (chunks[chunkNumber].blocks[py][px] == id && id != 0)
-                    {
+            for (int px = 0; px < cSize; px++) {
+                for (int py = 0; py < cSize; py++) {
+                    if (chunks[chunkNumber].blocks[py][px] == id && id != 0) {
                         pos.x = px;
                         pos.y = py;
                         block = Instantiate(block, frame);
                         block.transform.localPosition = pos;
                         block.name = px + "_" + py + "_" + Enum.GetName(typeof(BLOCK_ID), id);
-                        
-                        
+
+
                         block.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
                         if (isWall) {
                             bcl = block.GetComponent<BoxCollider>();
@@ -255,8 +245,7 @@ public class LayerManager : MonoBehaviour
             Vector2Int posBase = new Vector2Int(chunkNumber % cNumX * cSize, chunkNumber / cNumX * cSize);
             chunkFrame[chunkNumber].transform.localPosition = new Vector3(posBase.x, posBase.y, 0);
 
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             //Debug.Log(e);
         }
     }
@@ -273,10 +262,10 @@ public class LayerManager : MonoBehaviour
         chunks[chunkNumber].blocks[y][x] = id;
 
 
-        if (!checkAir(chunkNumber, x,y)) {      //指定位置にブロックが存在
+        if (!checkAir(chunkNumber, x, y)) {      //指定位置にブロックが存在
 
             Destroy(chunks[chunkNumber].blockObj[y][x]);
-        
+
         }
         if (id != 0) {                          //指定IDがair以外
 
@@ -310,14 +299,33 @@ public class LayerManager : MonoBehaviour
     public void UpdateChunk(int[][] blocks, int chunkNumber) {
         if (!started) Start();
         chunks[chunkNumber].blocks = blocks;
+
+        String ch = $"cn : {chunkNumber}\n";
+
+        if (DebugChunkAct) {
+            for (int i = 0; i < blocks.Length; i++) {
+                for (int j = 0; j < blocks[i].Length; j++) {
+                    ch += blocks[i][j].ToString() + ",";
+                }
+                ch += "\n";
+            }
+        }
+
+
+
+
+
     }
 
     public bool checkAir(int cn, int x, int y) {
-        if(chunks[cn].blocks[y][x] == 0) {
+        if (chunks[cn].blocks[y][x] == 0) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
-}   
+
+    public int GetBlock(int chunkNumber, int x, int y) {
+        return chunks[chunkNumber].blocks[y][x];
+    }
+}

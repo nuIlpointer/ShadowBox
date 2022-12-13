@@ -1,15 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
-using System.Net;
 using System.Text;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.Assertions;
-using static ShadowBoxClientWrapper;
 
 public class ShadowBoxServer : MonoBehaviour {
     public bool debugMode = false;
@@ -52,7 +48,7 @@ public class ShadowBoxServer : MonoBehaviour {
         guidConnectionList = new Dictionary<int, Guid>();
         lastCommandSend = new Dictionary<int, float>();
         terrainGenerator = terrainGeneratorObj.GetComponent<GenerateTerrain>();
-        if((worldInfo = WorldInfo.LoadWorldData()) != null) {
+        if ((worldInfo = WorldInfo.LoadWorldData()) != null) {
             isWorldGenerated = true;
         }
     }
@@ -81,10 +77,10 @@ public class ShadowBoxServer : MonoBehaviour {
         var endpoint = NetworkEndPoint.AnyIpv4;
         endpoint.Port = (ushort)port;
         if (this.driver.Bind(endpoint) != 0) {
-            if(debugMode) Debug.LogError("[SERVER]Failed to bind port " + port + ".");
+            if (debugMode) Debug.LogError("[SERVER]Failed to bind port " + port + ".");
             return false;
         } else this.driver.Listen();
-        if(debugMode) Debug.Log("[SERVER]Listen on " + port);
+        if (debugMode) Debug.Log("[SERVER]Listen on " + port);
         active = true;
         return true;
     }
@@ -124,7 +120,7 @@ public class ShadowBoxServer : MonoBehaviour {
         for (int i = 0; i < this.connectionList.Length; i++) {
             if (!this.connectionList[i].IsCreated) { //破棄されたコネクションを削除
                 this.connectionList.RemoveAtSwapBack(i);
-                i--; 
+                i--;
             }
         }
 
@@ -146,7 +142,7 @@ public class ShadowBoxServer : MonoBehaviour {
                     }
                 }
 
-                if(debugMode) Debug.Log($"[Server]User {guidConnectionList[connectionId]} has disconnected.");
+                if (debugMode) Debug.Log($"[Server]User {guidConnectionList[connectionId]} has disconnected.");
                 userList.Remove(guidConnectionList[connectionId]);
                 lastCommandSend.Remove(connectionId);
                 guidConnectionList.Remove(connectionId);
@@ -159,7 +155,7 @@ public class ShadowBoxServer : MonoBehaviour {
         DataStreamReader stream;
         for (int i = 0; i < this.connectionList.Length; i++) {
             //コネクションが作成されているかどうか
-            if(this.connectionList[i].IsCreated) {
+            if (this.connectionList[i].IsCreated) {
                 Assert.IsTrue(this.connectionList[i].IsCreated);
 
                 NetworkEvent.Type cmd;
@@ -169,7 +165,7 @@ public class ShadowBoxServer : MonoBehaviour {
                     } else if (cmd == NetworkEvent.Type.Data) {
                         //データを受信したとき
                         String receivedData = ("" + stream.ReadFixedString4096());
-                        if (stream.HasFailedReads) Debug.Log("読み取りに失敗したデータがあります。");
+                        if (stream.HasFailedReads) Debug.Log("[SERVER]Failed to read data");
                         lastCommandSend[this.connectionList[i].InternalId] = 0.0f;
                         if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
                             receivedData = receivedData.Replace("SCH,", "");
@@ -226,45 +222,13 @@ public class ShadowBoxServer : MonoBehaviour {
                             var sendChunkStr = $"CKD,{blockLayer},{chunkID},";
                             foreach (int[] chunkLine in sendChunkData)
                                 sendChunkStr += string.Join(",", chunkLine) + "\n";
-                            if (debugMode) Debug.Log($"Sending data {sendChunkStr}");
+                            if (debugMode) Debug.Log($"[SERVER]Sending data {sendChunkStr}");
+                            Send(connectionList[i], sendChunkStr);
                         }
 
-                        if(receivedData.StartsWith("WGC")) {
+                        if (receivedData.StartsWith("WGC")) {
                             Send(connectionList[i], $"WST,{isWorldGenerated}");
                         }
-
-                        /*
-                        
-                        if (receivedData.StartsWith("SBF")) { //チャンクバッファを受け取ったとき
-                            if (debugMode) Debug.Log("[SERVER]Receive chunk buffer data");
-                            receivedData = receivedData.Replace("SBF,", "");
-                            Guid workspaceId = Guid.Parse(receivedData.Split(',')[0]);
-                            BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[1]);
-                            int chunkId = Int32.Parse(receivedData.Split(',')[2]);
-                            receivedData = receivedData.Replace($"{workspaceId.ToString("N")},{layer},{chunkId},", "");
-                            List<int[]> bufferLineList = new List<int[]>();
-                            foreach (string bufferLine in receivedData.Split('\n'))
-                                if (bufferLine != "")
-                                    bufferLineList.Add(Array.ConvertAll(bufferLine.Split(','), int.Parse));
-                            SaveChunkBuffer(workspaceId, layer, chunkId, bufferLineList.ToArray());
-                            //TODO 該当するworkspaceIdの編集者に対して一斉送信
-                        }
-
-                        //バッファの適用要求
-                        if (receivedData.StartsWith("BRQ")) {
-                            if (debugMode) Debug.Log("[SERVER]Receive buffer applying request");
-                            receivedData = receivedData.Replace("BRQ", "");
-                            var dataArr = receivedData.Split(',');
-                            Guid workspaceId = Guid.Parse(dataArr[0]);
-                            BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
-                            int chunkId = Int32.Parse(dataArr[2]);
-                            SaveChunkBuffer(workspaceId, layer, chunkId, LoadChunkBuffer(workspaceId, layer, chunkId));
-                            //TODO 一斉送信
-
-                        } */
-
-
-
 
                         //プレイヤー一覧の取得要求
                         if (receivedData.StartsWith("RPL")) {
@@ -298,33 +262,33 @@ public class ShadowBoxServer : MonoBehaviour {
 
                             //自身を除くユーザに移動情報を通知する
                             int senderConnectionID = connectionList[i].InternalId;
-                            foreach (NetworkConnection conn in connectionList) 
-                                if(conn.InternalId != senderConnectionID)
+                            foreach (NetworkConnection conn in connectionList)
+                                if (conn.InternalId != senderConnectionID)
                                     Send(conn, $"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}");
                         }
 
                         //ブロック単位の更新を受け取った時のやつ
-                        if(receivedData.StartsWith("SBC")) {
+                        if (receivedData.StartsWith("SBC")) {
                             receivedData = receivedData.Replace("SBC,", "");
                             var dataArr = receivedData.Split(',');
                             BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
                             int x = Int32.Parse(dataArr[1]);
                             int y = Int32.Parse(dataArr[2]);
-                            int blockId = Int32.Parse(dataArr[3]); 
-                            if(worldInfo != null) {
+                            int blockId = Int32.Parse(dataArr[3]);
+                            if (worldInfo != null) {
                                 int chunkNum = CoordinateToChunkNo(x, y, worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetWorldSizeX());
                                 var oldChunk = LoadChunk(layer, chunkNum);
                                 oldChunk[x % worldInfo.GetChunkSizeX()][y % worldInfo.GetWorldSizeY()] = blockId;
                                 SaveChunk(layer, chunkNum, oldChunk);
                             }
-                                
+
                             //全ユーザに移動情報を通知
-                            foreach(NetworkConnection conn in connectionList)
+                            foreach (NetworkConnection conn in connectionList)
                                 Send(conn, $"BCB,{receivedData}");
                         }
 
                         //ワールドのconfigを設定するやつ
-                        if(receivedData.StartsWith("SWD")) {
+                        if (receivedData.StartsWith("SWD")) {
                             receivedData = receivedData.Replace("SWD,", "");
                             var dataArr = receivedData.Split(',');
                             int worldSizeX = Int32.Parse(dataArr[0]);
@@ -337,15 +301,15 @@ public class ShadowBoxServer : MonoBehaviour {
 
                             worldInfo = new WorldInfo(worldSizeX, worldSizeY, chunkSizeX, chunkSizeY, heightRange, seed, worldName);
                             worldInfo.SaveWorldData();
-                            if(debugMode) Debug.Log("[SERVER]World regenerate complete.");
+                            if (debugMode) Debug.Log("[SERVER]World regenerate complete.");
                             foreach (NetworkConnection conn in connectionList)
                                 Send(conn, "RCP");
                         }
 
                         //ワールドを再生成するやつ
                         if (receivedData.StartsWith("RGN")) {
-                            if (debugMode) Debug.Log("[SERVER]Start world regenerate...");   
-                            if(worldInfo != null) {
+                            if (debugMode) Debug.Log("[SERVER]Start world regenerate...");
+                            if (worldInfo != null) {
                                 GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
                             } else {
                                 Send(connectionList[i], "FGN");
@@ -361,7 +325,7 @@ public class ShadowBoxServer : MonoBehaviour {
                     }
                 }
             }
-            
+
         }
     }
 
@@ -369,25 +333,17 @@ public class ShadowBoxServer : MonoBehaviour {
     private bool Send(NetworkConnection connection, string sendData) {
         if (connection.IsCreated) {
             var sendDataFS4096 = new FixedString4096Bytes(sendData);
-            if(debugMode) Debug.Log($"Sending {System.Text.ASCIIEncoding.Unicode.GetByteCount(sendDataFS4096.ToString())} bytes data");
+            //if(debugMode) Debug.Log($"[SERVER]Sending {System.Text.ASCIIEncoding.Unicode.GetByteCount(sendDataFS4096.ToString())} bytes data");
             var writer = this.driver.BeginSend(NetworkPipeline.Null, connection, out DataStreamWriter dsw);
-            
             dsw.WriteFixedString4096(sendDataFS4096);
             this.driver.EndSend(dsw);
-            if(debugMode) Debug.Log(dsw.HasFailedWrites);
+            if (dsw.HasFailedWrites) {
+                Debug.LogWarning($"[SERVER]Failed to sending data:\n{sendData}");
+                return false;
+            }
             return true;
         } else return false;
     }
-
-    // plz plz work as well...
-    /*
-    private bool SendBytes(NetworkConnection connection, byte[] sendData) {
-        if (!connection.IsCreated) return false;
-        var writer = this.driver.BeginSend(NetworkPipeline.Null, connection, out DataStreamWriter dsw);
-        dsw.WriteBytes(new NativeArray<byte>(sendData));
-
-    }*/
-
 
     /// <summary>
     /// 内部サーバー(127.0.0.1:11781)を作成する
@@ -413,8 +369,7 @@ public class ShadowBoxServer : MonoBehaviour {
                     tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
                 return tempList.ToArray();
             }
-        }
-        else {
+        } else {
             var chunkData = LoadDefaultChunk();
             SaveChunk(layerID, chunkID, chunkData);
             return chunkData;
@@ -437,67 +392,12 @@ public class ShadowBoxServer : MonoBehaviour {
         }
     }
 
-    /*
-    /// <summary>
-    /// 保存されたチャンクのバッファを読み込む
-    /// </summary>
-    /// <param name="workspaceID"></param>
-    /// <param name="layerID"></param>
-    /// <param name="chunkID"></param>
-    /// <returns></returns>
-    public int[][]? LoadChunkBuffer(Guid workspaceID, BlockLayer layerID, int chunkID) {
-        string fileName = $"./worlddata/{workspaceID}.{layerID}.chunk{chunkID}.dat";
-        if (File.Exists(fileName)) {
-            List<int[]> tempList = new List<int[]>();
-            using (var reader = new StreamReader(fileName, Encoding.UTF8)) {
-                while (0 <= reader.Peek())
-                    tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
-                return tempList.ToArray();
-            }
-        }
-        else {
-            var chunkData = LoadDefaultChunk();
-            SaveChunk(layerID, chunkID, chunkData);
-            return chunkData;
-        }
-    }
-
-    /// <summary>
-    /// チャンクのバッファーデータを保存する。tempだから削除部分も実装しないとな...
-    /// </summary>
-    /// <param name="workspaceID">ワークスペースのID</param>
-    /// <param name="layerID">レイヤーのID</param>
-    /// <param name="chunkID">チャンクのID</param>
-    /// <param name="chunkData">保存するデータ</param>
-    void SaveChunkBuffer(Guid workspaceID, BlockLayer layerID, int chunkID, int[][] chunkData) {
-        if (!Directory.Exists("./worlddata/")) {
-            Directory.CreateDirectory("./worlddata");
-        }
-        string fileName = $"./worlddata/{workspaceID}.{layerID}.chunk{chunkID}.dat";
-        using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
-            foreach (int[] row in chunkData)
-                writer.WriteLine(string.Join(",", row));
-        }
-    }*/
-
     int[][] LoadDefaultChunk() {
         List<int[]> tempList = new List<int[]>();
         using (var reader = new StreamReader("./default.dat", Encoding.UTF8)) {
             while (0 <= reader.Peek())
                 tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
             return tempList.ToArray();
-        }
-    }
-
-    private byte[] Compress(string target) {
-        var targetBytes = Encoding.UTF8.GetBytes(target);
-        using(var mem = new MemoryStream(targetBytes))
-        using(var deflateStream = new DeflateStream(mem, CompressionMode.Compress, true)) {
-            deflateStream.Write(targetBytes, 0, targetBytes.Length);
-            mem.Position = 0;
-            var returnVal = new byte[mem.Length];
-            mem.Read(returnVal, 0, returnVal.Length);
-            return returnVal;
         }
     }
 }

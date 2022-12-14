@@ -267,7 +267,7 @@ public class WorldLoader : MonoBehaviour
             }
         }
 
-        UnityEngine.Debug.LogWarning($"0:{loaded[0]} 1:{loaded[1]} 2:{loaded[2]} 3:{loaded[3]} 4:{loaded[4]} 5:{loaded[5]} 6:{loaded[6]} 7:{loaded[7]} 8:{loaded[8]} 9:{loaded[9]} 10:{loaded[10]} 11:{loaded[11]} 12:{loaded[12]} 13:{loaded[13]} 14:{loaded[14]} 15:{loaded[15]}");
+        //UnityEngine.Debug.LogWarning($"0:{loaded[0]} 1:{loaded[1]} 2:{loaded[2]} 3:{loaded[3]} 4:{loaded[4]} 5:{loaded[5]} 6:{loaded[6]} 7:{loaded[7]} 8:{loaded[8]} 9:{loaded[9]} 10:{loaded[10]} 11:{loaded[11]} 12:{loaded[12]} 13:{loaded[13]} 14:{loaded[14]} 15:{loaded[15]}");
         
 
         for(int i = 0; i < lastLoad.Length; i++) {

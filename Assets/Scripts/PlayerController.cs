@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour {
     public float pointerLayer;
 
     private GameObject pointer;
+    private GameObject pointerForMousePos;
 
     /// <summary>
     /// プレイヤーデータ送信レート
@@ -90,7 +91,9 @@ public class PlayerController : MonoBehaviour {
 
             //ポインタ
             pointer = (GameObject)Resources.Load("Generic/Pointer");
+            pointerForMousePos = (GameObject)Resources.Load("Generic/Pointer");
             pointer = Instantiate(pointer);
+            pointerForMousePos = Instantiate(pointerForMousePos);
             mouse = Input.mousePosition;
             pointerLayer = 1;
 
@@ -240,14 +243,16 @@ public class PlayerController : MonoBehaviour {
 
         mouse = Input.mousePosition;
         //Debug.Log("mouse " + mouse);
-        mouse.z = -(cameraObj.transform.position.z + (1.2f - (((int)pointerLayer - 1) * 0.4f)));
+        mouse.z = -(cameraObj.transform.position.z /*+ (1.2f - (((int)pointerLayer - 1) * 0.4f))*/);
         pointerPos = Camera.main.ScreenToWorldPoint(mouse);
 
         pointerPos = new Vector3((float)Mathf.Floor(pointerPos.x + 0.5f), (float)Mathf.Floor(pointerPos.y + 0.5f), 0);
 
-        pointer.transform.position = new Vector3(pointerPos.x, pointerPos.y, 0);
+        pointer.transform.position = new Vector3(pointerPos.x, pointerPos.y, 1.2f - ((int)pointerLayer - 1) * 0.4f);
+        pointerForMousePos.transform.position = new Vector3(pointerPos.x, pointerPos.y, 0);
 
-        pointerLayer += Input.GetAxis("Mouse ScrollWheel") * 3;
+
+        pointerLayer += (Input.GetAxis("Mouse ScrollWheel") * 3);
 
         if (pointerLayer > 4) pointerLayer = 4;
         else if (pointerLayer < 1) pointerLayer = 1;

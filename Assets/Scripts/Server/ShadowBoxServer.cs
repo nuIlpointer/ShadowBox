@@ -9,7 +9,6 @@ using UnityEngine.Assertions;
 
 public class ShadowBoxServer : MonoBehaviour {
     public bool debugMode = false;
-    public GameObject terrainGeneratorObj;
     public bool standalone = false;
 
     /// <summary>
@@ -45,15 +44,12 @@ public class ShadowBoxServer : MonoBehaviour {
     private GenerateTerrain terrainGenerator;
     private ServerGUI serverGui;
 
-    void Awake() {
-        if(standalone) serverGui = GameObject.Find("Server").GetComponent<ServerGUI>();
-    }
     // Start is called before the first frame update
     void Start() {
         userList = new Dictionary<Guid, PlayerData>();
         guidConnectionList = new Dictionary<int, Guid>();
         lastCommandSend = new Dictionary<int, float>();
-        terrainGenerator = terrainGeneratorObj.GetComponent<GenerateTerrain>();
+        terrainGenerator = GetComponent<GenerateTerrain>();
         if ((worldInfo = WorldInfo.LoadWorldData()) != null) {
             isWorldGenerated = true;
         }
@@ -78,6 +74,7 @@ public class ShadowBoxServer : MonoBehaviour {
     }
 
     public bool StartServer(int port) {
+        if (standalone) serverGui = GameObject.Find("GUIController").GetComponent<ServerGUI>();
         this.driver = NetworkDriver.Create();
         this.connectionList = new NativeList<NetworkConnection>(16, Allocator.Persistent);
         var endpoint = NetworkEndPoint.AnyIpv4;
@@ -89,6 +86,7 @@ public class ShadowBoxServer : MonoBehaviour {
         } else this.driver.Listen();
         if (debugMode) Debug.Log("[SERVER]Listen on " + port);
         if (debugMode && standalone) serverGui.Log($"Listen on {port}");
+        if(standalone) serverGui.SetWorldInfo(WorldInfo.LoadWorldData());
         active = true;
         return true;
     }
@@ -366,7 +364,7 @@ public class ShadowBoxServer : MonoBehaviour {
 
     public void RegenerateWorld() {
         if(standalone) {
-
+            GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
         }
     }
 

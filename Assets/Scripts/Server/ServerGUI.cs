@@ -31,6 +31,7 @@ public class ServerGUI : MonoBehaviour
         if (!isStarted) StartServer(); else StopServer();    
     }
     private void StartServer() {
+        serverPrefab.GetComponent<ShadowBoxServer>().standalone = true;
         serverPrefab.GetComponent<ShadowBoxServer>().debugMode = enableDebugLog.GetComponent<Toggle>().isOn;
         server = (serverObject = Instantiate(serverPrefab)).GetComponent<ShadowBoxServer>();
         server.StartServer(int.Parse(portNumObject.GetComponent<InputField>().text));
@@ -44,13 +45,19 @@ public class ServerGUI : MonoBehaviour
         isStarted = false;
     }
     public void Log(string text) {
-        logArea.text = $"{text}\n{logArea.text}";
+        logArea.text += $"{text}\n";
     }
-    public void InitializeGUI(WorldInfo worldInfo) {
-
+    public void SetWorldInfo(WorldInfo worldInfo) {
+        worldChunkSizeObj.GetComponent<InputField>().text = ""+worldInfo.GetChunkSizeX();
+        worldSizeXObj.GetComponent<InputField>().text = "" + worldInfo.GetWorldSizeX();
+        worldSizeYObj.GetComponent<InputField>().text = "" + worldInfo.GetWorldSizeY();
+        worldHeightRangeObj.GetComponent<InputField>().text = "" + worldInfo.GetHeightRange();
+        worldSeedObj.GetComponent<InputField>().text = "" + worldInfo.GetSeed();
     }
 
     public void RegenerateWorld() {
-        
+        Log("再生成を開始します");
+        server.RegenerateWorld();
+        Log("再生成を完了しました。");
     }
 }

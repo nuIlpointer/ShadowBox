@@ -90,6 +90,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                 if (debugMode) Debug.Log("[WRAPPER]Success to connect.");
                 log.addText("接続しました。");
                 active = true;
+                Send(connection, "WGC");
                 if (!player.Equals(default(PlayerData)))
                     Send(connection, $"SPD,{player}");
             } else if (cmd == NetworkEvent.Type.Data) {

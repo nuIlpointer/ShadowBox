@@ -28,9 +28,9 @@ public class WorldLoader : MonoBehaviour
 
     public bool autoSetCompnents = false;
 
-    int[] loaded = new int[9];
-    int[] lastLoad = new int[9];
-    int[] liveChunk = new int[9];
+    int[] loaded;
+    int[] lastLoad;
+    int[] liveChunk;
     bool[] visit;
 
     private bool started = false;
@@ -40,6 +40,7 @@ public class WorldLoader : MonoBehaviour
     Queue<Vector2Int> chunkGetQueue = new Queue<Vector2Int>();
     Queue<KeyValuePair<int, Vector3>> loadChunksQueue = new Queue<KeyValuePair<int, Vector3>>();
 
+    public bool wideLoadMode = false;
     public bool getChunkFromServer = true; 
 
     // Start is called before the first frame update
@@ -58,15 +59,27 @@ public class WorldLoader : MonoBehaviour
 
             }
 
+            /* wideLoadModeの場合
+             * 
+             *15  8  1  5  9
+             *14  4  0  2 10
+             *13  7  3  6 11
+            */
+            loaded = new int[wideLoadMode ? 9 : 15];
+            lastLoad = new int[wideLoadMode ? 9 : 15];
+            liveChunk = new int[wideLoadMode ? 9 : 15];
+
             cNumX = ip.chunksNumX;
             cNumY = ip.chunksNumY;
             cSize = ip.chunkSize;
             heightRange = ip.heightRange;
 
-            liveChunk = new int[] { -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+            liveChunk = new int[wideLoadMode ? 9 : 15];
+            for(int i = 0; i < liveChunk.Length; i++)liveChunk[i] = -1;  
 
 
-            lastLoad = new int[] { -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+            lastLoad = new int[wideLoadMode ? 9 : 15];
+            for (int i = 0; i < liveChunk.Length; i++) lastLoad[i] = -1;
 
 
             visit = new bool[cNumX * cNumY];
@@ -89,7 +102,7 @@ public class WorldLoader : MonoBehaviour
             gc = chunkGetQueue.Dequeue();
             //Debug.Log($"gc内容 {gc.x} , {gc.y}");
             if (getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
-            layers[gc.x].MakeChunk(gc.y);
+            //layers[gc.x].MakeChunk(gc.y);
             Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
         }
         
@@ -102,7 +115,7 @@ public class WorldLoader : MonoBehaviour
             if (wrapper.IsConnectionActive() && !wrapper.IsWorldRegenerateFinished()) {
                 wrapper.SetWorldData(cNumX, cNumY, cSize, cSize, heightRange, new System.Random().Next(0, Int32.MaxValue), "new_World");
                 wrapper.RequestWorldRegenerate();
-
+                for (int i = 0; i < visit.Length; i++) visit[i] = false;
                 waking = false;
                 Debug.Log("[WorldLoader] > waked");
             }
@@ -196,25 +209,43 @@ public class WorldLoader : MonoBehaviour
         loaded[0] = chunkNumber;
         //UnityEngine.Debug.LogWarning(chunkNumber);
 
-        bool up = false, lo = false, ri = false, le = false;
+        bool up = false, lo = false, ri = false, le = false, riri = false, lele = false;
+
+        /* wideLoadModeの場合
+         * 
+         *15  8  1  5 12
+         *11  4  0  2 10
+         *14  7  3  6 13
+         *
+        */
 
         if ((loaded[1] = chunkNumber + cNumX) >= cNumX * cNumY) { loaded[1] = -1; } else { up = true; }
         if ((loaded[2] = chunkNumber - cNumX) < 0)              { loaded[2] = -1; } else { lo = true; }
         if ((loaded[3] = chunkNumber + 1) % cNumX == 0)         { loaded[3] = -1; } else { ri = true; }
         if ((loaded[4] = chunkNumber - 1) % cNumX == cNumX - 1 || chunkNumber == 0) { loaded[4] = -1; } else { le = true; }
 
+
         if (up && ri) { loaded[5] = loaded[1] + 1; } else { loaded[5] = -1; }
         if (lo && ri) { loaded[6] = loaded[2] + 1; } else { loaded[6] = -1; }
         if (lo && le) { loaded[7] = loaded[2] - 1; } else { loaded[7] = -1; }
         if (up && le) { loaded[8] = loaded[1] - 1; } else { loaded[8] = -1; }
-        
+
+        //wideLoadModeがtureの場合
+
+        /*if (wideLoadMode) {
+            if ((loaded[10] = chunkNumber + 2) / cNumY > chunkNumber / cNumY) loaded[10] = -1; else riri = true;
+            if ((loaded[11] = chunkNumber - 2) / cNumY < chunkNumber / cNumY) loaded[11] = -1; else lele = true;
+
+            if (up && riri) loaded[12] = loaded[5] + 1;
+        }*/
+
         for(int i = 0; i < 9; i++) {
             liveChunk[i] = loaded[i];//UnityEngine.Debug.LogWarning($"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<{loaded[i]}>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         }
 
 
         //死んだチャンクを検出
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < lastLoad.Length; i++) {
             if (lastLoad[i] != -1) {
                 if (checkDie(lastLoad[i])) {
                     //UnityEngine.Debug.Log("消去　チャンクナンバー:" + lastLoad[i]);
@@ -227,7 +258,7 @@ public class WorldLoader : MonoBehaviour
 
         //UnityEngine.Debug.Log($"{loaded[0]} {loaded[1]} {loaded[2]} {loaded[3]} {loaded[4]} {loaded[5]} {loaded[6]} {loaded[7]} {loaded[8]} ");
         //ロード被り判定
-        for(int i = 0; i < 9; i++){
+        for(int i = 0; i < loaded.Length; i++){
             if (checkLoaded(loaded[i])){
                 //UnityEngine.Debug.Log("被り　チャンクナンバー："+loaded[i]);
                 loaded[i] = -1;
@@ -237,22 +268,22 @@ public class WorldLoader : MonoBehaviour
         //UnityEngine.Debug.Log($"{loaded[0]} {loaded[1]} {loaded[2]} {loaded[3]} {loaded[4]} {loaded[5]} {loaded[6]} {loaded[7]} {loaded[8]} ");
         
 
-        for(int i = 0; i < 9; i++) {
+        for(int i = 0; i < lastLoad.Length; i++) {
             lastLoad[i] = liveChunk[i];
         }
         
 
-        for(int i = 0; i < 9; i++){
+        for(int i = 0; i < loaded.Length; i++){
             if(loaded[i] != -1){
-                //UnityEngine.Debug.Log("生成　チャンクナンバー:" + loaded[i]);
+                
                 for (int j = 1; j <= 4; j++){
                     if (!visit[loaded[i]]) {
                         Debug.Log($"[WorldLoader] > チャンクデータ要求キューに追加 chunkNumber : {loaded[i]}  layer : {j}");
                         
-                        //wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)j, loaded[i]);
+                        
                         chunkGetQueue.Enqueue(new Vector2Int(j, loaded[i]));
                     }
-                    //layers[j].MakeChunk(loaded[i]);
+                    layers[j].MakeChunk(loaded[i]);
                 }
                 visit[loaded[i]] = true;
             }
@@ -270,7 +301,7 @@ public class WorldLoader : MonoBehaviour
     /// <returns></returns>
     private bool checkLoaded(int cn)
     {
-        for (int i = 0; i < 9; i++)
+        for (int i = 0; i < lastLoad.Length; i++)
         {
             if (lastLoad[i] == cn)
             {
@@ -286,7 +317,7 @@ public class WorldLoader : MonoBehaviour
     /// <param name="cn"></param>
     /// <returns></returns>
     private bool checkDie(int cn) {
-        for(int i = 0; i < 9; i++) {
+        for(int i = 0; i < loaded.Length; i++) {
             if(loaded[i] == cn) { return false; }
         }
         return true;
@@ -298,7 +329,7 @@ public class WorldLoader : MonoBehaviour
     /// <param name="cn"></param>
     /// <returns></returns>
     private bool checkLive(int cn) {
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < liveChunk.Length; i++) {
             //UnityEngine.Debug.Log(liveChunk[i]);
             if (liveChunk[i] == cn) {
                 return true;
@@ -318,8 +349,6 @@ public class WorldLoader : MonoBehaviour
     public bool ChunkUpdate(int[][] blocks, int layerNumber, int chunkNumber)
     {
         if (!started) { Start();}
-        //UnityEngine.Debug.Log($"{layers[1]} {layers[2]} {layers[3]} {layers[4]} {layerNumber}");
-
 
         Debug.Log("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber + $"  \n{ChunkToString(blocks)}");
         layers[layerNumber].UpdateChunk(blocks, chunkNumber);

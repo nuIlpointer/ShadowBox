@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public static class TitleData {
     public static string ipAddress = "127.0.0.1";
@@ -11,6 +11,9 @@ public static class TitleData {
 
 public class TitleState : MonoBehaviour
 {
+    [SerializeField] private string gameSceneName;
+    [SerializeField] private GameObject serverItemPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,5 +24,9 @@ public class TitleState : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void OnConnectedToServer() {
+
     }
 }

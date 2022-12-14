@@ -65,20 +65,20 @@ public class WorldLoader : MonoBehaviour
              *14  4  0  2 10
              *13  7  3  6 11
             */
-            loaded = new int[wideLoadMode ? 9 : 15];
-            lastLoad = new int[wideLoadMode ? 9 : 15];
-            liveChunk = new int[wideLoadMode ? 9 : 15];
+            loaded = new int[wideLoadMode ? 15 : 9];
+            lastLoad = new int[wideLoadMode ? 15 : 9];
+            liveChunk = new int[wideLoadMode ? 15 : 9];
 
             cNumX = ip.chunksNumX;
             cNumY = ip.chunksNumY;
             cSize = ip.chunkSize;
             heightRange = ip.heightRange;
 
-            liveChunk = new int[wideLoadMode ? 9 : 15];
+            liveChunk = new int[wideLoadMode ? 15 : 9];
             for(int i = 0; i < liveChunk.Length; i++)liveChunk[i] = -1;  
 
 
-            lastLoad = new int[wideLoadMode ? 9 : 15];
+            lastLoad = new int[wideLoadMode ? 15 : 9];
             for (int i = 0; i < liveChunk.Length; i++) lastLoad[i] = -1;
 
 
@@ -104,9 +104,7 @@ public class WorldLoader : MonoBehaviour
             if (getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
             //layers[gc.x].MakeChunk(gc.y);
             Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
-        }
-        
-    }
+        }    }
 
     // Update is called once per frame
     void Update()
@@ -213,16 +211,16 @@ public class WorldLoader : MonoBehaviour
 
         /* wideLoadModeの場合
          * 
-         *15  8  1  5 12
-         *11  4  0  2 10
-         *14  7  3  6 13
+         *14  8  1  5 11
+         *10  4  0  2  9
+         *13  7  3  6 12
          *
         */
 
         if ((loaded[1] = chunkNumber + cNumX) >= cNumX * cNumY) { loaded[1] = -1; } else { up = true; }
         if ((loaded[2] = chunkNumber - cNumX) < 0)              { loaded[2] = -1; } else { lo = true; }
         if ((loaded[3] = chunkNumber + 1) % cNumX == 0)         { loaded[3] = -1; } else { ri = true; }
-        if ((loaded[4] = chunkNumber - 1) % cNumX == cNumX - 1 || chunkNumber == 0) { loaded[4] = -1; } else { le = true; }
+        if ((loaded[4] = chunkNumber - 1) % cNumX == cNumX - 1 || chunkNumber < 1) { loaded[4] = -1; } else { le = true; }
 
 
         if (up && ri) { loaded[5] = loaded[1] + 1; } else { loaded[5] = -1; }
@@ -232,15 +230,19 @@ public class WorldLoader : MonoBehaviour
 
         //wideLoadModeがtureの場合
 
-        /*if (wideLoadMode) {
-            if ((loaded[10] = chunkNumber + 2) / cNumY > chunkNumber / cNumY) loaded[10] = -1; else riri = true;
-            if ((loaded[11] = chunkNumber - 2) / cNumY < chunkNumber / cNumY) loaded[11] = -1; else lele = true;
+        if (wideLoadMode) {
+            if ((loaded[9] = chunkNumber + 2) / cNumY > chunkNumber / cNumY) loaded[9] = -1; else riri = true;
+            if ((loaded[10] = chunkNumber - 2) / cNumY < chunkNumber / cNumY || chunkNumber < 2) loaded[10] = -1; else lele = true;
 
-            if (up && riri) loaded[12] = loaded[5] + 1;
-        }*/
+            if (up && riri) loaded[11] = loaded[5] + 1; else loaded[11] = -1;
+            if (lo && riri) loaded[12] = loaded[6] + 1; else loaded[12] = -1; 
+            if (lo && lele) loaded[13] = loaded[7] - 1; else loaded[13] = -1;
+            if (up && lele) loaded[14] = loaded[8] - 1; else loaded[14] = -1;
+        }
 
-        for(int i = 0; i < 9; i++) {
-            liveChunk[i] = loaded[i];//UnityEngine.Debug.LogWarning($"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<{loaded[i]}>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        for(int i = 0; i < liveChunk.Length; i++) {
+            liveChunk[i] = loaded[i];
+            //UnityEngine.Debug.LogWarning($"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<{loaded[i]}>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         }
 
 
@@ -265,7 +267,7 @@ public class WorldLoader : MonoBehaviour
             }
         }
 
-        //UnityEngine.Debug.Log($"{loaded[0]} {loaded[1]} {loaded[2]} {loaded[3]} {loaded[4]} {loaded[5]} {loaded[6]} {loaded[7]} {loaded[8]} ");
+        UnityEngine.Debug.LogWarning($"0:{loaded[0]} 1:{loaded[1]} 2:{loaded[2]} 3:{loaded[3]} 4:{loaded[4]} 5:{loaded[5]} 6:{loaded[6]} 7:{loaded[7]} 8:{loaded[8]} 9:{loaded[9]} 10:{loaded[10]} 11:{loaded[11]} 12:{loaded[12]} 13:{loaded[13]} 14:{loaded[14]} 15:{loaded[15]}");
         
 
         for(int i = 0; i < lastLoad.Length; i++) {

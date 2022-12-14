@@ -287,7 +287,8 @@ public class ShadowBoxServer : MonoBehaviour {
                                 if (worldInfo != null) {
                                     int chunkNum = CoordinateToChunkNo(x, y, worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetWorldSizeX());
                                     var oldChunk = LoadChunk(layer, chunkNum);
-                                    oldChunk[x % worldInfo.GetChunkSizeX()][y % worldInfo.GetWorldSizeY()] = blockId;
+
+                                    oldChunk[y % worldInfo.GetChunkSizeY()][x % worldInfo.GetChunkSizeX()] = blockId;
                                     SaveChunk(layer, chunkNum, oldChunk);
                                 }
 

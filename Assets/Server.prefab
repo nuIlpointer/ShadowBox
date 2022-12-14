@@ -45,9 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugMode: 0
-  terrainGeneratorObj: {fileID: 2859619196047104019}
   standalone: 0
-  standaloneGUIObj: {fileID: 0}
   timeout: 0.5
 --- !u!114 &1951639090243056316
 MonoBehaviour:

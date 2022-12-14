@@ -3828,6 +3828,7 @@ MonoBehaviour:
   ip: {fileID: 1724355513}
   wObj: {fileID: 946281863}
   autoSetCompnents: 1
+  wideLoadMode: 0
   getChunkFromServer: 1
 --- !u!1 &1733044395
 GameObject:

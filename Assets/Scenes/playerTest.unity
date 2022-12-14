@@ -4291,7 +4291,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 100
+  field of view: 110
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -4350,7 +4350,7 @@ MonoBehaviour:
   followTarget: {fileID: 142052759}
   follow: 1
   followingLevel: 3
-  cameraDist: -7
+  cameraDist: -10
   yCorrection: 3
 --- !u!1 &1926622003
 GameObject:

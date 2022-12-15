@@ -7,6 +7,8 @@ public static class TitleData {
     public static string ipAddress = "127.0.0.1";
     public static int port = 11781;
     public static bool isMultiPlay = false;
+    public static string playerName = "Player";
+    public static int skinID = 1;
 }
 
 public class TitleState : MonoBehaviour

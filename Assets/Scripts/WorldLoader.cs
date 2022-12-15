@@ -234,7 +234,7 @@ public class WorldLoader : MonoBehaviour
         //wideLoadModeがtureの場合
 
         if (wideLoadMode) {
-            if ((loaded[9] = chunkNumber + 2) / cNumX > chunkNumber / cNumX) loaded[9] = -1; else riri = true;Debug.LogWarning($"loaded9 : {loaded[9]}");
+            if ((loaded[9] = chunkNumber + 2) / cNumX > chunkNumber / cNumX) loaded[9] = -1; else riri = true;
             if ((loaded[10] = chunkNumber - 2) / cNumX < chunkNumber / cNumX || chunkNumber < 2) loaded[10] = -1; else lele = true;
 
             if (up && riri) loaded[11] = loaded[5] + 1; else loaded[11] = -1;
@@ -253,7 +253,7 @@ public class WorldLoader : MonoBehaviour
         for (int i = 0; i < lastLoad.Length; i++) {
             if (lastLoad[i] != -1) {
                 if (checkDie(lastLoad[i])) {
-                    UnityEngine.Debug.LogWarning("消去　チャンクナンバー:" + lastLoad[i] + $"相対位置：{i}");
+                    //UnityEngine.Debug.LogWarning("消去　チャンクナンバー:" + lastLoad[i] + $"相対位置：{i}");
                     for (int j = 1; j <= 4; j++)
                         if (lastLoad[i] != -1)
                             layers[j].RemoveChunk(lastLoad[i]);
@@ -265,7 +265,7 @@ public class WorldLoader : MonoBehaviour
         //ロード被り判定
         for(int i = 0; i < loaded.Length; i++){
             if (checkLoaded(loaded[i])){
-                UnityEngine.Debug.LogWarning("被り　チャンクナンバー："+loaded[i] + $"相対位置：{i}");
+                //UnityEngine.Debug.LogWarning("被り　チャンクナンバー："+loaded[i] + $"相対位置：{i}");
                 loaded[i] = -1;
             }
         }
@@ -290,7 +290,7 @@ public class WorldLoader : MonoBehaviour
                 visit[loaded[i]] = true;
             }
         }
-        if (wideLoadMode) UnityEngine.Debug.LogWarning($"0:{loaded[0]}\t1:{loaded[1]}\t2:{loaded[2]}\t3:{loaded[3]}\t4:{loaded[4]}\t5:{loaded[5]}\t6:{loaded[6]}\t7:{loaded[7]}\t8:{loaded[8]}\t9:{loaded[9]}\t10:{loaded[10]}\t11:{loaded[11]}\t12:{loaded[12]}\t13:{loaded[13]}\t14:{loaded[14]}");
+        //if (wideLoadMode) UnityEngine.Debug.LogWarning($"0:{loaded[0]}\t1:{loaded[1]}\t2:{loaded[2]}\t3:{loaded[3]}\t4:{loaded[4]}\t5:{loaded[5]}\t6:{loaded[6]}\t7:{loaded[7]}\t8:{loaded[8]}\t9:{loaded[9]}\t10:{loaded[10]}\t11:{loaded[11]}\t12:{loaded[12]}\t13:{loaded[13]}\t14:{loaded[14]}");
 
 
 

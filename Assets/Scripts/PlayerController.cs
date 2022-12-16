@@ -53,7 +53,8 @@ public class PlayerController : MonoBehaviour {
     private float loadCnt = 0;
 
     //移動制御等
-    private bool runR = false, runL = false, jump = false, moveB = false, moveF = false, underTheWorld = false;
+    private bool runR = false, runL = false, jump = false, moveB = false, moveF = false, 
+        underTheWorld = false, atRightBorder, atLeftBorder;
     private int inLayer = 2;
     private Vector3 safePos;
 
@@ -278,6 +279,8 @@ public class PlayerController : MonoBehaviour {
             // 上にあげる
             underTheWorld = true;
         }
+
+        
     }
 
 
@@ -387,6 +390,13 @@ public class PlayerController : MonoBehaviour {
         if (underTheWorld) {
             controller.Move(safePos - transform.position);
             underTheWorld = false;
+        }
+
+        if (transform.position.x + movedir.x * Time.deltaTime < 0.5) {
+            movedir.x = 0;
+            if (transform.position.x < 0.5) {
+                controller.Move(new Vector3(5, 0, 0));
+            }
         }
 
 

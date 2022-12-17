@@ -3954,7 +3954,7 @@ MonoBehaviour:
   followTarget: {fileID: 142052759}
   follow: 1
   followingLevel: 3
-  cameraDist: -10
+  cameraDist: -12
   yCorrection: 3
 --- !u!1 &1926622003
 GameObject:

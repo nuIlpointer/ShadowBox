@@ -19,5 +19,6 @@ public class ToggleMenu : MonoBehaviour {
     public void EnableObject(GameObject go) {
         currentObj.SetActive(false);
         go.SetActive(true);
+        currentObj = go;
     }
 }

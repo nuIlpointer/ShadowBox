@@ -16,7 +16,7 @@ public class ToggleImage : MonoBehaviour {
         indicator = imageIndicatorObj.GetComponent<TextMeshProUGUI>();
         Debug.Log($"{instructImages.Length} images loaded.");
         image.sprite = instructImages[index];
-
+        image.preserveAspect = true;
         indicator.text = GenerateIndicatorText(index, instructImages.Length);
     }
 
@@ -24,6 +24,7 @@ public class ToggleImage : MonoBehaviour {
         if (index < instructImages.Length - 1) {
             index++;
             image.sprite = instructImages[index];
+            image.preserveAspect = true;
             indicator.text = GenerateIndicatorText(index, instructImages.Length);
         }
     }
@@ -32,6 +33,7 @@ public class ToggleImage : MonoBehaviour {
         if (index > 0) {
             index--;
             image.sprite = instructImages[index];
+            image.preserveAspect = true;
             indicator.text = GenerateIndicatorText(index, instructImages.Length);
         }
     }

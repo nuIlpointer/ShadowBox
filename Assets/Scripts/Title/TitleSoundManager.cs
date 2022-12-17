@@ -6,6 +6,8 @@ public class TitleSoundManager : MonoBehaviour
 {
     [SerializeField] private AudioClip hoverSound;
     [SerializeField] private AudioClip clickSound;
+    [SerializeField] private AudioClip cancelSound;
+
 
     private AudioSource source;
     // Start is called before the first frame update
@@ -23,7 +25,12 @@ public class TitleSoundManager : MonoBehaviour
     public void PlayHoverSound() {
         source.PlayOneShot(hoverSound);
     }
+    
     public void PlayClickSound() {
         source.PlayOneShot(clickSound);
+    }
+
+    public void PlayCancelSound() {
+        source.PlayOneShot(cancelSound);
     }
 }

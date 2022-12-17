@@ -359,9 +359,6 @@ public class ShadowBoxServer : MonoBehaviour {
         } else return false;
     }
 
-    public WorldInfo? GetWorldInfo() {
-        return worldInfo;
-    }
 
     public void RegenerateWorld() {
         if(standalone) {
@@ -377,6 +374,10 @@ public class ShadowBoxServer : MonoBehaviour {
     }
 
 #nullable enable
+    public WorldInfo? GetWorldInfo() {
+        return worldInfo;
+    }
+
     /// <summary>
     /// レイヤーデータをファイルから読み込む
     /// </summary>

@@ -19,8 +19,8 @@ public class PlayerController : MonoBehaviour {
     public CreateController creater;
     private string ipAddress = "127.0.0.1";
     private int port = 11781;
-    private string playerName = "Player";
-    private int skinID;
+    public string playerName = "Player";
+    public int skinID;
     private int oldSkinID;
     private bool createServer = false;
     /// <summary>
@@ -97,6 +97,14 @@ public class PlayerController : MonoBehaviour {
             wrapper.Connect(ipAddress, port);
 
             //スキンid
+
+            string sid = Enum.GetName(typeof(Skins), skinID);
+
+            anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load($"Characters/Animator/{sid}/{sid}_player");
+            if(sid == null) {
+                Debug.LogWarning($"[PlayerController] > 指定のスキンIDのスキンは見つかりませんでした。エラーマンが出動します。　ID : {skinID}");
+                anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load($"Characters/Animator/error_man/error_man_player");
+            }
             oldSkinID = skinID;
 
             //ポインタ

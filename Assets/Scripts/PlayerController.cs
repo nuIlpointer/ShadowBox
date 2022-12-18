@@ -17,12 +17,12 @@ public class PlayerController : MonoBehaviour {
     public CharacterController controller;
     public Animator anim;
     public CreateController creater;
-    public string ipAddress = "127.0.0.1";
-    public int port = 11781;
-    public string playerName = "Player";
-    public int skinID;
+    private string ipAddress = "127.0.0.1";
+    private int port = 11781;
+    private string playerName = "Player";
+    private int skinID;
     private int oldSkinID;
-    public bool createServer = false;
+    private bool createServer = false;
     /// <summary>
     /// true時、ゲーム起動時にサーバにワールド再生成リクエストを送ります
     /// </summary>
@@ -74,6 +74,15 @@ public class PlayerController : MonoBehaviour {
     public generaTester gt;
 
     private bool firstUpdate = true;
+
+    //Start()前の初期化完了最初のタイミングで実行
+    void Awake() {
+        ipAddress = TitleData.ipAddress;
+        port = TitleData.port;
+        playerName = TitleData.playerName;
+        createServer = !TitleData.isMultiPlay;
+        skinID = TitleData.skinID;
+    }
 
     // Start is called before the first frame update
     void Start() {

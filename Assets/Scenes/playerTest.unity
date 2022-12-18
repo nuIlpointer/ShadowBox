@@ -413,7 +413,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 142052759}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 40, y: 15, z: 0.4}
+  m_LocalPosition: {x: 40, y: 30, z: 0.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1724355515}
@@ -440,11 +440,6 @@ MonoBehaviour:
   controller: {fileID: 142052764}
   anim: {fileID: 142052763}
   creater: {fileID: 142052765}
-  ipAddress: 127.0.0.1
-  port: 11781
-  playerName: Player
-  skinID: 1
-  createServer: 1
   wakeUpWithWorldRegenerate: 1
   pointerLayer: 0
   syncTimeLate: 0.1

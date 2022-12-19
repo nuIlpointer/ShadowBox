@@ -17,12 +17,12 @@ public class PlayerController : MonoBehaviour {
     public CharacterController controller;
     public Animator anim;
     public CreateController creater;
-    public string ipAddress = "127.0.0.1";
-    public int port = 11781;
+    private string ipAddress = "127.0.0.1";
+    private int port = 11781;
     public string playerName = "Player";
     public int skinID;
     private int oldSkinID;
-    public bool createServer = false;
+    private bool createServer = false;
     /// <summary>
     /// true時、ゲーム起動時にサーバにワールド再生成リクエストを送ります
     /// </summary>
@@ -53,7 +53,8 @@ public class PlayerController : MonoBehaviour {
     private float loadCnt = 0;
 
     //移動制御等
-    private bool runR = false, runL = false, jump = false, moveB = false, moveF = false, underTheWorld = false;
+    private bool runR = false, runL = false, jump = false, moveB = false, moveF = false, 
+        underTheWorld = false, atRightBorder, atLeftBorder;
     private int inLayer = 2;
     private Vector3 safePos;
 
@@ -74,6 +75,16 @@ public class PlayerController : MonoBehaviour {
 
     private bool firstUpdate = true;
 
+    //Start()前の初期化完了最初のタイミングで実行
+    void Awake() {
+        ipAddress = TitleData.ipAddress;
+        port = TitleData.port;
+        playerName = TitleData.playerName;
+        createServer = !TitleData.isMultiPlay;
+        skinID = TitleData.skinID;
+        Debug.Log($"{ipAddress}:{port} singlemode:{createServer} Player {playerName}(skinID:{skinID}) ");
+    }
+
     // Start is called before the first frame update
     void Start() {
         if (!started) {
@@ -87,6 +98,14 @@ public class PlayerController : MonoBehaviour {
             wrapper.Connect(ipAddress, port);
 
             //スキンid
+
+            string sid = Enum.GetName(typeof(Skins), skinID);
+
+            anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load($"Characters/Animator/{sid}/{sid}_player");
+            if(sid == null) {
+                Debug.LogWarning($"[PlayerController] > 指定のスキンIDのスキンは見つかりませんでした。エラーマンが出動します。　ID : {skinID}");
+                anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load($"Characters/Animator/error_man/error_man_player");
+            }
             oldSkinID = skinID;
 
             //ポインタ
@@ -278,6 +297,8 @@ public class PlayerController : MonoBehaviour {
             // 上にあげる
             underTheWorld = true;
         }
+
+        
     }
 
 
@@ -387,6 +408,13 @@ public class PlayerController : MonoBehaviour {
         if (underTheWorld) {
             controller.Move(safePos - transform.position);
             underTheWorld = false;
+        }
+
+        if (transform.position.x + movedir.x * Time.deltaTime < 0.5) {
+            movedir.x = 0;
+            if (transform.position.x < 0.5) {
+                controller.Move(new Vector3(5, 0, 0));
+            }
         }
 
 

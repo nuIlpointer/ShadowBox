@@ -155,11 +155,6 @@ public class LayerManager : MonoBehaviour {
         }
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    }
-
 
     /// <summary>
     /// 指定チャンク内のブロックを生成[テスト版]
@@ -326,6 +321,6 @@ public class LayerManager : MonoBehaviour {
     }
 
     public int GetBlock(int chunkNumber, int x, int y) {
-        return chunks[chunkNumber].blocks[y][x];
+        return (x >= 0 && y >= 0 && y < chunks[chunkNumber].blocks.Length && x < chunks[chunkNumber].blocks[y].Length) ? chunks[chunkNumber].blocks[y][x] : 0;
     }
 }

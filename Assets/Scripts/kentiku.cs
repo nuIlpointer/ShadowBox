@@ -10,7 +10,7 @@ public class kentiku : MonoBehaviour
     public GameObject image;
     public GameObject ChangeButton;
     
-    private bool flg = true;
+    private bool flg = false;
     public void Onclick() {
         flg = !flg;
         //image2.SetActive(flg);

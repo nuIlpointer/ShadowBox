@@ -21,4 +21,10 @@ public class ToggleMenu : MonoBehaviour {
         go.SetActive(true);
         currentObj = go;
     }
+
+    public void SetAsLocal() {
+        TitleData.port = 11781;
+        TitleData.ipAddress = "127.0.0.1";
+        TitleData.isMultiPlay = false;
+    }
 }

@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 public class LoadServerList : MonoBehaviour {
     [SerializeField] private GameObject serverItemPrefab;
@@ -27,6 +28,14 @@ public class LoadServerList : MonoBehaviour {
                     }
                 }
                 SetServerInfo(firstObject);
+
+                foreach (GameObject o in GameObject.FindGameObjectsWithTag("ServerItem")) {
+                    if (o.Equals(firstObject)) {
+                        o.transform.Find("ServerBackground").gameObject.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.2f, 0.1f);
+                    } else {
+                        o.transform.Find("ServerBackground").gameObject.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.2f, 0f);
+                    }
+                }
             }
         }
     }

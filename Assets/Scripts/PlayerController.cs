@@ -82,6 +82,7 @@ public class PlayerController : MonoBehaviour {
         playerName = TitleData.playerName;
         createServer = !TitleData.isMultiPlay;
         skinID = TitleData.skinID;
+        Debug.Log($"{ipAddress}:{port} singlemode:{createServer} Player {playerName}(skinID:{skinID}) ");
     }
 
     // Start is called before the first frame update

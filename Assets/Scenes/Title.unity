@@ -1288,6 +1288,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1146702706}
+        m_TargetAssemblyTypeName: ToggleMenu, Assembly-CSharp
+        m_MethodName: SetAsLocal
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &600460383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4984,6 +4996,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1511818265}
         m_TargetAssemblyTypeName: OpenNextScene, Assembly-CSharp
         m_MethodName: Open
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1184019386}
+        m_TargetAssemblyTypeName: LoadSkinList, Assembly-CSharp
+        m_MethodName: SetName
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

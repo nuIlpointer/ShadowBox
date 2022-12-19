@@ -278,11 +278,12 @@ public class PlayerController : MonoBehaviour {
 
         //建築
 
-        if (Input.GetMouseButton(0)) {
-            creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
-        }
-        if(Input.GetMouseButton(1)) {
-            creater.DeleteBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+        Debug.Log(worldSize.x);
+        if (pointerPos.x >= 0 && pointerPos.y >= 0 && pointerPos.x < worldLoader.GetWorldSizeX() && pointerPos.y < worldLoader.GetWorldSizeY()) {
+            if (Input.GetMouseButton(0))
+                creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+            if (Input.GetMouseButton(1))
+                creater.DeleteBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
         }
 
 

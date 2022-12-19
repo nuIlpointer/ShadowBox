@@ -522,4 +522,14 @@ public class WorldLoader : MonoBehaviour
         }
         return result;
     }
+
+
+
+
+    public int GetWorldSizeX() {
+        return cNumX * cSize;
+    }
+    public int GetWorldSizeY() {
+        return cNumY * cSize;
+    }
 }

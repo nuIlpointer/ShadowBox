@@ -37,7 +37,7 @@ public class CreateController : MonoBehaviour
     /// <param name="y"></param>
     /// <param name="leyerNumber"></param>
     public void DrawBlock(int x, int y, int layerNumber) {
-        Vector2Int[] marks;
+        Vector2Int[] marks = null;
         //ブラシのマーク位置を決定
         switch (lineWidth % 10) {
             case 0:
@@ -46,50 +46,62 @@ public class CreateController : MonoBehaviour
             case 1:
                 marks = BOLD_MARKS;
                 break;
+            default:
+                marks = SHARP_MARKS;
+                break;
         }
 
         if(lineWidth / 10 == 1) {
             for(int i = 1; i <= 4; i++) {
-                
-
-                if (worldLoader.GetBlock(x, y, i) != useBlock) {
-                    if (wrapper.IsConnectionActive()) {
-
-                        wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)i, x, y, useBlock);
-
-                    } else {
-
-                        worldLoader.BlockUpdate(useBlock, i, x, y);
-
+                for (int j = 0; j < marks.Length; j++) {
+                    if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) != useBlock) {
+                        if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)i, x + marks[j].x, y + marks[j].y, useBlock);
+                        else worldLoader.BlockUpdate(useBlock, i, x + marks[j].x, y + marks[j].y);
                     }
                 }
             }
         } else {
-            if (worldLoader.GetBlock(x, y, layerNumber) != useBlock) {
-                if (wrapper.IsConnectionActive()) {
-
-                    wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x, y, useBlock);
-
-                } else {
-
-                    worldLoader.BlockUpdate(useBlock, layerNumber, x, y);
-
+            for (int j = 0; j < marks.Length; j++) {
+                if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) != useBlock) {
+                    if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x + marks[j].x, y + marks[j].y, useBlock);
+                    else worldLoader.BlockUpdate(useBlock, layerNumber, x + marks[j].x, y + marks[j].y);
                 }
             }
         }
         
     }
 
+
     public void DeleteBlock(int x, int y, int layerNumber) {
-        if (worldLoader.GetBlock(x, y, layerNumber) != useBlock) {
-            if (wrapper.IsConnectionActive()) {
+        Vector2Int[] marks = null;
+        //ブラシのマーク位置を決定
+        switch (lineWidth % 10) {
+            case 0:
+                marks = SHARP_MARKS;
+                break;
+            case 1:
+                marks = BOLD_MARKS;
+                break;
+            default:
+                marks = SHARP_MARKS;
+                break;
+        }
 
-                wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x, y, 0);
-
-            } else {
-
-                worldLoader.BlockUpdate(0, layerNumber, x, y);
-
+        if (lineWidth / 10 == 1) {
+            for (int i = 1; i <= 4; i++) {
+                for (int j = 0; j < marks.Length; j++) {
+                    if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) != 0) {
+                        if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)i, x + marks[j].x, y + marks[j].y, 0);
+                        else worldLoader.BlockUpdate(0, i, x + marks[j].x, y + marks[j].y);
+                    }
+                }
+            }
+        } else {
+            for (int j = 0; j < marks.Length; j++) {
+                if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) != 0) {
+                    if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x + marks[j].x, y + marks[j].y, 0);
+                    else worldLoader.BlockUpdate(0, layerNumber, x + marks[j].x, y + marks[j].y);
+                }
             }
         }
     }

@@ -10,16 +10,6 @@ public class pointer_layer : MonoBehaviour
    
 
     private bool flg = true;
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void OnClickUp() {
         pc.pointerLayer = pc.pointerLayer + 1;    

@@ -9,9 +9,8 @@ using UnityEngine.Assertions;
 
 public class ShadowBoxServer : MonoBehaviour {
     public bool debugMode = false;
-    public GameObject terrainGeneratorObj;
+    public bool standalone = false;
 
-    private GenerateTerrain terrainGenerator;
     /// <summary>
     /// 最後の通信からこの時間が経過した場合、切断とみなす時間
     /// </summary>
@@ -42,12 +41,15 @@ public class ShadowBoxServer : MonoBehaviour {
     private bool isWorldGenerated = false;
     private bool active = false;
     private WorldInfo worldInfo;
+    private GenerateTerrain terrainGenerator;
+    private ServerGUI serverGui;
+
     // Start is called before the first frame update
     void Start() {
         userList = new Dictionary<Guid, PlayerData>();
         guidConnectionList = new Dictionary<int, Guid>();
         lastCommandSend = new Dictionary<int, float>();
-        terrainGenerator = terrainGeneratorObj.GetComponent<GenerateTerrain>();
+        terrainGenerator = GetComponent<GenerateTerrain>();
         if ((worldInfo = WorldInfo.LoadWorldData()) != null) {
             isWorldGenerated = true;
         }
@@ -72,15 +74,19 @@ public class ShadowBoxServer : MonoBehaviour {
     }
 
     public bool StartServer(int port) {
+        if (standalone) serverGui = GameObject.Find("GUIController").GetComponent<ServerGUI>();
         this.driver = NetworkDriver.Create();
         this.connectionList = new NativeList<NetworkConnection>(16, Allocator.Persistent);
         var endpoint = NetworkEndPoint.AnyIpv4;
         endpoint.Port = (ushort)port;
         if (this.driver.Bind(endpoint) != 0) {
             if (debugMode) Debug.LogError("[SERVER]Failed to bind port " + port + ".");
+            if (debugMode && standalone) serverGui.Log("Failed to bind port.");
             return false;
         } else this.driver.Listen();
         if (debugMode) Debug.Log("[SERVER]Listen on " + port);
+        if (debugMode && standalone) serverGui.Log($"Listen on {port}");
+        if(standalone) serverGui.SetWorldInfo(WorldInfo.LoadWorldData());
         active = true;
         return true;
     }
@@ -115,217 +121,224 @@ public class ShadowBoxServer : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        this.driver.ScheduleUpdate().Complete();
+        if(active) {
+            this.driver.ScheduleUpdate().Complete();
 
-        for (int i = 0; i < this.connectionList.Length; i++) {
-            if (!this.connectionList[i].IsCreated) { //破棄されたコネクションを削除
-                this.connectionList.RemoveAtSwapBack(i);
-                i--;
-            }
-        }
-
-        NetworkConnection connection;
-        while ((connection = this.driver.Accept()) != default(NetworkConnection)) {
-            this.connectionList.Add(connection);
-        }
-
-        // なんかDisconnectイベントを拾ってくれないので一定時間何のパケットも送信しなかった時切断とみなすよう変更。
-        // 原因不明の為少し不安要素。まあいいや。
-        //if(debugMode) Debug.Log(string.Join(",", lastCommandSend.Values));
-        foreach (int connectionId in new List<int>(lastCommandSend.Keys)) {
-            if (lastCommandSend[connectionId] >= timeout) {
-                foreach (NetworkConnection conn in connectionList) {
-                    if (conn.IsCreated) {
-                        if (guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != connectionId)
-                            Send(conn, $"UDC,{guidConnectionList[connectionId]}");
-
-                    }
-                }
-
-                if (debugMode) Debug.Log($"[Server]User {guidConnectionList[connectionId]} has disconnected.");
-                userList.Remove(guidConnectionList[connectionId]);
-                lastCommandSend.Remove(connectionId);
-                guidConnectionList.Remove(connectionId);
-                this.connectionList[connectionId].Disconnect(driver);
-                this.connectionList[connectionId] = default(NetworkConnection);
-            } else
-                lastCommandSend[connectionId] += Time.deltaTime;
-        }
-
-        DataStreamReader stream;
-        for (int i = 0; i < this.connectionList.Length; i++) {
-            //コネクションが作成されているかどうか
-            if (this.connectionList[i].IsCreated) {
-                Assert.IsTrue(this.connectionList[i].IsCreated);
-
-                NetworkEvent.Type cmd;
-                while ((cmd = this.driver.PopEventForConnection(this.connectionList[i], out stream)) != NetworkEvent.Type.Empty) {
-                    if (cmd == NetworkEvent.Type.Connect) {
-                        if (debugMode) Debug.Log("[SERVER]User Connected.");
-                    } else if (cmd == NetworkEvent.Type.Data) {
-                        //データを受信したとき
-                        String receivedData = ("" + stream.ReadFixedString4096());
-                        if (stream.HasFailedReads) Debug.Log("[SERVER]Failed to read data");
-                        lastCommandSend[this.connectionList[i].InternalId] = 0.0f;
-                        if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
-                            receivedData = receivedData.Replace("SCH,", "");
-                            if (debugMode) Debug.Log("[SERVER]Receive chunk data: \n" + receivedData);
-                            BlockLayer layerID = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[0]);
-                            int chunkID = Int32.Parse(receivedData.Split(',')[1]);
-                            receivedData = receivedData.Replace($"{layerID},{chunkID},", "");
-                            List<int[]> tempArr = new List<int[]>();
-                            foreach (string line in receivedData.Split('\n'))
-                                if (line != "")
-                                    tempArr.Add(Array.ConvertAll(line.Split(','), int.Parse));
-                            SaveChunk(layerID, chunkID, tempArr.ToArray());
-                        }
-
-                        if (receivedData.StartsWith("SPD")) { //プレイヤーデータを受信したとき
-                            var dataArr = receivedData.Split(',');
-                            PlayerData newPlayer;
-                            // 受信したデータをPlayerDataに落としこむ
-                            newPlayer.name = dataArr[1];
-                            newPlayer.skinType = Int32.Parse(dataArr[2]);
-                            newPlayer.actState = Int32.Parse(dataArr[3]);
-                            newPlayer.playerID = Guid.Parse(dataArr[4]);
-                            newPlayer.playerX = float.Parse(dataArr[5]);
-                            newPlayer.playerY = float.Parse(dataArr[6]);
-                            newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[7]);
-                            userList[newPlayer.playerID] = newPlayer;
-
-                            //デバッグ出力
-                            if (debugMode) Debug.Log("[SERVER]Recieve new user data: " + userList[newPlayer.playerID].ToString());
-
-                            //当該プレイヤーとNetworkConnectionを紐づけする
-                            guidConnectionList[this.connectionList[i].InternalId] = newPlayer.playerID;
-
-                            //プレイヤー情報を周知する
-                            foreach (NetworkConnection conn in connectionList)
-                                Send(conn, $"NPD,{newPlayer.ToString()}");
-
-                            //当該ユーザに現在のユーザ一覧を送信する
-                            var sendPListStr = "PDL,";
-                            foreach (PlayerData data in userList.Values)
-                                sendPListStr += data.ToString() + "\n";
-                            Send(connectionList[i], sendPListStr);
-                            if (debugMode) Debug.Log("[SERVER]USERS:" + string.Join(",", userList.Values));
-                        }
-
-                        //送出
-                        if (receivedData.StartsWith("RQC")) { //チャンク要求を受け取った時
-                            if (debugMode) Debug.Log("[SERVER]Recieve chunk request from client");
-                            receivedData = receivedData.Replace("RQC,", "");
-                            var dataArr = receivedData.Split(',');
-                            BlockLayer blockLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
-                            int chunkID = Int32.Parse(dataArr[1]);
-                            var sendChunkData = isWorldGenerated ? LoadChunk(blockLayer, chunkID) : LoadDefaultChunk();
-                            var sendChunkStr = $"CKD,{blockLayer},{chunkID},";
-                            foreach (int[] chunkLine in sendChunkData)
-                                sendChunkStr += string.Join(",", chunkLine) + "\n";
-                            if (debugMode) Debug.Log($"[SERVER]Sending data {sendChunkStr}");
-                            Send(connectionList[i], sendChunkStr);
-                        }
-
-                        if (receivedData.StartsWith("WGC")) {
-                            Send(connectionList[i], $"WST,{isWorldGenerated}");
-                        }
-
-                        //プレイヤー一覧の取得要求
-                        if (receivedData.StartsWith("RPL")) {
-                            var sendPListStr = "PDL,";
-                            foreach (PlayerData data in userList.Values)
-                                sendPListStr += data.ToString() + "\n";
-                            Send(connectionList[i], sendPListStr);
-                            if (debugMode) Debug.Log("USERS:" + string.Join(",", userList.Values));
-                        }
-
-                        // プレイヤーのデータ
-                        if (receivedData.StartsWith("RPD"))
-                            Send(connectionList[i], $"PLD,{userList[Guid.Parse(receivedData.Replace("RPD,", ""))]}");
-
-                        //プレイヤーの移動データ受信 
-                        if (receivedData.StartsWith("PMV")) {
-                            receivedData = receivedData.Replace("PMV,", "");
-                            var dataArr = receivedData.Split(',');
-                            PlayerData newPlayer;
-                            newPlayer.playerID = Guid.Parse(dataArr[0]);
-                            newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
-                            newPlayer.playerX = float.Parse(dataArr[2]);
-                            newPlayer.playerY = float.Parse(dataArr[3]);
-                            newPlayer.actState = Int32.Parse(dataArr[4]);
-                            newPlayer.name = userList[newPlayer.playerID].name;
-                            newPlayer.skinType = userList[newPlayer.playerID].skinType;
-                            userList[newPlayer.playerID] = newPlayer;
-
-                            //仮 ログ出力
-                            // if (debugMode) Debug.Log($"[SERVER]Player {userList[newPlayer.playerID].name} moving to {newPlayer.playerX}, {newPlayer.playerY}");
-
-                            //自身を除くユーザに移動情報を通知する
-                            int senderConnectionID = connectionList[i].InternalId;
-                            foreach (NetworkConnection conn in connectionList)
-                                if (conn.InternalId != senderConnectionID)
-                                    Send(conn, $"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}");
-                        }
-
-                        //ブロック単位の更新を受け取った時のやつ
-                        if (receivedData.StartsWith("SBC")) {
-                            receivedData = receivedData.Replace("SBC,", "");
-                            var dataArr = receivedData.Split(',');
-                            BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
-                            int x = Int32.Parse(dataArr[1]);
-                            int y = Int32.Parse(dataArr[2]);
-                            int blockId = Int32.Parse(dataArr[3]);
-                            if (worldInfo != null) {
-                                int chunkNum = CoordinateToChunkNo(x, y, worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetWorldSizeX());
-                                var oldChunk = LoadChunk(layer, chunkNum);
-                                oldChunk[x % worldInfo.GetChunkSizeX()][y % worldInfo.GetWorldSizeY()] = blockId;
-                                SaveChunk(layer, chunkNum, oldChunk);
-                            }
-
-                            //全ユーザに移動情報を通知
-                            foreach (NetworkConnection conn in connectionList)
-                                Send(conn, $"BCB,{receivedData}");
-                        }
-
-                        //ワールドのconfigを設定するやつ
-                        if (receivedData.StartsWith("SWD")) {
-                            receivedData = receivedData.Replace("SWD,", "");
-                            var dataArr = receivedData.Split(',');
-                            int worldSizeX = Int32.Parse(dataArr[0]);
-                            int worldSizeY = Int32.Parse(dataArr[1]);
-                            int chunkSizeX = Int32.Parse(dataArr[2]);
-                            int chunkSizeY = Int32.Parse(dataArr[3]);
-                            int heightRange = Int32.Parse(dataArr[4]);
-                            int seed = Int32.Parse(dataArr[5]);
-                            string worldName = dataArr[6];
-
-                            worldInfo = new WorldInfo(worldSizeX, worldSizeY, chunkSizeX, chunkSizeY, heightRange, seed, worldName);
-                            worldInfo.SaveWorldData();
-                            if (debugMode) Debug.Log("[SERVER]World regenerate complete.");
-                            foreach (NetworkConnection conn in connectionList)
-                                Send(conn, "RCP");
-                        }
-
-                        //ワールドを再生成するやつ
-                        if (receivedData.StartsWith("RGN")) {
-                            if (debugMode) Debug.Log("[SERVER]Start world regenerate...");
-                            if (worldInfo != null) {
-                                GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
-                            } else {
-                                Send(connectionList[i], "FGN");
-                            }
-                        }
-
-                        // 切断処理...なんでDisconnectイベント拾ってくれないんや！
-                        if (receivedData.StartsWith("DCN")) {
-                            if (debugMode) Debug.Log("[SERVER]User disconnected.");
-                        }
-                    } else {
-                        Debug.Log("Unknown Event");
-                    }
+            for (int i = 0; i < this.connectionList.Length; i++) {
+                if (!this.connectionList[i].IsCreated) { //破棄されたコネクションを削除
+                    this.connectionList.RemoveAtSwapBack(i);
+                    i--;
                 }
             }
 
+            NetworkConnection connection;
+            while ((connection = this.driver.Accept()) != default(NetworkConnection)) {
+                this.connectionList.Add(connection);
+            }
+
+            // なんかDisconnectイベントを拾ってくれないので一定時間何のパケットも送信しなかった時切断とみなすよう変更。
+            // 原因不明の為少し不安要素。まあいいや。
+            //if(debugMode) Debug.Log(string.Join(",", lastCommandSend.Values));
+            foreach (int connectionId in new List<int>(lastCommandSend.Keys)) {
+                if (lastCommandSend[connectionId] >= timeout) {
+                    foreach (NetworkConnection conn in connectionList) {
+                        if (conn.IsCreated) {
+                            if (guidConnectionList.ContainsKey(conn.InternalId) && conn.InternalId != connectionId)
+                                Send(conn, $"UDC,{guidConnectionList[connectionId]}");
+
+                        }
+                    }
+
+                    if (debugMode) Debug.Log($"[Server]User {guidConnectionList[connectionId]} has disconnected.");
+                    if (debugMode && standalone) serverGui.Log($"User {guidConnectionList[connectionId]} has disconnected.");
+                    userList.Remove(guidConnectionList[connectionId]);
+                    lastCommandSend.Remove(connectionId);
+                    guidConnectionList.Remove(connectionId);
+                    this.connectionList[connectionId].Disconnect(driver);
+                    this.connectionList[connectionId] = default(NetworkConnection);
+                } else
+                    lastCommandSend[connectionId] += Time.deltaTime;
+            }
+
+            DataStreamReader stream;
+            for (int i = 0; i < this.connectionList.Length; i++) {
+                //コネクションが作成されているかどうか
+                if (this.connectionList[i].IsCreated) {
+                    Assert.IsTrue(this.connectionList[i].IsCreated);
+
+                    NetworkEvent.Type cmd;
+                    while ((cmd = this.driver.PopEventForConnection(this.connectionList[i], out stream)) != NetworkEvent.Type.Empty) {
+                        if (cmd == NetworkEvent.Type.Connect) {
+                            if (debugMode) Debug.Log("[SERVER]User Connected.");
+                            if (debugMode && standalone) serverGui.Log($"New connection detected.");
+                        } else if (cmd == NetworkEvent.Type.Data) {
+                            //データを受信したとき
+                            String receivedData = ("" + stream.ReadFixedString4096());
+                            if (stream.HasFailedReads) Debug.Log("[SERVER]Failed to read data");
+                            lastCommandSend[this.connectionList[i].InternalId] = 0.0f;
+                            if (receivedData.StartsWith("SCH")) { //チャンクを受信したとき
+                                receivedData = receivedData.Replace("SCH,", "");
+                                if (debugMode) Debug.Log("[SERVER]Receive chunk data: \n" + receivedData);
+                                BlockLayer layerID = (BlockLayer)Enum.Parse(typeof(BlockLayer), receivedData.Split(',')[0]);
+                                int chunkID = Int32.Parse(receivedData.Split(',')[1]);
+                                receivedData = receivedData.Replace($"{layerID},{chunkID},", "");
+                                List<int[]> tempArr = new List<int[]>();
+                                foreach (string line in receivedData.Split('\n'))
+                                    if (line != "")
+                                        tempArr.Add(Array.ConvertAll(line.Split(','), int.Parse));
+                                SaveChunk(layerID, chunkID, tempArr.ToArray());
+                            }
+
+                            if (receivedData.StartsWith("SPD")) { //プレイヤーデータを受信したとき
+                                var dataArr = receivedData.Split(',');
+                                PlayerData newPlayer;
+                                // 受信したデータをPlayerDataに落としこむ
+                                newPlayer.name = dataArr[1];
+                                newPlayer.skinType = Int32.Parse(dataArr[2]);
+                                newPlayer.actState = Int32.Parse(dataArr[3]);
+                                newPlayer.playerID = Guid.Parse(dataArr[4]);
+                                newPlayer.playerX = float.Parse(dataArr[5]);
+                                newPlayer.playerY = float.Parse(dataArr[6]);
+                                newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[7]);
+                                userList[newPlayer.playerID] = newPlayer;
+
+                                //デバッグ出力
+                                if (debugMode) Debug.Log("[SERVER]Recieve new user data: " + userList[newPlayer.playerID].ToString());
+                                if (debugMode && standalone) serverGui.Log($"User {newPlayer.name} joined.");
+                                //当該プレイヤーとNetworkConnectionを紐づけする
+                                guidConnectionList[this.connectionList[i].InternalId] = newPlayer.playerID;
+
+                                //プレイヤー情報を周知する
+                                foreach (NetworkConnection conn in connectionList)
+                                    Send(conn, $"NPD,{newPlayer.ToString()}");
+
+                                //当該ユーザに現在のユーザ一覧を送信する
+                                var sendPListStr = "PDL,";
+                                foreach (PlayerData data in userList.Values)
+                                    sendPListStr += data.ToString() + "\n";
+                                Send(connectionList[i], sendPListStr);
+                                if (debugMode) Debug.Log("[SERVER]USERS:" + string.Join(",", userList.Values));
+                            }
+
+                            //送出
+                            if (receivedData.StartsWith("RQC")) { //チャンク要求を受け取った時
+                                if (debugMode) Debug.Log("[SERVER]Recieve chunk request from client");
+                                receivedData = receivedData.Replace("RQC,", "");
+                                var dataArr = receivedData.Split(',');
+                                BlockLayer blockLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
+                                int chunkID = Int32.Parse(dataArr[1]);
+                                var sendChunkData = isWorldGenerated ? LoadChunk(blockLayer, chunkID) : LoadDefaultChunk();
+                                var sendChunkStr = $"CKD,{blockLayer},{chunkID},";
+                                foreach (int[] chunkLine in sendChunkData)
+                                    sendChunkStr += string.Join(",", chunkLine) + "\n";
+                                if (debugMode) Debug.Log($"[SERVER]Sending data {sendChunkStr}");
+                                Send(connectionList[i], sendChunkStr);
+                            }
+
+                            if (receivedData.StartsWith("WGC")) {
+                                Send(connectionList[i], $"WST,{isWorldGenerated}");
+                            }
+
+                            //プレイヤー一覧の取得要求
+                            if (receivedData.StartsWith("RPL")) {
+                                var sendPListStr = "PDL,";
+                                foreach (PlayerData data in userList.Values)
+                                    sendPListStr += data.ToString() + "\n";
+                                Send(connectionList[i], sendPListStr);
+                                if (debugMode) Debug.Log("USERS:" + string.Join(",", userList.Values));
+                            }
+
+                            // プレイヤーのデータ
+                            if (receivedData.StartsWith("RPD"))
+                                Send(connectionList[i], $"PLD,{userList[Guid.Parse(receivedData.Replace("RPD,", ""))]}");
+
+                            //プレイヤーの移動データ受信 
+                            if (receivedData.StartsWith("PMV")) {
+                                receivedData = receivedData.Replace("PMV,", "");
+                                var dataArr = receivedData.Split(',');
+                                PlayerData newPlayer;
+                                newPlayer.playerID = Guid.Parse(dataArr[0]);
+                                newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
+                                newPlayer.playerX = float.Parse(dataArr[2]);
+                                newPlayer.playerY = float.Parse(dataArr[3]);
+                                newPlayer.actState = Int32.Parse(dataArr[4]);
+                                newPlayer.name = userList[newPlayer.playerID].name;
+                                newPlayer.skinType = userList[newPlayer.playerID].skinType;
+                                userList[newPlayer.playerID] = newPlayer;
+
+                                //仮 ログ出力
+                                // if (debugMode) Debug.Log($"[SERVER]Player {userList[newPlayer.playerID].name} moving to {newPlayer.playerX}, {newPlayer.playerY}");
+
+                                //自身を除くユーザに移動情報を通知する
+                                int senderConnectionID = connectionList[i].InternalId;
+                                foreach (NetworkConnection conn in connectionList)
+                                    if (conn.InternalId != senderConnectionID)
+                                        Send(conn, $"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}");
+                            }
+
+                            //ブロック単位の更新を受け取った時のやつ
+                            if (receivedData.StartsWith("SBC")) {
+                                receivedData = receivedData.Replace("SBC,", "");
+                                var dataArr = receivedData.Split(',');
+                                BlockLayer layer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]);
+                                int x = Int32.Parse(dataArr[1]);
+                                int y = Int32.Parse(dataArr[2]);
+                                int blockId = Int32.Parse(dataArr[3]);
+                                if (worldInfo != null) {
+                                    int chunkNum = CoordinateToChunkNo(x, y, worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetWorldSizeX());
+                                    var oldChunk = LoadChunk(layer, chunkNum);
+
+                                    oldChunk[y % worldInfo.GetChunkSizeY()][x % worldInfo.GetChunkSizeX()] = blockId;
+                                    SaveChunk(layer, chunkNum, oldChunk);
+                                }
+
+                                //全ユーザに移動情報を通知
+                                foreach (NetworkConnection conn in connectionList)
+                                    Send(conn, $"BCB,{receivedData}");
+                            }
+
+                            //ワールドのconfigを設定するやつ
+                            if (receivedData.StartsWith("SWD")) {
+                                receivedData = receivedData.Replace("SWD,", "");
+                                var dataArr = receivedData.Split(',');
+                                int worldSizeX = Int32.Parse(dataArr[0]);
+                                int worldSizeY = Int32.Parse(dataArr[1]);
+                                int chunkSizeX = Int32.Parse(dataArr[2]);
+                                int chunkSizeY = Int32.Parse(dataArr[3]);
+                                int heightRange = Int32.Parse(dataArr[4]);
+                                int seed = Int32.Parse(dataArr[5]);
+                                string worldName = dataArr[6];
+
+                                worldInfo = new WorldInfo(worldSizeX, worldSizeY, chunkSizeX, chunkSizeY, heightRange, seed, worldName);
+                                worldInfo.SaveWorldData();
+                                if (debugMode) Debug.Log("[SERVER]World regenerate complete.");
+                                if (debugMode && standalone) serverGui.Log($"World regenerate complete.");
+                                foreach (NetworkConnection conn in connectionList)
+                                    Send(conn, "RCP");
+                            }
+
+                            //ワールドを再生成するやつ
+                            if (receivedData.StartsWith("RGN")) {
+                                if (debugMode) Debug.Log("[SERVER]Start world regenerate...");
+                                if (debugMode && standalone) serverGui.Log($"Start world regenerate...");
+                                if (worldInfo != null) {
+                                    GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
+                                } else {
+                                    Send(connectionList[i], "FGN");
+                                }
+                            }
+
+                            // 切断処理...なんでDisconnectイベント拾ってくれないんや！
+                            if (receivedData.StartsWith("DCN")) {
+                                if (debugMode) Debug.Log("[SERVER]User disconnected.");
+                            }
+                        } else {
+                            Debug.Log("Unknown Event");
+                        }
+                    }
+                }
+
+            }
         }
     }
 
@@ -338,11 +351,19 @@ public class ShadowBoxServer : MonoBehaviour {
             dsw.WriteFixedString4096(sendDataFS4096);
             this.driver.EndSend(dsw);
             if (dsw.HasFailedWrites) {
+                if (debugMode && standalone) serverGui.Log($"Failed to sending data:\n{sendData}");
                 Debug.LogWarning($"[SERVER]Failed to sending data:\n{sendData}");
                 return false;
             }
             return true;
         } else return false;
+    }
+
+
+    public void RegenerateWorld() {
+        if(standalone) {
+            GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
+        }
     }
 
     /// <summary>
@@ -353,6 +374,10 @@ public class ShadowBoxServer : MonoBehaviour {
     }
 
 #nullable enable
+    public WorldInfo? GetWorldInfo() {
+        return worldInfo;
+    }
+
     /// <summary>
     /// レイヤーデータをファイルから読み込む
     /// </summary>

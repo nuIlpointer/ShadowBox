@@ -17,12 +17,12 @@ public class PlayerController : MonoBehaviour {
     public CharacterController controller;
     public Animator anim;
     public CreateController creater;
-    public string ipAddress = "127.0.0.1";
-    public int port = 11781;
+    private string ipAddress = "127.0.0.1";
+    private int port = 11781;
     public string playerName = "Player";
     public int skinID;
     private int oldSkinID;
-    public bool createServer = false;
+    private bool createServer = false;
     /// <summary>
     /// true時、ゲーム起動時にサーバにワールド再生成リクエストを送ります
     /// </summary>
@@ -75,6 +75,16 @@ public class PlayerController : MonoBehaviour {
 
     private bool firstUpdate = true;
 
+    //Start()前の初期化完了最初のタイミングで実行
+    void Awake() {
+        ipAddress = TitleData.ipAddress;
+        port = TitleData.port;
+        playerName = TitleData.playerName;
+        createServer = !TitleData.isMultiPlay;
+        skinID = TitleData.skinID;
+        Debug.Log($"{ipAddress}:{port} singlemode:{createServer} Player {playerName}(skinID:{skinID}) ");
+    }
+
     // Start is called before the first frame update
     void Start() {
         if (!started) {
@@ -88,6 +98,14 @@ public class PlayerController : MonoBehaviour {
             wrapper.Connect(ipAddress, port);
 
             //スキンid
+
+            string sid = Enum.GetName(typeof(Skins), skinID);
+
+            anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load($"Characters/Animator/{sid}/{sid}_player");
+            if(sid == null) {
+                Debug.LogWarning($"[PlayerController] > 指定のスキンIDのスキンは見つかりませんでした。エラーマンが出動します。　ID : {skinID}");
+                anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load($"Characters/Animator/error_man/error_man_player");
+            }
             oldSkinID = skinID;
 
             //ポインタ

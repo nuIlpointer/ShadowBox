@@ -33,14 +33,14 @@ public class GenerateTerrain : MonoBehaviour
         int heightBase = new System.Random().Next(heightRange, chunkHeight - heightRange);
         List<int[][]> chunks = new List<int[][]>();
         for (int i = 0; i < width * height; i++) {
-            if(i / width == height - 1) {
+            if(i / width == height - 2) {
                 List<int[]> row = new List<int[]>();
                 for (int j = 0; j < chunkWidth; j++) {
                     int x = i * chunkWidth + j;
                     List<int> column = new List<int>();
                     int noise = (int)Mathf.Floor(Mathf.PerlinNoise(x * 0.1f, seed * 0.1f) * heightRange) + heightBase;
                     for (int k = 0; k < chunkHeight; k++)
-                        column.Add(k < noise ? 0 : k == noise ? 10 : 12);
+                        column.Add(k < noise - 1 ? 0 : (k == noise || k + 1 == noise) ? 10 : 12);
                     row.Add(column.ToArray());
                 }
 
@@ -48,7 +48,7 @@ public class GenerateTerrain : MonoBehaviour
             } else if(i / width < height - 1) {
                 chunks.Add(FillArray(0, chunkWidth, chunkHeight));
             } else {
-                chunks.Add(FillArray(12, chunkWidth, chunkHeight));
+                chunks.Add(FillArray(11, chunkWidth, chunkHeight));
             }
         }
         chunks.Reverse();

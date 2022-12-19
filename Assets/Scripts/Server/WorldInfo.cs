@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
-using static InitialProcess;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class WorldInfo {
     int worldSizeX;

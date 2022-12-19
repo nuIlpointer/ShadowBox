@@ -64,16 +64,23 @@ public class CreateController : MonoBehaviour
             for(int i = 1; i <= 4; i++) {
                 for (int j = 0; j < marks.Length; j++) {
                     if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) != useBlock) {
-                        if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)i, x + marks[j].x, y + marks[j].y, useBlock);
-                        else worldLoader.BlockUpdate(useBlock, i, x + marks[j].x, y + marks[j].y);
+                        if( x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() && 
+                            y + marks[j].y >= 0 && y + marks[j].y < worldLoader.GetWorldSizeY()) {
+                            if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)i, x + marks[j].x, y + marks[j].y, useBlock);
+                            else worldLoader.BlockUpdate(useBlock, i, x + marks[j].x, y + marks[j].y);
+                        }
+                        
                     }
                 }
             }
         } else {
             for (int j = 0; j < marks.Length; j++) {
                 if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) != useBlock) {
-                    if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x + marks[j].x, y + marks[j].y, useBlock);
-                    else worldLoader.BlockUpdate(useBlock, layerNumber, x + marks[j].x, y + marks[j].y);
+                    if (x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() &&
+                        y + marks[j].y >= 0 && y + marks[j].y < worldLoader.GetWorldSizeY()) {
+                        if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x + marks[j].x, y + marks[j].y, useBlock);
+                        else worldLoader.BlockUpdate(useBlock, layerNumber, x + marks[j].x, y + marks[j].y);
+                    }
                 }
             }
         }
@@ -100,16 +107,23 @@ public class CreateController : MonoBehaviour
             for (int i = 1; i <= 4; i++) {
                 for (int j = 0; j < marks.Length; j++) {
                     if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) != 0) {
-                        if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)i, x + marks[j].x, y + marks[j].y, 0);
-                        else worldLoader.BlockUpdate(0, i, x + marks[j].x, y + marks[j].y);
+                        if (x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() &&
+                            y + marks[j].y >= 0 && y + marks[j].y < worldLoader.GetWorldSizeY()) {
+                            if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)i, x + marks[j].x, y + marks[j].y, 0);
+                            else worldLoader.BlockUpdate(0, i, x + marks[j].x, y + marks[j].y);
+                        }
                     }
                 }
             }
         } else {
             for (int j = 0; j < marks.Length; j++) {
                 if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) != 0) {
-                    if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x + marks[j].x, y + marks[j].y, 0);
-                    else worldLoader.BlockUpdate(0, layerNumber, x + marks[j].x, y + marks[j].y);
+                    if (x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() &&
+                        y + marks[j].y >= 0 && y + marks[j].y < worldLoader.GetWorldSizeY()) {
+                        if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x + marks[j].x, y + marks[j].y, 0);
+                        else worldLoader.BlockUpdate(0, layerNumber, x + marks[j].x, y + marks[j].y);
+                    }
+                        
                 }
             }
         }

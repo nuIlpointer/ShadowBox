@@ -5,7 +5,8 @@ using UnityEngine;
 public class UseBrushViewer : MonoBehaviour
 {
     public CreateController cc;
-
+    GameObject listUp;
+    GameObject listDown;
     private int selectBrush;
     // Start is called before the first frame update
     void Start()

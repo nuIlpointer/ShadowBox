@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class CreateController : MonoBehaviour
 {
+    public enum BrushTypes {
+        sharp = 0,
+        bold = 1
+    }
     public WorldLoader worldLoader;
     public ShadowBoxClientWrapper wrapper;
 
@@ -29,12 +33,24 @@ public class CreateController : MonoBehaviour
 
             } else {
 
-                worldLoader.BlockUpdate(useBlock, layerNumber, x, y); worldLoader.BlockUpdate(useBlock, layerNumber, x, y);
+                worldLoader.BlockUpdate(useBlock, layerNumber, x, y); 
 
             }
         }
-        
-        
+    }
+
+    public void DeleteBlock(int x, int y, int layerNumber) {
+        if (worldLoader.GetBlock(x, y, layerNumber) != useBlock) {
+            if (wrapper.IsConnectionActive()) {
+
+                wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x, y, 0);
+
+            } else {
+
+                worldLoader.BlockUpdate(0, layerNumber, x, y);
+
+            }
+        }
     }
 
 

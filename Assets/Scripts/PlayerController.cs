@@ -281,6 +281,9 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetMouseButton(0)) {
             creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
         }
+        if(Input.GetMouseButton(1)) {
+            creater.DeleteBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+        }
 
 
         //ワールド外判定

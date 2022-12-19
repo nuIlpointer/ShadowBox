@@ -259,14 +259,14 @@ public class LayerManager : MonoBehaviour {
     /// <param name="y">！チャンク内の座標</param>
     public void BlockChange(int id, int chunkNumber, int x, int y) {
 
-        chunks[chunkNumber].blocks[y][x] = id;
 
 
         if (!checkAir(chunkNumber, x, y)) {      //指定位置にブロックが存在
-
+            Debug.LogWarning("Destroy");
             Destroy(chunks[chunkNumber].blockObj[y][x]);
 
         }
+        chunks[chunkNumber].blocks[y][x] = id;
         if (id != 0) {                          //指定IDがair以外
 
             block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));

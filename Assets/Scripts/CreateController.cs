@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,11 +7,19 @@ using UnityEngine;
 public class CreateController : MonoBehaviour
 {
     public enum BrushTypes {
-        sharp = 0,
-        bold = 1,
+        sharp           = 0,
+        bold            = 1,
         sharp_all_layer = 10,
-        bold_all_layer = 11
+        bold_all_layer  = 11
     }
+
+    public Dictionary<int, String> BRUSH_NAMES = new Dictionary<int, String>() {
+        { 0 ,   "sharp"             },
+        { 1 ,   "bold"              },
+        { 10,   "sharp(all Layer)"  },
+        { 11,   "bold(all Layer)"   }
+    };
+
     public WorldLoader worldLoader;
     public ShadowBoxClientWrapper wrapper;
 

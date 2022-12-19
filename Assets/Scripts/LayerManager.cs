@@ -155,11 +155,6 @@ public class LayerManager : MonoBehaviour {
         }
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    }
-
 
     /// <summary>
     /// 指定チャンク内のブロックを生成[テスト版]
@@ -221,7 +216,7 @@ public class LayerManager : MonoBehaviour {
                             if (bcl != null) Destroy(bcl);
                         }
 
-                        chunks[chunkNumber].blockObj[px][py] = block;
+                        chunks[chunkNumber].blockObj[py][px] = block;
                         //block.transform.SetParent(this.gameObject.transform);
                     }
                 }
@@ -259,14 +254,14 @@ public class LayerManager : MonoBehaviour {
     /// <param name="y">！チャンク内の座標</param>
     public void BlockChange(int id, int chunkNumber, int x, int y) {
 
-        chunks[chunkNumber].blocks[y][x] = id;
 
 
         if (!checkAir(chunkNumber, x, y)) {      //指定位置にブロックが存在
-
+            Debug.LogWarning("Destroy");
             Destroy(chunks[chunkNumber].blockObj[y][x]);
 
         }
+        chunks[chunkNumber].blocks[y][x] = id;
         if (id != 0) {                          //指定IDがair以外
 
             block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));
@@ -326,6 +321,6 @@ public class LayerManager : MonoBehaviour {
     }
 
     public int GetBlock(int chunkNumber, int x, int y) {
-        return chunks[chunkNumber].blocks[y][x];
+        return (x >= 0 && y >= 0 && y < chunks[chunkNumber].blocks.Length && x < chunks[chunkNumber].blocks[y].Length) ? chunks[chunkNumber].blocks[y][x] : 0;
     }
 }

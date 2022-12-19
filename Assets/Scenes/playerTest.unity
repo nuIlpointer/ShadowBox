@@ -4799,7 +4799,7 @@ Camera:
   m_BackGroundColor: {r: 0.4761926, g: 0.61018896, b: 0.8207547, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
-  m_FOVAxisMode: 0
+  m_FOVAxisMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
   m_FocalLength: 50
@@ -4811,7 +4811,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 89
+  field of view: 73.36088
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -4860,6 +4860,12 @@ MonoBehaviour:
   followingLevel: 3
   cameraDist: -12
   yCorrection: 3
+  cameraFOV: 0
+  wl: {fileID: 1724355517}
+  moveLeftLimit: 0
+  moveRightLimit: 0
+  moveUpLimit: 0
+  moveDownLimit: 0
 --- !u!1 &1926622003
 GameObject:
   m_ObjectHideFlags: 0

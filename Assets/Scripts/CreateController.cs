@@ -16,8 +16,8 @@ public class CreateController : MonoBehaviour
     public Dictionary<int, String> BRUSH_NAMES = new Dictionary<int, String>() {
         { 0 ,   "sharp"             },
         { 1 ,   "bold"              },
-        { 10,   "sharp(all Layer)"  },
-        { 11,   "bold(all Layer)"   }
+        { 10,   "sharp\n(all Layer)"  },
+        { 11,   "bold\n(all Layer)"   }
     };
 
     public WorldLoader worldLoader;
@@ -27,7 +27,7 @@ public class CreateController : MonoBehaviour
     public int useBlock;
     public int lineWidth;
 
-    private int toBlock = -1;
+    private bool replase;
 
     private Vector2Int[] SHARP_MARKS = {
         new Vector2Int(0, 0),
@@ -51,19 +51,22 @@ public class CreateController : MonoBehaviour
         switch (lineWidth % 10) {
             case 0:
                 marks = SHARP_MARKS;
+                replase = true;
                 break;
             case 1:
                 marks = BOLD_MARKS;
+                replase = false;
                 break;
             default:
                 marks = SHARP_MARKS;
+                replase = false;
                 break;
         }
 
         if(lineWidth / 10 == 1) {
             for(int i = 1; i <= 4; i++) {
                 for (int j = 0; j < marks.Length; j++) {
-                    if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) != useBlock) {
+                    if (!replase ? (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) == 0) : (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) != useBlock)) {
                         if( x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() && 
                             y + marks[j].y >= 0 && y + marks[j].y < worldLoader.GetWorldSizeY()) {
                             Debug.Log($"[CreateController] > SendBlockChange() x : {x + marks[j].x} y : {y + marks[j].y}");
@@ -76,7 +79,7 @@ public class CreateController : MonoBehaviour
             }
         } else {
             for (int j = 0; j < marks.Length; j++) {
-                if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) != useBlock) {
+                if (!replase ? (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) == 0) : (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) != useBlock)) {
                     if (x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() &&
                         y + marks[j].y >= 0 && y + marks[j].y < worldLoader.GetWorldSizeY()) {
                         Debug.Log($"[CreateController] > SendBlockChange() x : {x + marks[j].x} y : {y + marks[j].y}");

@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class UseBrushSelector : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    public UseBrushViewer ubv;
+    public int modification;
+
+    public void Click_Action() {
+        ubv.SetBrush(modification);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
+
 }

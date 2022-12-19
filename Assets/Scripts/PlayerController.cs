@@ -278,7 +278,6 @@ public class PlayerController : MonoBehaviour {
 
         //建築
 
-        Debug.Log(worldSize.x);
         if (pointerPos.x >= 0 && pointerPos.y >= 0 && pointerPos.x < worldLoader.GetWorldSizeX() && pointerPos.y < worldLoader.GetWorldSizeY()) {
             if (Input.GetMouseButton(0))
                 creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
@@ -421,6 +420,19 @@ public class PlayerController : MonoBehaviour {
             }
         }
 
+        if (transform.position.x + movedir.x * Time.deltaTime >= worldLoader.GetWorldSizeX() - 1.5) {
+            movedir.x = 0;
+            if (transform.position.x >= worldLoader.GetWorldSizeX() - 1.5) {
+                controller.Move(new Vector3(-5, 0, 0));
+            }
+        }
+
+        if (transform.position.y + movedir.y * Time.deltaTime >= worldLoader.GetWorldSizeY() - 1.5) {
+            movedir.y = 0;
+            if (transform.position.y >= worldLoader.GetWorldSizeY() - 1.5) {
+                controller.Move(new Vector3(0, -5, 0));
+            }
+        }
 
         //移動反映
         controller.Move(movedir * Time.deltaTime);

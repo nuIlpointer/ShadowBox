@@ -216,7 +216,7 @@ public class LayerManager : MonoBehaviour {
                             if (bcl != null) Destroy(bcl);
                         }
 
-                        chunks[chunkNumber].blockObj[px][py] = block;
+                        chunks[chunkNumber].blockObj[py][px] = block;
                         //block.transform.SetParent(this.gameObject.transform);
                     }
                 }

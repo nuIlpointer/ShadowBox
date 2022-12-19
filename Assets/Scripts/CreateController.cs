@@ -66,6 +66,7 @@ public class CreateController : MonoBehaviour
                     if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) != useBlock) {
                         if( x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() && 
                             y + marks[j].y >= 0 && y + marks[j].y < worldLoader.GetWorldSizeY()) {
+                            Debug.Log($"[CreateController] > SendBlockChange() x : {x + marks[j].x} y : {y + marks[j].y}");
                             if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)i, x + marks[j].x, y + marks[j].y, useBlock);
                             else worldLoader.BlockUpdate(useBlock, i, x + marks[j].x, y + marks[j].y);
                         }
@@ -78,6 +79,7 @@ public class CreateController : MonoBehaviour
                 if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) != useBlock) {
                     if (x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() &&
                         y + marks[j].y >= 0 && y + marks[j].y < worldLoader.GetWorldSizeY()) {
+                        Debug.Log($"[CreateController] > SendBlockChange() x : {x + marks[j].x} y : {y + marks[j].y}");
                         if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x + marks[j].x, y + marks[j].y, useBlock);
                         else worldLoader.BlockUpdate(useBlock, layerNumber, x + marks[j].x, y + marks[j].y);
                     }

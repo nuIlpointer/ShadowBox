@@ -23,11 +23,18 @@ public class LayerManager : MonoBehaviour {
         grass_0 = 10,
         stone_0 = 11,
         dirt_0 = 12,
+        leaf = 13,
 
         clay_brick = 20,
+        brick_stone = 21,
+        tile = 22,
 
         door_0 = 30,
-        door_1 = 31
+        door_1 = 31,
+
+        Planks = 40,
+        whiteplanks = 41,
+        darkplanks = 42
 
     }
 

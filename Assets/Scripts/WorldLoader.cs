@@ -106,6 +106,7 @@ public class WorldLoader : MonoBehaviour
             if (getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
             //layers[gc.x].MakeChunk(gc.y);
             Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
+            visit[gc.y] = false;
         }    }
 
     // Update is called once per frame

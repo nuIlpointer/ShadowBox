@@ -106,6 +106,7 @@ public class WorldLoader : MonoBehaviour
             if (getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
             //layers[gc.x].MakeChunk(gc.y);
             Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
+            visit[gc.y] = false;
         }    }
 
     // Update is called once per frame
@@ -373,6 +374,7 @@ public class WorldLoader : MonoBehaviour
     /// <param name="y">置き換える位置（絶対座標）</param>
     /// <returns></returns>
     public bool BlockUpdate(int blockID, int layerNumber, int x, int y) {
+        Debug.LogWarning($"blockID{blockID}");
         layers[layerNumber].BlockChange(blockID, PosToChunkNum(x, y), x - ChunkNumToOriginPos(PosToChunkNum(x, y))[0], y - ChunkNumToOriginPos(PosToChunkNum(x, y))[1]);
         return true;
     }
@@ -420,7 +422,7 @@ public class WorldLoader : MonoBehaviour
 
         float mod = pos.x - x;
         Vector2Int[] checkList;
-        if(mod < 0.5) {//横3ブロックにまたがっていなければ
+        if(mod < 0.2) {//横3ブロックにまたがっていなければ
             checkList = new Vector2Int[6] {
                 new Vector2Int(x,y),
                 new Vector2Int(x+1,y),
@@ -447,7 +449,7 @@ public class WorldLoader : MonoBehaviour
             cn = PosToChunkNum(checkList[i].x, checkList[i].y);
             chx = checkList[i].x - ChunkNumToOriginPos(cn)[0];
             chy = checkList[i].y - ChunkNumToOriginPos(cn)[1];
-            if (!layers[3].checkAir(cn, chx, chy) || !layers[3].checkAir(cn, chx, chy)) {
+            if (layers[3].checkAir(cn, chx, chy) || layers[3].checkAir(cn, chx, chy)) {
                 isSafe = false;
             }
         }
@@ -467,7 +469,7 @@ public class WorldLoader : MonoBehaviour
 
         float mod = pos.x - x;
         Vector2Int[] checkList;
-        if (mod < 0.5) {//横3ブロックにまたがっていなければ
+        if (mod < 0.2) {//横3ブロックにまたがっていなければ
             checkList = new Vector2Int[6] {
                 new Vector2Int(x,y),
                 new Vector2Int(x+1,y),
@@ -495,7 +497,7 @@ public class WorldLoader : MonoBehaviour
             chx = checkList[i].x - ChunkNumToOriginPos(cn)[0];
             chy = checkList[i].y - ChunkNumToOriginPos(cn)[1];
             //Debug.Log($">>>>>>cn{cn} chx{chx} chy{chy} clx{checkList[i].x} cly{checkList[i].y}    \n{ChunkNumToOriginPos(1)[0]} {ChunkNumToOriginPos(1)[1]}");
-            if (!layers[2].checkAir(cn, chx, chy) || !layers[3].checkAir(cn, chx, chy)) {
+            if (layers[2].checkAir(cn, chx, chy) || layers[3].checkAir(cn, chx, chy)) {
                 isSafe = false;
             }
         }
@@ -520,5 +522,15 @@ public class WorldLoader : MonoBehaviour
             result += "\n";
         }
         return result;
+    }
+
+
+
+
+    public int GetWorldSizeX() {
+        return cNumX * cSize;
+    }
+    public int GetWorldSizeY() {
+        return cNumY * cSize;
     }
 }

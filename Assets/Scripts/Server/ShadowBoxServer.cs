@@ -257,13 +257,13 @@ public class ShadowBoxServer : MonoBehaviour {
                                 receivedData = receivedData.Replace("PMV,", "");
                                 var dataArr = receivedData.Split(',');
                                 PlayerData newPlayer;
-                                newPlayer.playerID = Guid.Parse(dataArr[0]);
-                                newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
-                                newPlayer.playerX = float.Parse(dataArr[2]);
-                                newPlayer.playerY = float.Parse(dataArr[3]);
-                                newPlayer.actState = Int32.Parse(dataArr[4]);
-                                newPlayer.name = userList[newPlayer.playerID].name;
-                                newPlayer.skinType = userList[newPlayer.playerID].skinType;
+                                newPlayer.name = dataArr[0];
+                                newPlayer.skinType = Int32.Parse(dataArr[1]);
+                                newPlayer.actState = Int32.Parse(dataArr[2]);
+                                newPlayer.playerID = Guid.Parse(dataArr[3]);
+                                newPlayer.playerX = float.Parse(dataArr[4]);
+                                newPlayer.playerY = float.Parse(dataArr[5]);
+                                newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[6]);
                                 userList[newPlayer.playerID] = newPlayer;
 
                                 //仮 ログ出力
@@ -273,7 +273,7 @@ public class ShadowBoxServer : MonoBehaviour {
                                 int senderConnectionID = connectionList[i].InternalId;
                                 foreach (NetworkConnection conn in connectionList)
                                     if (conn.InternalId != senderConnectionID)
-                                        Send(conn, $"PLM,{newPlayer.playerID},{newPlayer.playerLayer},{newPlayer.playerX},{newPlayer.playerY},{newPlayer.actState}");
+                                        Send(conn, $"PLM,{newPlayer.ToString()}");
                             }
 
                             //ブロック単位の更新を受け取った時のやつ

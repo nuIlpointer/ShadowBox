@@ -374,7 +374,7 @@ public class WorldLoader : MonoBehaviour
     /// <param name="y">置き換える位置（絶対座標）</param>
     /// <returns></returns>
     public bool BlockUpdate(int blockID, int layerNumber, int x, int y) {
-        Debug.LogWarning($"blockID{blockID}");
+
         layers[layerNumber].BlockChange(blockID, PosToChunkNum(x, y), x - ChunkNumToOriginPos(PosToChunkNum(x, y))[0], y - ChunkNumToOriginPos(PosToChunkNum(x, y))[1]);
         return true;
     }

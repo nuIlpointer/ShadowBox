@@ -265,7 +265,7 @@ public class LayerManager : MonoBehaviour {
 
 
         if (!checkAir(chunkNumber, x, y)) {      //指定位置にブロックが存在
-            Debug.LogWarning("Destroy");
+
             Destroy(chunks[chunkNumber].blockObj[y][x]);
 
         }

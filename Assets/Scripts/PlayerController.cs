@@ -409,7 +409,10 @@ public class PlayerController : MonoBehaviour {
 
         //ワールド外判定
         if (underTheWorld) {
-            controller.Move(safePos - transform.position);
+            //controller.Move(safePos - transform.position);
+            controller.enabled = false;
+            transform.position = new Vector3(transform.position.x, transform.position.y + 50, transform.position.z);
+            controller.enabled = true;
             underTheWorld = false;
         }
 

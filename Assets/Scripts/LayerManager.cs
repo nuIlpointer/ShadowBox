@@ -28,6 +28,7 @@ public class LayerManager : MonoBehaviour {
         clay_brick = 20,
         brick_stone = 21,
         tile = 22,
+        glass = 23,
 
         door_0 = 30,
         door_1 = 31,

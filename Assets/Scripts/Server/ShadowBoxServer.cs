@@ -359,6 +359,7 @@ public class ShadowBoxServer : MonoBehaviour {
         } else return false;
     }
 
+
     public void RegenerateWorld() {
         if(standalone) {
             GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());

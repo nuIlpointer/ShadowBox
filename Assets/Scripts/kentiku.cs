@@ -2,35 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
-public class kentiku : MonoBehaviour
-{
-    // Start is called before the first frame update
-    
-    public GameObject image;
-    public GameObject ChangeButton;
-    
-    private bool flg = true;
-    public void Onclick() {
-        flg = !flg;
-        //image2.SetActive(flg);
-        if (flg) {
-            image.transform.position = new Vector3(image.transform.position.x, image.transform.position.y + 300, image.transform.position.z);
-            ChangeButton.GetComponentInChildren<Text>().text = "↑";
+public class kentiku : MonoBehaviour {
+    [SerializeField] private GameObject expandButton;
+    private bool expanded = true;
+
+    public void OnClick() {
+        if(expanded) {
+            expandButton.transform.Find("Arrow").GetComponent<TextMeshProUGUI>().text = "↑";
+            transform.position -= new Vector3(0, 300, 0);
         } else {
-            image.transform.position = new Vector3(image.transform.position.x, image.transform.position.y - 300, image.transform.position.z);
-            ChangeButton.GetComponentInChildren<Text>().text = "↓";
+            expandButton.transform.Find("Arrow").GetComponent<TextMeshProUGUI>().text = "↓";
+            transform.position += new Vector3(0, 300, 0);
         }
-        
-    }
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        expanded = !expanded;
     }
 }

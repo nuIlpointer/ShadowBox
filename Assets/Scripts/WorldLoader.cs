@@ -37,6 +37,8 @@ public class WorldLoader : MonoBehaviour
     private bool waking;
     private int loadChunksQueueID = 0;
 
+    private double time;
+
     Queue<Vector2Int> chunkGetQueue = new Queue<Vector2Int>();
     Queue<KeyValuePair<int, Vector3>> loadChunksQueue = new Queue<KeyValuePair<int, Vector3>>();
 
@@ -104,11 +106,13 @@ public class WorldLoader : MonoBehaviour
             if (getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
             //layers[gc.x].MakeChunk(gc.y);
             Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
+            visit[gc.y] = false;
         }    }
 
     // Update is called once per frame
     void Update()
     {
+        time += Time.deltaTime;
         if (waking) {
             if (wrapper.IsConnectionActive() && !wrapper.IsWorldRegenerateFinished()) {
                 wrapper.SetWorldData(cNumX, cNumY, cSize, cSize, heightRange, new System.Random().Next(0, Int32.MaxValue), "new_World");
@@ -189,7 +193,7 @@ public class WorldLoader : MonoBehaviour
         //UnityEngine.Debug.LogWarning("ワーーーールドッッッ・ロォーーーーードッッッ！！");
         if (!started) { Start(); }
         //サーバ非アクティブ時処理　叩いた内容をキューに保存し、次回実行時に呼び出す
-        if (!wrapper.IsConnectionActive()) {
+        if (!wrapper.IsConnectionActive() || time < 0.1) {
             Debug.Log($"[WorldLoader] > サーバが未接続な為、ロードチャンク待ちキューに引数を保存しました ID : {loadChunksQueueID}");
             loadChunksQueue.Enqueue(new KeyValuePair<int, Vector3>(loadChunksQueueID, pos));
             loadChunksQueueID++;
@@ -231,8 +235,8 @@ public class WorldLoader : MonoBehaviour
         //wideLoadModeがtureの場合
 
         if (wideLoadMode) {
-            if ((loaded[9] = chunkNumber + 2) / cNumY > chunkNumber / cNumY) loaded[9] = -1; else riri = true;
-            if ((loaded[10] = chunkNumber - 2) / cNumY < chunkNumber / cNumY || chunkNumber < 2) loaded[10] = -1; else lele = true;
+            if ((loaded[9] = chunkNumber + 2) / cNumX > chunkNumber / cNumX) loaded[9] = -1; else riri = true;
+            if ((loaded[10] = chunkNumber - 2) / cNumX < chunkNumber / cNumX || chunkNumber < 2) loaded[10] = -1; else lele = true;
 
             if (up && riri) loaded[11] = loaded[5] + 1; else loaded[11] = -1;
             if (lo && riri) loaded[12] = loaded[6] + 1; else loaded[12] = -1; 
@@ -250,7 +254,7 @@ public class WorldLoader : MonoBehaviour
         for (int i = 0; i < lastLoad.Length; i++) {
             if (lastLoad[i] != -1) {
                 if (checkDie(lastLoad[i])) {
-                    //UnityEngine.Debug.Log("消去　チャンクナンバー:" + lastLoad[i]);
+                    //UnityEngine.Debug.LogWarning("消去　チャンクナンバー:" + lastLoad[i] + $"相対位置：{i}");
                     for (int j = 1; j <= 4; j++)
                         if (lastLoad[i] != -1)
                             layers[j].RemoveChunk(lastLoad[i]);
@@ -258,17 +262,14 @@ public class WorldLoader : MonoBehaviour
             }
         }
 
-        //UnityEngine.Debug.Log($"{loaded[0]} {loaded[1]} {loaded[2]} {loaded[3]} {loaded[4]} {loaded[5]} {loaded[6]} {loaded[7]} {loaded[8]} ");
+        //UnityEngine.Debug.Log($"{loaded[0]}\t{loaded[1]}\t{loaded[2]}\t{loaded[3]}\t{loaded[4]}\t{loaded[5]}\t{loaded[6]}\t{loaded[7]}\t{loaded[8]} ");
         //ロード被り判定
         for(int i = 0; i < loaded.Length; i++){
             if (checkLoaded(loaded[i])){
-                //UnityEngine.Debug.Log("被り　チャンクナンバー："+loaded[i]);
+                //UnityEngine.Debug.LogWarning("被り　チャンクナンバー："+loaded[i] + $"相対位置：{i}");
                 loaded[i] = -1;
             }
         }
-
-        //UnityEngine.Debug.LogWarning($"0:{loaded[0]} 1:{loaded[1]} 2:{loaded[2]} 3:{loaded[3]} 4:{loaded[4]} 5:{loaded[5]} 6:{loaded[6]} 7:{loaded[7]} 8:{loaded[8]} 9:{loaded[9]} 10:{loaded[10]} 11:{loaded[11]} 12:{loaded[12]} 13:{loaded[13]} 14:{loaded[14]} 15:{loaded[15]}");
-        
 
         for(int i = 0; i < lastLoad.Length; i++) {
             lastLoad[i] = liveChunk[i];
@@ -290,12 +291,13 @@ public class WorldLoader : MonoBehaviour
                 visit[loaded[i]] = true;
             }
         }
+        //if (wideLoadMode) UnityEngine.Debug.LogWarning($"0:{loaded[0]}\t1:{loaded[1]}\t2:{loaded[2]}\t3:{loaded[3]}\t4:{loaded[4]}\t5:{loaded[5]}\t6:{loaded[6]}\t7:{loaded[7]}\t8:{loaded[8]}\t9:{loaded[9]}\t10:{loaded[10]}\t11:{loaded[11]}\t12:{loaded[12]}\t13:{loaded[13]}\t14:{loaded[14]}");
 
 
 
     }
-    
-    
+
+
     /// <summary>
     /// 処理用
     /// </summary>
@@ -372,6 +374,7 @@ public class WorldLoader : MonoBehaviour
     /// <param name="y">置き換える位置（絶対座標）</param>
     /// <returns></returns>
     public bool BlockUpdate(int blockID, int layerNumber, int x, int y) {
+        Debug.LogWarning($"blockID{blockID}");
         layers[layerNumber].BlockChange(blockID, PosToChunkNum(x, y), x - ChunkNumToOriginPos(PosToChunkNum(x, y))[0], y - ChunkNumToOriginPos(PosToChunkNum(x, y))[1]);
         return true;
     }
@@ -419,7 +422,7 @@ public class WorldLoader : MonoBehaviour
 
         float mod = pos.x - x;
         Vector2Int[] checkList;
-        if(mod < 0.5) {//横3ブロックにまたがっていなければ
+        if(mod < 0.2) {//横3ブロックにまたがっていなければ
             checkList = new Vector2Int[6] {
                 new Vector2Int(x,y),
                 new Vector2Int(x+1,y),
@@ -446,7 +449,7 @@ public class WorldLoader : MonoBehaviour
             cn = PosToChunkNum(checkList[i].x, checkList[i].y);
             chx = checkList[i].x - ChunkNumToOriginPos(cn)[0];
             chy = checkList[i].y - ChunkNumToOriginPos(cn)[1];
-            if (!layers[3].checkAir(cn, chx, chy) || !layers[3].checkAir(cn, chx, chy)) {
+            if (layers[3].checkAir(cn, chx, chy) || layers[3].checkAir(cn, chx, chy)) {
                 isSafe = false;
             }
         }
@@ -466,7 +469,7 @@ public class WorldLoader : MonoBehaviour
 
         float mod = pos.x - x;
         Vector2Int[] checkList;
-        if (mod < 0.5) {//横3ブロックにまたがっていなければ
+        if (mod < 0.2) {//横3ブロックにまたがっていなければ
             checkList = new Vector2Int[6] {
                 new Vector2Int(x,y),
                 new Vector2Int(x+1,y),
@@ -494,7 +497,7 @@ public class WorldLoader : MonoBehaviour
             chx = checkList[i].x - ChunkNumToOriginPos(cn)[0];
             chy = checkList[i].y - ChunkNumToOriginPos(cn)[1];
             //Debug.Log($">>>>>>cn{cn} chx{chx} chy{chy} clx{checkList[i].x} cly{checkList[i].y}    \n{ChunkNumToOriginPos(1)[0]} {ChunkNumToOriginPos(1)[1]}");
-            if (!layers[2].checkAir(cn, chx, chy) || !layers[3].checkAir(cn, chx, chy)) {
+            if (layers[2].checkAir(cn, chx, chy) || layers[3].checkAir(cn, chx, chy)) {
                 isSafe = false;
             }
         }
@@ -519,5 +522,15 @@ public class WorldLoader : MonoBehaviour
             result += "\n";
         }
         return result;
+    }
+
+
+
+
+    public int GetWorldSizeX() {
+        return cNumX * cSize;
+    }
+    public int GetWorldSizeY() {
+        return cNumY * cSize;
     }
 }

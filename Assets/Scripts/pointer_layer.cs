@@ -5,16 +5,26 @@ using UnityEngine;
 public class pointer_layer : MonoBehaviour
 {
     // Start is called before the first frame update
-    public float pl;
+   
     public PlayerController pc;
+   
+
+    private bool flg = true;
     void Start()
     {
-        pl = pc.pointerLayer;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void OnClickUp() {
+        pc.pointerLayer = pc.pointerLayer + 1;    
+    }
+    public void OnClickDown() {
+        pc.pointerLayer = pc.pointerLayer - 1;
     }
 }

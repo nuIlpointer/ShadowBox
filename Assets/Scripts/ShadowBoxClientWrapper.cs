@@ -107,8 +107,6 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     foreach (String line in receivedData.Split('\n'))
                         if (line != "")
                             chunkTemp.Add(Array.ConvertAll(line.Split(','), int.Parse));
-
-                    Debug.Log($"[WRAPPER]{chunkTemp},{(int)blockLayer},{chunkID}");
                     try {
                         worldLoader.ChunkUpdate(chunkTemp.ToArray(), (int)blockLayer, chunkID);
                     } catch(Exception) {
@@ -124,25 +122,19 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                 if (receivedData.StartsWith("PLM")) { //プレイヤーの移動情報を受信したときの処理
                     receivedData = receivedData.Replace("PLM,", "");
                     var dataArr = receivedData.Split(',');
-                    Guid playerId = Guid.Parse(dataArr[0]);
-                    BlockLayer playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[1]);
-                    float playerX = float.Parse(dataArr[2]);
-                    float playerY = float.Parse(dataArr[3]);
-                    int actState = Int32.Parse(dataArr[4]);
                     PlayerData newPlayer;
-                    newPlayer.playerID = playerId;
-                    newPlayer.playerX = playerX;
-                    newPlayer.playerY = playerY;
-                    newPlayer.playerLayer = playerLayer;
+                    newPlayer.name = dataArr[0];
+                    newPlayer.skinType = Int32.Parse(dataArr[1]);
+                    newPlayer.actState = Int32.Parse(dataArr[2]);
+                    newPlayer.playerID = Guid.Parse(dataArr[3]);
+                    newPlayer.playerX = float.Parse(dataArr[4]);
+                    newPlayer.playerY = float.Parse(dataArr[5]);
+                    newPlayer.playerLayer = (BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[6]);
+                    Guid playerId = newPlayer.playerID;
                     if (!playerId.Equals(player.playerID)) {
                         //そのプレイヤーが現在のローカルデータに存在するか確認し、なければ仮のプレイヤーとして情報を保持
                         //そのままだとまずいので、プレイヤーの一覧を自動的に要求する。挙動が怪しい。なんだこれ。
-                        if (!userList.ContainsKey(playerId)) {
-                            newPlayer.name = "Player";
-                            newPlayer.skinType = 0;
-                            newPlayer.actState = 0;
-                            Send(connection, "RPL");
-                        } else {
+                        if (userList.ContainsKey(playerId)) {
                             newPlayer.name = userList[playerId].name;
                             newPlayer.skinType = userList[playerId].skinType;
                             newPlayer.actState = userList[playerId].actState;
@@ -152,7 +144,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                         if (!entityManager.HasPlayer(playerId)) {
                             entityManager.AddPlayer(newPlayer.playerID, newPlayer.name, newPlayer.skinType);
                         }
-                        entityManager.SyncPlayer(playerId, playerX, playerY, (int)playerLayer, actState);
+                        entityManager.SyncPlayer(playerId, newPlayer.playerX, newPlayer.playerY, (int)newPlayer.playerLayer, newPlayer.actState);
                     } else {
                         if (debugMode) Debug.Log("[WRAPPER]Player move event received but it's same as local player, so skipping it.");
                     }
@@ -418,7 +410,7 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
     /// <param name="y">プレイヤーのY座標</param>
     /// <param name="actState">プレイヤーの詳細情報？</param>
     public bool SendPlayerMove(BlockLayer layer, float x, float y, int actState) {
-        return Send(this.connection, $"PMV,{player.playerID},{layer},{x},{y},{actState}");
+        return Send(this.connection, $"PMV,{player.ToString()}");
     }
 
     /// <summary>

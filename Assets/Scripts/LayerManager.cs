@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LayerManager : MonoBehaviour {
@@ -20,6 +21,7 @@ public class LayerManager : MonoBehaviour {
         cube_blue = 4,
         cube_black = 5,
 
+        //自然生成（極力変えない）
         grass_0 = 10,
         stone_0 = 11,
         dirt_0 = 12,
@@ -30,14 +32,33 @@ public class LayerManager : MonoBehaviour {
         tile = 22,
         glass = 23,
 
-        door_0 = 30,
-        door_1 = 31,
-
         Planks = 40,
         whiteplanks = 41,
-        darkplanks = 42
+        darkplanks = 42,
 
+        //左右上下反転(60~79　 mod(4)が　0:デフォ　1:左右反転　2:上下反転　3:上下左右反転)
+
+
+        //複数ブロック(80~)
+        door_0 = 80,
+        door_1 = 81,
+
+        //制御用
+        usb_0 = -2,
+        usb_1 = -3,
+        usb_2 = -4,
+        usb_3 = -5,
+        usb_4 = -6,
+        usb_5 = -7,
+        
     }
+
+    Dictionary<String, Vector2Int> UNNORMAL_SIZE_BLOCKS = new Dictionary<string, Vector2Int>() {
+        {"door_0", new Vector2Int(2,3)},
+        {"door_1", new Vector2Int(1,3)},
+
+    };
+
 
 
     struct Chunk {
@@ -109,6 +130,9 @@ public class LayerManager : MonoBehaviour {
 
 
     void Start() {
+        string a = "-1";
+        Debug.LogWarning(int.Parse(a));
+
         if (!started) {
             ip = GetComponentInParent<InitialProcess>();
             blocks = new int[ip.chunkSize][];
@@ -263,12 +287,47 @@ public class LayerManager : MonoBehaviour {
     public void BlockChange(int id, int chunkNumber, int x, int y) {
 
 
-
-        if (!checkAir(chunkNumber, x, y)) {      //指定位置にブロックが存在
+        //既存ブロックを削除
+        int oldBlockID = GetBlock(chunkNumber, x, y);
+        if (oldBlockID > 0) {      //指定位置にブロックが存在
 
             Destroy(chunks[chunkNumber].blockObj[y][x]);
 
         }
+
+        if(oldBlockID <= (int)Enum.Parse(typeof(BLOCK_ID), "usb_0") && oldBlockID > (int)Enum.Parse(typeof(BLOCK_ID), "usb_5")) {
+            //アルゴリズム：IDが基のブロックのY座標を示している　そこから左（x-方向）に遡っていくと基のブロックにぶつかる
+            int usbStart = (int)Enum.Parse(typeof(BLOCK_ID), "usb_0");
+            int[] usbID = { usbStart, usbStart - 1, usbStart - 2, usbStart - 3, usbStart - 4 , usbStart - 5};
+            int searchX = x, searchY;
+            int i;
+
+            for(i = usbStart; i < usbID.Length + usbStart; i++) if (id == usbID[i]) break;
+            searchY = i;
+            int searchStertChunk = chunkNumber;
+            while (chunks[chunkNumber].blocks[searchY][searchX] >= 80) {
+                searchX--;
+                if (searchX < 0) { 
+                    searchX = cSize - 1;
+                    if (!(searchStertChunk % cNumX == 0)) searchStertChunk--;
+                    else Debug.LogError($"[LayerManager {name}] > Unnormal size block origin search error : 特殊サイズブロックの削除において、ブロック原点を探索しましたが、見つかりませんでした。（x : {x} y : {y}）/n" +
+                        $"Description : 探索がワールド外に出ました");
+
+                }
+            }
+
+            Vector2Int blockSize = UNNORMAL_SIZE_BLOCKS[Enum.GetName(typeof(BLOCK_ID), chunks[chunkNumber].blocks[searchY][searchX])];
+
+            for(i = 0; i < blockSize.y; i++) {
+                for(int j = 0; j < blockSize.x; j++) {
+                    //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\作業ここから　airに置き換える
+                }
+            }
+
+        }
+
+
+
         chunks[chunkNumber].blocks[y][x] = id;
         if (id != 0) {                          //指定IDがair以外
 
@@ -287,6 +346,8 @@ public class LayerManager : MonoBehaviour {
             }
 
             chunks[chunkNumber].blockObj[y][x] = block;
+
+            //id = unnormal size block の時
 
         }
 

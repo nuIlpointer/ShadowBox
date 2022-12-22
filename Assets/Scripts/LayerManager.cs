@@ -295,10 +295,10 @@ public class LayerManager : MonoBehaviour {
 
         }
 
-        if(oldBlockID <= (int)Enum.Parse(typeof(BLOCK_ID), "usb_0") && oldBlockID > (int)Enum.Parse(typeof(BLOCK_ID), "usb_5")) {
+        if(oldBlockID <= (int)Enum.Parse(typeof(BLOCK_ID), "usb_0") && oldBlockID >= (int)Enum.Parse(typeof(BLOCK_ID), "usb_5")) {
             //アルゴリズム：IDが基のブロックのY座標を示している　そこから左（x-方向）に遡っていくと基のブロックにぶつかる
             int usbStart = (int)Enum.Parse(typeof(BLOCK_ID), "usb_0");
-            int[] usbID = { usbStart, usbStart - 1, usbStart - 2, usbStart - 3, usbStart - 4 , usbStart - 5};
+            int[] usbID = { usbStart, usbStart - 1, usbStart - 2, usbStart - 3, usbStart - 4 };
             int searchX = x, searchY;
             int i;
 
@@ -310,17 +310,25 @@ public class LayerManager : MonoBehaviour {
                 if (searchX < 0) { 
                     searchX = cSize - 1;
                     if (!(searchStertChunk % cNumX == 0)) searchStertChunk--;
-                    else Debug.LogError($"[LayerManager {name}] > Unnormal size block origin search error : 特殊サイズブロックの削除において、ブロック原点を探索しましたが、見つかりませんでした。（x : {x} y : {y}）/n" +
-                        $"Description : 探索がワールド外に出ました");
-
+                    else {
+                        Debug.LogError($"[LayerManager {name}] > Unnormal size block origin search error : 特殊サイズブロックの削除において、ブロック原点を探索しましたが、見つかりませんでした。（x : {x} y : {y}）/n" +
+                                    $"Description : 探索がワールド外に出ました");
+                    }
                 }
             }
 
-            Vector2Int blockSize = UNNORMAL_SIZE_BLOCKS[Enum.GetName(typeof(BLOCK_ID), chunks[chunkNumber].blocks[searchY][searchX])];
-
+            Vector2Int blockSize;
+            if (Enum.GetName(typeof(BLOCK_ID), chunks[chunkNumber].blocks[searchY][searchX]) != null ) {
+                 blockSize = UNNORMAL_SIZE_BLOCKS[Enum.GetName(typeof(BLOCK_ID), chunks[chunkNumber].blocks[searchY][searchX])];
+            } else {
+                Debug.LogError($"[LayerManager {name}] > Unnormal size block origin search error : 特殊サイズブロックの削除において、ブロック原点を探索しましたが、見つかりませんでした。（x : {x} y : {y}）/n" +
+                                    $"Description : id {blocks[searchY][searchX]} に該当する特殊サイズブロックが見つかりませんでした。 列挙型BLOCK_IDか、Dictionary型UNNORMAL_SIZE_BLOCKSに記述がない可能性があります 座標:({searchX},{searchY})");
+                return;
+            }
+            
             for(i = 0; i < blockSize.y; i++) {
                 for(int j = 0; j < blockSize.x; j++) {
-                    //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\作業ここから　airに置き換える
+                    //111111111111111111111111111111111111111111111111111111111111air置く
                 }
             }
 

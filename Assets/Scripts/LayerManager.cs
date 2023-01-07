@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LayerManager : MonoBehaviour {
 
@@ -25,6 +26,8 @@ public class LayerManager : MonoBehaviour {
         grass_0 = 10,
         stone_0 = 11,
         dirt_0 = 12,
+
+        //通常ブロック　
         leaf = 13,
 
         clay_brick = 20,
@@ -39,11 +42,11 @@ public class LayerManager : MonoBehaviour {
         //左右上下反転(60~79　 mod(4)が　0:デフォ　1:左右反転　2:上下反転　3:上下左右反転)
 
 
-        //複数ブロック(80~)
+        //複数ブロック(80~　ブロック名を変更する場合はUNNOMAL_SIZE_BLOCKSも変更すること)
         door_0 = 80,
         door_1 = 81,
 
-        //制御用
+        //制御用(変更厳禁)
         usb_0 = -2,
         usb_1 = -3,
         usb_2 = -4,
@@ -53,7 +56,7 @@ public class LayerManager : MonoBehaviour {
         
     }
 
-    Dictionary<String, Vector2Int> UNNORMAL_SIZE_BLOCKS = new Dictionary<string, Vector2Int>() {
+    public static Dictionary<String, Vector2Int> UNNORMAL_SIZE_BLOCKS = new Dictionary<string, Vector2Int>() {
         {"door_0", new Vector2Int(2,3)},
         {"door_1", new Vector2Int(1,3)},
 
@@ -230,7 +233,10 @@ public class LayerManager : MonoBehaviour {
 
             //ブロックプレハブ取得
             block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));
-            if (block == null) { block = (GameObject)Resources.Load("Blocks/unknown"); }
+            if (block == null) { 
+                block = (GameObject)Resources.Load("Blocks/unknown");
+                block.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = id.ToString();
+            }
 
             for (int px = 0; px < cSize; px++) {
                 for (int py = 0; py < cSize; py++) {
@@ -273,7 +279,7 @@ public class LayerManager : MonoBehaviour {
             chunkFrame[chunkNumber].transform.localPosition = new Vector3(posBase.x, posBase.y, 0);
 
         } catch (Exception e) {
-            //Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 
@@ -289,13 +295,13 @@ public class LayerManager : MonoBehaviour {
 
         //既存ブロックを削除
         int oldBlockID = GetBlock(chunkNumber, x, y);
-        if (oldBlockID > 0) {      //指定位置にブロックが存在
+        if (oldBlockID != 0) {      //指定位置にブロックが存在
 
             Destroy(chunks[chunkNumber].blockObj[y][x]);
 
         }
 
-        if(oldBlockID <= (int)Enum.Parse(typeof(BLOCK_ID), "usb_0") && oldBlockID >= (int)Enum.Parse(typeof(BLOCK_ID), "usb_5")) {
+        /*if(oldBlockID <= (int)Enum.Parse(typeof(BLOCK_ID), "usb_0") && oldBlockID >= (int)Enum.Parse(typeof(BLOCK_ID), "usb_5")) {
             //アルゴリズム：IDが基のブロックのY座標を示している　そこから左（x-方向）に遡っていくと基のブロックにぶつかる
             int usbStart = (int)Enum.Parse(typeof(BLOCK_ID), "usb_0");
             int[] usbID = { usbStart, usbStart - 1, usbStart - 2, usbStart - 3, usbStart - 4 };
@@ -328,19 +334,22 @@ public class LayerManager : MonoBehaviour {
             
             for(i = 0; i < blockSize.y; i++) {
                 for(int j = 0; j < blockSize.x; j++) {
-                    //111111111111111111111111111111111111111111111111111111111111air置く
+
                 }
             }
 
-        }
+        }*/
 
 
 
         chunks[chunkNumber].blocks[y][x] = id;
-        if (id != 0) {                          //指定IDがair以外
+        if (id != 0) {                          //指定IDがair以外 （正しくは　id > 0　デバッグのため変更中）
 
             block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));
-            if (block == null) { block = (GameObject)Resources.Load("Blocks/unknown"); }
+            if (block == null) { 
+                block = (GameObject)Resources.Load("Blocks/unknown");
+                block.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = id.ToString();
+            }
 
             Transform frame = chunkFrame[chunkNumber].transform;
             block = Instantiate(block, frame);
@@ -355,8 +364,7 @@ public class LayerManager : MonoBehaviour {
 
             chunks[chunkNumber].blockObj[y][x] = block;
 
-            //id = unnormal size block の時
-
+            
         }
 
 

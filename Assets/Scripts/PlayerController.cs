@@ -4,7 +4,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
     enum Skins {
         error_man = 0,
-        test_kun_1 = 1
+        test_kun_1 = 1,
+        knit_chan = 2
     }
 
 
@@ -271,7 +272,7 @@ public class PlayerController : MonoBehaviour {
         pointerForMousePos.transform.position = new Vector3(pointerPos.x, pointerPos.y, 0);
 
 
-        pointerLayer += (Input.GetAxis("Mouse ScrollWheel") * 3);
+        pointerLayer -= (Input.GetAxis("Mouse ScrollWheel") * 6);
 
         if (pointerLayer > 4) pointerLayer = 4;
         else if (pointerLayer < 1) pointerLayer = 1;

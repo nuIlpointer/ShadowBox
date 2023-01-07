@@ -4874,13 +4874,14 @@ MonoBehaviour:
   follow: 1
   followingLevel: 3
   cameraDist: -12
-  yCorrection: 3
-  cameraFOV: 0
+  yDifferenceLevel: 0.2
+  camFOV: 0
   wl: {fileID: 1724355517}
   moveLeftLimit: 0
   moveRightLimit: 0
   moveUpLimit: 0
   moveDownLimit: 0
+  horizontalFOV: 0
 --- !u!1 &1926622003
 GameObject:
   m_ObjectHideFlags: 0

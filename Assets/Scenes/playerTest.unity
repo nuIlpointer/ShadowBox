@@ -475,7 +475,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 998f68c0d9181bd41a6d9723fa9ac347, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -493,8 +493,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1656308823
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: -7974425067795271119, guid: ad86f2ead713c684e8b86fb0c346e4b5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -515,7 +515,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 142052759}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 40, y: 50, z: 0.4}
+  m_LocalPosition: {x: 40, y: 50, z: 0.095}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1724355515}
@@ -2739,6 +2739,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerName: InsideWall
   isWall: 1
+  overrayColor: {r: 0.652, g: 1, b: 1, a: 1}
   makeTest: 0
   insTestCase: 0
   transparency: 0
@@ -2792,6 +2793,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerName: OutsideWall
   isWall: 1
+  overrayColor: {r: 0.85, g: 1, b: 1, a: 1}
   makeTest: 0
   insTestCase: 0
   transparency: 0
@@ -4613,6 +4615,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerName: OutsideBlock
   isWall: 0
+  overrayColor: {r: 1, g: 1, b: 1, a: 1}
   makeTest: 0
   insTestCase: 0
   transparency: 0
@@ -5174,6 +5177,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerName: InsideBlock
   isWall: 0
+  overrayColor: {r: 0.796, g: 1, b: 1, a: 1}
   makeTest: 0
   insTestCase: 0
   transparency: 0

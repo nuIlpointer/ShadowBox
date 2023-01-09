@@ -13,6 +13,8 @@ public class LayerManager : MonoBehaviour {
     public String layerName;
     public bool isWall = false;
 
+    public Color overrayColor;
+
     public enum BLOCK_ID {
         unknown = -1,
         air = 0,
@@ -301,45 +303,6 @@ public class LayerManager : MonoBehaviour {
 
         }
 
-        /*if(oldBlockID <= (int)Enum.Parse(typeof(BLOCK_ID), "usb_0") && oldBlockID >= (int)Enum.Parse(typeof(BLOCK_ID), "usb_5")) {
-            //アルゴリズム：IDが基のブロックのY座標を示している　そこから左（x-方向）に遡っていくと基のブロックにぶつかる
-            int usbStart = (int)Enum.Parse(typeof(BLOCK_ID), "usb_0");
-            int[] usbID = { usbStart, usbStart - 1, usbStart - 2, usbStart - 3, usbStart - 4 };
-            int searchX = x, searchY;
-            int i;
-
-            for(i = usbStart; i < usbID.Length + usbStart; i++) if (id == usbID[i]) break;
-            searchY = i;
-            int searchStertChunk = chunkNumber;
-            while (chunks[chunkNumber].blocks[searchY][searchX] >= 80) {
-                searchX--;
-                if (searchX < 0) { 
-                    searchX = cSize - 1;
-                    if (!(searchStertChunk % cNumX == 0)) searchStertChunk--;
-                    else {
-                        Debug.LogError($"[LayerManager {name}] > Unnormal size block origin search error : 特殊サイズブロックの削除において、ブロック原点を探索しましたが、見つかりませんでした。（x : {x} y : {y}）/n" +
-                                    $"Description : 探索がワールド外に出ました");
-                    }
-                }
-            }
-
-            Vector2Int blockSize;
-            if (Enum.GetName(typeof(BLOCK_ID), chunks[chunkNumber].blocks[searchY][searchX]) != null ) {
-                 blockSize = UNNORMAL_SIZE_BLOCKS[Enum.GetName(typeof(BLOCK_ID), chunks[chunkNumber].blocks[searchY][searchX])];
-            } else {
-                Debug.LogError($"[LayerManager {name}] > Unnormal size block origin search error : 特殊サイズブロックの削除において、ブロック原点を探索しましたが、見つかりませんでした。（x : {x} y : {y}）/n" +
-                                    $"Description : id {blocks[searchY][searchX]} に該当する特殊サイズブロックが見つかりませんでした。 列挙型BLOCK_IDか、Dictionary型UNNORMAL_SIZE_BLOCKSに記述がない可能性があります 座標:({searchX},{searchY})");
-                return;
-            }
-            
-            for(i = 0; i < blockSize.y; i++) {
-                for(int j = 0; j < blockSize.x; j++) {
-
-                }
-            }
-
-        }*/
-
 
 
         chunks[chunkNumber].blocks[y][x] = id;
@@ -355,7 +318,11 @@ public class LayerManager : MonoBehaviour {
             block = Instantiate(block, frame);
             block.transform.localPosition = new Vector3(x, y, 0);
             block.name = x + "_" + y + "_" + Enum.GetName(typeof(BLOCK_ID), id);
-            block.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
+            SpriteRenderer spriteRenderer = block.GetComponent<SpriteRenderer>();
+            spriteRenderer.sortingLayerName = layerName;
+            //spriteRenderer.color = overrayColor;
+
+
             BoxCollider bcl;
             if (isWall) {
                 bcl = block.GetComponent<BoxCollider>();

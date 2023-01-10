@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour {
 
             //ポインタ
             pointer = (GameObject)Resources.Load("Generic/Pointer");
-            pointerForMousePos = (GameObject)Resources.Load("Generic/Pointer");
+            pointerForMousePos = (GameObject)Resources.Load("Generic/PointerBox");
             pointer = Instantiate(pointer);
             pointerForMousePos = Instantiate(pointerForMousePos);
             mouse = Input.mousePosition;

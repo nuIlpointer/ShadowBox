@@ -69,9 +69,50 @@ public class CreateController : MonoBehaviour
                 break;
         }
         if (useBlock >= 80) {       //useBlock = 特殊サイズブロックの場合
-            if(usbDelay > 0.5) {
+
+            Vector2Int blockSize;
+            LayerManager.UNNORMAL_SIZE_BLOCKS.TryGetValue(Enum.GetName(typeof(LayerManager.BLOCK_ID), useBlock), out blockSize);
+            bool col = false;
+
+            int i = 0, j = 0;
+            for(i = 0; i < blockSize.y; i++) {
+                for(j = 0; j < blockSize.x; j++) {
+                    if (worldLoader.GetBlock(x + j, y + i, layerNumber) <= -2 || worldLoader.GetBlock(x + j, y + i, layerNumber) >= 80) {
+                        col = true;
+                        break;
+                    }
+                }
+                if (col) break;
+            }
+
+            if (col) DeleteUnnormalSizeBlock(x + j, y + i, layerNumber);
+
+            int usbID = -2; //usb_0のidが-2
+
+            for (i = 0; i < blockSize.y; i++) {
+                for (j = 0; j < blockSize.x; j++) {
+                    
+                    if(i == 0 && j == 0) {
+                        if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x, y, useBlock);
+                        else worldLoader.BlockUpdate(useBlock, layerNumber, x, y);
+                    
+                    } else {
+
+                        if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x + j, y + i, usbID);
+                        else worldLoader.BlockUpdate(usbID, layerNumber, x + j, y + i);
+                    }
+                }
+                usbID--;
+            }
+
+
+
+
+
+            /*if(usbDelay > 1) {
                 //起点ブロック設置
                 if (x >= 0 && x < worldLoader.GetWorldSizeX() && y >= 0 && y < worldLoader.GetWorldSizeY()) {
+                    
                     if (worldLoader.GetBlock(x, y, layerNumber) <= -2 || worldLoader.GetBlock(x, y, layerNumber) >= 80) {
                         DeleteUnnormalSizeBlock(x, y, layerNumber);
                     }
@@ -101,10 +142,10 @@ public class CreateController : MonoBehaviour
                     usbID--;
                 }
                 usbDelay = 0;
-            }
+            }*/
 
 
-        }else if(lineWidth / 10 == 1) {
+        } else if(lineWidth / 10 == 1) {
             for(int i = 1; i <= 4; i++) {
                 for (int j = 0; j < marks.Length; j++) {
                     if (!replase ? (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) == 0) : (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) != useBlock) && worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) > -2) {
@@ -124,7 +165,7 @@ public class CreateController : MonoBehaviour
             }
         } else {
             for (int j = 0; j < marks.Length; j++) {
-                Debug.LogWarning( worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) > 0);
+                //Debug.LogWarning( worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) > 0);
                 if (!replase ? (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) == 0) : (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) != useBlock) && worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) > -2) {
                     Debug.LogWarning("rerere");
                     if (x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() &&
@@ -178,7 +219,7 @@ public class CreateController : MonoBehaviour
                 if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) != 0 /*&& worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) > 0*/) {
                     if (x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() &&
                         y + marks[j].y >= 0 && y + marks[j].y < worldLoader.GetWorldSizeY()) {
-                        Debug.LogWarning("uuuuuuuuuuuuuuuuuuu");
+                        //Debug.LogWarning("uuuuuuuuuuuuuuuuuuu");
                         if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) <= -2 || worldLoader.GetBlock(x, y, layerNumber) >= 80) {
                             
                             DeleteUnnormalSizeBlock(x + marks[j].x, y + marks[j].y, layerNumber);
@@ -206,10 +247,12 @@ public class CreateController : MonoBehaviour
                 if(originPos.x < 0) {
                     Debug.LogError($"[CreateController] > Unnormal size block origin search error : 特殊サイズブロックの削除において、ブロック原点を探索しましたが、見つかりませんでした。（x : {x} y : {y} layer number : {layerNumber} ）/n" +
                                     $"Description : 探索がワールド外に出ました");
+                    break;
                 }
                 if(x - originPos.x > 20) {
                     Debug.LogError($"[CreateController] > Unnormal size block origin search error : 特殊サイズブロックの削除において、ブロック原点を探索しましたが、見つかりませんでした。（x : {x} y : {y} layer number : {layerNumber} ）/n" +
                                     $"Description : 20ブロックにわたってx軸を走査しましたが、原点ブロックが見つかりませんでした。");
+                    break;
                 }
             }
             Debug.LogWarning(originPos);

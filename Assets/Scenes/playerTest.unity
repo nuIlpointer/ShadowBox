@@ -1050,7 +1050,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -30, y: -10}
+  m_AnchoredPosition: {x: 30, y: 10}
   m_SizeDelta: {x: 60, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &277676256
@@ -1381,7 +1381,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -60, y: 52.5}
+  m_AnchoredPosition: {x: -150, y: -20}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &352627204
@@ -1397,19 +1397,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 142052762}
-  upperButton: {fileID: 365699969}
-  lowerButton: {fileID: 0}
   LayerItemOrigin: {fileID: 1622902861}
   insideWall: {fileID: 1521915846}
   insideBlock: {fileID: 770657015}
   outsideWall: {fileID: 277676254}
   outsideBlock: {fileID: 1005147379}
-  selectingItemSize: 120
-  baseItemSize: 60
+  selectingItemSize: 2
+  baseItemSize: 1
   selectOutColor: {r: 0.333, g: 0.333, b: 0.333, a: 1}
   moveTime: 0.15
-  moveVectorForSelect: {x: 0, y: 0, z: 0}
-  layerItemSpace: {x: 30, y: 10, z: 0}
+  moveVectorForSelect: {x: 100, y: 20, z: 0}
+  layerItemSpace: {x: 50, y: 10, z: 0}
 --- !u!1 &359460665
 GameObject:
   m_ObjectHideFlags: 0
@@ -1577,6 +1575,18 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: pointer_layer, Assembly-CSharp
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2670,7 +2680,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 30, y: 10}
+  m_AnchoredPosition: {x: 60, y: 20}
   m_SizeDelta: {x: 60, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &770657017
@@ -3077,7 +3087,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -60, y: -20}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 60, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1005147381
@@ -4131,7 +4141,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 60, y: 20}
+  m_AnchoredPosition: {x: 90, y: 30}
   m_SizeDelta: {x: 60, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1521915848
@@ -5305,8 +5315,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 0}
-  upperButton: {fileID: 0}
-  lowerButton: {fileID: 0}
   LayerItemOrigin: {fileID: 2027613885}
   insideWall: {fileID: 1521915846}
   insideBlock: {fileID: 770657015}

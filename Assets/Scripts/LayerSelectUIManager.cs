@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class LayerSelectUIManager : MonoBehaviour
 {
     // Start is called before the first frame update
     public PlayerController playerController;
-    public GameObject upperButton;
-    public GameObject lowerButton;
+    //public GameObject upperButton;
+    //public GameObject lowerButton;
 
     public RectTransform LayerItemOrigin;
     public GameObject insideWall;
@@ -21,27 +22,33 @@ public class LayerSelectUIManager : MonoBehaviour
     public Color selectOutColor;
     public float moveTime;
 
-    public Vector3 moveVectorForSelect;
+    public Vector3 moveVectorForSelect = new Vector3(100,20);
     public Vector3 layerItemSpace;
 
-    private RectTransform iwTransform, ibTransform, owTransform, obTransform;
+    /// <summary>
+    /// 0:InsideWall 1:InsideBlock 2:OutsideWall 4 OutsideBlock
+    /// </summary>
+    private RectTransform[] layerItemTransform = new RectTransform[4];
     
-    private int selectingLayer;
-
-
+    private int selectingLayer = 0;
+    private int oldSelectLayer = 0;
     void Start()
     {
-        obTransform = outsideBlock.GetComponent<RectTransform>();
-        owTransform = outsideWall.GetComponent<RectTransform>();
-        ibTransform = insideBlock.GetComponent<RectTransform>();
-        iwTransform = insideWall.GetComponent<RectTransform>();
+        if(playerController == null) {
+            playerController = GameObject.Find("player").GetComponent<PlayerController>();
+            Debug.LogWarning("auto find");
+        }
 
-        obTransform.localPosition = LayerItemOrigin.localPosition;
-        owTransform.localPosition = LayerItemOrigin.localPosition + layerItemSpace;
-        ibTransform.localPosition = LayerItemOrigin.localPosition + layerItemSpace * 2;
-        iwTransform.localPosition = LayerItemOrigin.localPosition + layerItemSpace * 3;
+        layerItemTransform[3] = outsideBlock.GetComponent<RectTransform>();
+        layerItemTransform[2] = outsideWall.GetComponent<RectTransform>();
+        layerItemTransform[1] = insideBlock.GetComponent<RectTransform>();
+        layerItemTransform[0] = insideWall.GetComponent<RectTransform>();
 
-        selectingLayer = (int)playerController.pointerLayer;
+        layerItemTransform[3].localPosition = Vector3.zero;
+        layerItemTransform[2].localPosition = layerItemSpace;
+        layerItemTransform[1].localPosition = layerItemSpace * 2;
+        layerItemTransform[0].localPosition = layerItemSpace * 3;
+
     }
 
     public void UpperLayer() {
@@ -53,22 +60,37 @@ public class LayerSelectUIManager : MonoBehaviour
     }
 
     public void MoveSelectingLayer(int num) {
-        selectingLayer += num;
+        selectingLayer = num;
         if (selectingLayer < 0) selectingLayer = 0;
         if (selectingLayer > 3) selectingLayer = 3;
         
         for (int i = 0; i < 4; i++) {
-            
+            if(i == selectingLayer) {
+                layerItemTransform[i].sizeDelta = new Vector2(selectingItemSize, selectingItemSize);
+                layerItemTransform[i].localPosition = (layerItemSpace * i) + moveVectorForSelect;
+            }else if(i < selectingLayer) {
+                layerItemTransform[i].sizeDelta = new Vector2(baseItemSize, baseItemSize);
+                layerItemTransform[i].localPosition = layerItemSpace * i;
+            }else {
+                layerItemTransform[i].sizeDelta = new Vector2(baseItemSize, baseItemSize);
+                layerItemTransform[i].localPosition = (layerItemSpace * i) + (moveVectorForSelect * 2);
+                Debug.LogWarning(moveVectorForSelect + " " + i);
+            }
 
 
         }
     }
 
-
+    
 
     // Update is called once per frame
-    /*void Update()
-    {
+    void Update() {
         
-    }*/
+        //Debug.LogWarning(playerController);
+        selectingLayer = (int)playerController.pointerLayer;
+        if (oldSelectLayer != selectingLayer) {
+            oldSelectLayer = selectingLayer;
+            MoveSelectingLayer(selectingLayer-1);
+        }
+    }
 }

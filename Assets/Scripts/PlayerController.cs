@@ -117,7 +117,7 @@ public class PlayerController : MonoBehaviour {
             pointer = Instantiate(pointer);
             pointerForMousePos = Instantiate(pointerForMousePos);
             mouse = Input.mousePosition;
-            pointerLayer = 1;
+            pointerLayer = 3;
 
 
 
@@ -282,16 +282,16 @@ public class PlayerController : MonoBehaviour {
         pointer.transform.position = fpPos;
         pointerForMousePos.transform.position = fpfmPos;
         pointer.transform.GetChild(0).localScale = new Vector3(pSizeX, pSizeY);
-        pointerForMousePos.transform.GetChild(0).localScale = new Vector3(pSizeX, pSizeY, pointerForMousePos.transform.localScale.z);
+        pointerForMousePos.transform.GetChild(0).localScale = new Vector3(pSizeX, pSizeY, 1.2f);
 
         pointerLayer -= (Input.GetAxis("Mouse ScrollWheel") * 6);
 
         if (pointerLayer > 4) pointerLayer = 4;
         else if (pointerLayer < 1) pointerLayer = 1;
-        if (pointerLayer <= 2 && outsideMaterial.GetFloat("_Alpha") > 0.15) {
+        if (pointerLayer <= 3 && outsideMaterial.GetFloat("_Alpha") > 0.15) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") - (6 * Time.deltaTime));
         }
-        if (pointerLayer > 2 && outsideMaterial.GetFloat("_Alpha") < 1) {
+        if (pointerLayer > 3 && outsideMaterial.GetFloat("_Alpha") < 1) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") + (6 * Time.deltaTime));
         }
 

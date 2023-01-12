@@ -3538,6 +3538,7 @@ MonoBehaviour:
   skinList:
   - {fileID: 9026106015376755362, guid: 5bd63d5cb50b02441bb74169f6911af6, type: 3}
   - {fileID: 6513171497332126210, guid: c4368e97020b4594aad58026e56eacf1, type: 3}
+  - {fileID: 7923993012127542016, guid: c2f744df665a6554fa3a54373b487cdf, type: 3}
   skinPrefab: {fileID: 7732199830282019670, guid: 1358d3ce6da9ae34aba50993178404f1, type: 3}
   nameInputField: {fileID: 1279135139}
   margin: 30
@@ -5225,7 +5226,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1656308823
-  m_SortingLayer: 2
+  m_SortingLayer: -3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 971074d86d71f634fb7137d48b63da33, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

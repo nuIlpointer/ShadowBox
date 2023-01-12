@@ -494,7 +494,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1656308823
-  m_SortingLayer: 2
+  m_SortingLayer: -3
   m_SortingOrder: 0
   m_Sprite: {fileID: -7974425067795271119, guid: ad86f2ead713c684e8b86fb0c346e4b5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -546,6 +546,8 @@ MonoBehaviour:
   skinID: 0
   wakeUpWithWorldRegenerate: 1
   pointerLayer: 0
+  outsideMaterial: {fileID: 2100000, guid: 998f68c0d9181bd41a6d9723fa9ac347, type: 2}
+  insideMaterial: {fileID: 2100000, guid: 2cc09e7e254348a45a2ff6d20cdaf373, type: 2}
   syncTimeLate: 0.1
   actState: 0
   testUseWrapper: 1
@@ -2738,6 +2740,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerName: InsideWall
+  layerMaterial: {fileID: 2100000, guid: 2cc09e7e254348a45a2ff6d20cdaf373, type: 2}
   isWall: 1
   overrayColor: {r: 0.652, g: 1, b: 1, a: 1}
   makeTest: 0
@@ -2792,6 +2795,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerName: OutsideWall
+  layerMaterial: {fileID: 2100000, guid: 998f68c0d9181bd41a6d9723fa9ac347, type: 2}
   isWall: 1
   overrayColor: {r: 0.85, g: 1, b: 1, a: 1}
   makeTest: 0
@@ -4614,6 +4618,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerName: OutsideBlock
+  layerMaterial: {fileID: 2100000, guid: 998f68c0d9181bd41a6d9723fa9ac347, type: 2}
   isWall: 0
   overrayColor: {r: 1, g: 1, b: 1, a: 1}
   makeTest: 0
@@ -5118,7 +5123,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 408496129
-  m_SortingLayer: -1
+  m_SortingLayer: -5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: c42fe54923179bf4a9b56b50257e38a6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5176,6 +5181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layerName: InsideBlock
+  layerMaterial: {fileID: 2100000, guid: 2cc09e7e254348a45a2ff6d20cdaf373, type: 2}
   isWall: 0
   overrayColor: {r: 0.796, g: 1, b: 1, a: 1}
   makeTest: 0

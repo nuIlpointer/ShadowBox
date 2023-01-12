@@ -35,9 +35,9 @@ public class CreateController : MonoBehaviour
     };
 
     private Vector2Int[] BOLD_MARKS = { 
-        new Vector2Int(-1, 1), new Vector2Int( 0, 1), new Vector2Int( 1, 1),
-        new Vector2Int(-1, 0), new Vector2Int( 0, 0), new Vector2Int( 1, 0),                                
-        new Vector2Int(-1,-1), new Vector2Int( 0,-1), new Vector2Int( 1,-1), 
+        new Vector2Int( 0, 2), new Vector2Int( 1, 2), new Vector2Int( 2, 2),
+        new Vector2Int( 0, 1), new Vector2Int( 1, 1), new Vector2Int( 2, 1),                                
+        new Vector2Int( 0, 0), new Vector2Int( 1, 0), new Vector2Int( 2, 0), 
     };
 
     //特殊サイズブロック処理用
@@ -274,10 +274,43 @@ public class CreateController : MonoBehaviour
                 else worldLoader.BlockUpdate(0, layerNumber, x + originPos.x + j, originPos.y + i);
             }
         }
+    }
 
 
+    public void PointerSize(out int x, out int y, out bool isAllLayer) {
+        if (useBlock >= 80) {
 
+            x = LayerManager.UNNORMAL_SIZE_BLOCKS[Enum.GetName(typeof(LayerManager.BLOCK_ID), useBlock)].x;
+            y = LayerManager.UNNORMAL_SIZE_BLOCKS[Enum.GetName(typeof(LayerManager.BLOCK_ID), useBlock)].y;
+            isAllLayer = false;
+        } else {
+            switch (lineWidth % 10) {
+                case 0:
+                    x = 1;
+                    y = 1;
+                    break;
+                case 1:
+                    x = 3;
+                    y = 3;
+                    break;
+                default:
+                    x = 1;
+                    y = 1;
+                    break;
+            }
 
+            switch (lineWidth / 10) {
+                case 0:
+                    isAllLayer = false;
+                    break;
+                case 1:
+                    isAllLayer = true;
+                    break;
+                default:
+                    isAllLayer = false;
+                    break;
+            }
+        }
     }
 
 
@@ -288,10 +321,8 @@ public class CreateController : MonoBehaviour
         lineWidth = 1;
     }
 
+
+
     // Update is called once per frame
-    void Update()
-    {
-        usbDelay += Time.deltaTime;
-        if (usbDelay > 5) usbDelay = 5;
-    }
+    
 }

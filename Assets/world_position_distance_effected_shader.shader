@@ -4,7 +4,8 @@ Shader "Unlit/world_position_distance_effected_shader"
     {
         _MainTex ("Sprite", 2D) = "white" {}
         _AirColor ("Air Color", Color) = (0, 0, 0, 1)
-        _DistEffectLevel ("Dist Effect Level", Float) = 1
+        _DistEffectLevel ("Dist Effect Level", float) = 1
+        _Alpha ("Alpha", float) = 1
     }
     SubShader
     {
@@ -43,6 +44,7 @@ Shader "Unlit/world_position_distance_effected_shader"
             float4 _MainTex_ST;
             fixed4 _AirColor;
             float _DistEffectLevel;
+            fixed _Alpha;
 
             v2f vert (appdata v)
             {
@@ -58,7 +60,7 @@ Shader "Unlit/world_position_distance_effected_shader"
             {
                 // sample the texture
                 fixed4 tex = tex2D(_MainTex, i.uv);
-                fixed4 col = fixed4(lerp(tex.rgb, _AirColor.rgb, abs(i.worldPos.z) * _DistEffectLevel),tex.a);
+                fixed4 col = fixed4(lerp(tex.rgb, _AirColor.rgb, abs(i.worldPos.z) * _DistEffectLevel),tex.a * _Alpha);
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);

@@ -11,6 +11,7 @@ public class LayerManager : MonoBehaviour {
     /// 
 
     public String layerName;
+    public Material layerMaterial;
     public bool isWall = false;
 
     public Color overrayColor;
@@ -238,6 +239,7 @@ public class LayerManager : MonoBehaviour {
             if (block == null) { 
                 block = (GameObject)Resources.Load("Blocks/unknown");
                 block.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = id.ToString();
+                block.GetComponent<SpriteRenderer>().material = layerMaterial;
             }
 
             for (int px = 0; px < cSize; px++) {
@@ -248,7 +250,7 @@ public class LayerManager : MonoBehaviour {
                         block = Instantiate(block, frame);
                         block.transform.localPosition = pos;
                         block.name = px + "_" + py + "_" + Enum.GetName(typeof(BLOCK_ID), id);
-
+                        block.GetComponent<SpriteRenderer>().material = layerMaterial;
 
                         block.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
                         if (isWall) {
@@ -320,8 +322,7 @@ public class LayerManager : MonoBehaviour {
             block.name = x + "_" + y + "_" + Enum.GetName(typeof(BLOCK_ID), id);
             SpriteRenderer spriteRenderer = block.GetComponent<SpriteRenderer>();
             spriteRenderer.sortingLayerName = layerName;
-            //spriteRenderer.color = overrayColor;
-
+            spriteRenderer.material = layerMaterial;
 
             BoxCollider bcl;
             if (isWall) {

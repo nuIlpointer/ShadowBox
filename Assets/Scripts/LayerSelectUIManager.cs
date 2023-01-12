@@ -31,15 +31,15 @@ public class LayerSelectUIManager : MonoBehaviour
 
     void Start()
     {
-        iwTransform = insideWall.GetComponent<RectTransform>();
-        ibTransform = insideBlock.GetComponent<RectTransform>();
-        owTransform = outsideWall.GetComponent<RectTransform>();
         obTransform = outsideBlock.GetComponent<RectTransform>();
+        owTransform = outsideWall.GetComponent<RectTransform>();
+        ibTransform = insideBlock.GetComponent<RectTransform>();
+        iwTransform = insideWall.GetComponent<RectTransform>();
 
-        iwTransform.localPosition = LayerItemOrigin.localPosition + layerItemSpace;
+        obTransform.localPosition = LayerItemOrigin.localPosition;
+        owTransform.localPosition = LayerItemOrigin.localPosition + layerItemSpace;
         ibTransform.localPosition = LayerItemOrigin.localPosition + layerItemSpace * 2;
-        owTransform.localPosition = LayerItemOrigin.localPosition + -layerItemSpace;
-        obTransform.localPosition = LayerItemOrigin.localPosition + -layerItemSpace * 2;
+        iwTransform.localPosition = LayerItemOrigin.localPosition + layerItemSpace * 3;
 
         selectingLayer = (int)playerController.pointerLayer;
     }
@@ -53,8 +53,12 @@ public class LayerSelectUIManager : MonoBehaviour
     }
 
     public void MoveSelectingLayer(int num) {
+        selectingLayer += num;
+        if (selectingLayer < 0) selectingLayer = 0;
+        if (selectingLayer > 3) selectingLayer = 3;
+        
         for (int i = 0; i < 4; i++) {
-                    
+            
 
 
         }

@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using Image = UnityEngine.UI.Image;
 
 public class LayerSelectUIManager : MonoBehaviour
 {
@@ -16,14 +18,15 @@ public class LayerSelectUIManager : MonoBehaviour
     public GameObject insideBlock;
     public GameObject outsideWall;
     public GameObject outsideBlock;
+    public TextMeshProUGUI layerNameView;
 
     public float selectingItemSize;
     public float baseItemSize;
     public Color selectOutColor;
     public float moveTime;
 
-    public Vector3 moveVectorForSelect = new Vector3(100,20);
-    public Vector3 layerItemSpace;
+    [SerializeField] private Vector2 moveVectorForSelect;
+    [SerializeField] private Vector2 layerItemSpace;
 
     /// <summary>
     /// 0:InsideWall 1:InsideBlock 2:OutsideWall 4 OutsideBlock
@@ -64,19 +67,37 @@ public class LayerSelectUIManager : MonoBehaviour
         if (selectingLayer < 0) selectingLayer = 0;
         if (selectingLayer > 3) selectingLayer = 3;
         
+
         for (int i = 0; i < 4; i++) {
             if(i == selectingLayer) {
                 layerItemTransform[i].sizeDelta = new Vector2(selectingItemSize, selectingItemSize);
-                layerItemTransform[i].localPosition = (layerItemSpace * i) + moveVectorForSelect;
-            }else if(i < selectingLayer) {
+                layerItemTransform[i].anchoredPosition = Vector2.zero;
+                layerItemTransform[i].GetComponent<Image>().color = Color.white;
+            }else if(i > selectingLayer) {
                 layerItemTransform[i].sizeDelta = new Vector2(baseItemSize, baseItemSize);
-                layerItemTransform[i].localPosition = layerItemSpace * i;
-            }else {
+                layerItemTransform[i].anchoredPosition = layerItemSpace * (selectingLayer - i) - moveVectorForSelect;
+                layerItemTransform[i].GetComponent<Image>().color = selectOutColor;
+            } else {
                 layerItemTransform[i].sizeDelta = new Vector2(baseItemSize, baseItemSize);
-                layerItemTransform[i].localPosition = (layerItemSpace * i) + (moveVectorForSelect * 2);
-                Debug.LogWarning(moveVectorForSelect + " " + i);
+                layerItemTransform[i].anchoredPosition = layerItemSpace * (selectingLayer - i) + moveVectorForSelect + new Vector2(0, (-selectingItemSize / 2) + layerItemSpace.y);
+                layerItemTransform[i].GetComponent<Image>().color = selectOutColor;
             }
 
+        }
+
+        switch (selectingLayer) {
+            case 0:
+                layerNameView.SetText("Flont\n(足場)\n1/4");
+                break;
+            case 1:
+                layerNameView.SetText("Flont\n(背景)\n2/4");
+                break;
+            case 2:
+                layerNameView.SetText("Back\n(足場)\n3/4");
+                break;
+            case 3:
+                layerNameView.SetText("Back\n(背景)\n4/4");
+                break;
 
         }
     }

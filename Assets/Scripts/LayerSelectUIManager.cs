@@ -23,8 +23,7 @@ public class LayerSelectUIManager : MonoBehaviour
     public float selectingItemSize;
     public float baseItemSize;
     public Color selectOutColor;
-    public float moveTime;
-
+    
     [SerializeField] private Vector2 moveVectorForSelect;
     [SerializeField] private Vector2 layerItemSpace;
 
@@ -87,16 +86,16 @@ public class LayerSelectUIManager : MonoBehaviour
 
         switch (selectingLayer) {
             case 0:
-                layerNameView.SetText("Flont\n(足場)\n1/4");
+                layerNameView.SetText("Back\n(背景)\n4/4");
                 break;
             case 1:
-                layerNameView.SetText("Flont\n(背景)\n2/4");
-                break;
-            case 2:
                 layerNameView.SetText("Back\n(足場)\n3/4");
                 break;
+            case 2:
+                layerNameView.SetText("Flont\n(背景)\n2/4");
+                break;
             case 3:
-                layerNameView.SetText("Back\n(背景)\n4/4");
+                layerNameView.SetText("Flont\n(足場)\n1/4");
                 break;
 
         }

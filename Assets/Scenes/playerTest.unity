@@ -1407,7 +1407,6 @@ MonoBehaviour:
   selectingItemSize: 120
   baseItemSize: 80
   selectOutColor: {r: 0.496, g: 0.496, b: 0.496, a: 1}
-  moveTime: 0.15
   moveVectorForSelect: {x: 0, y: 60}
   layerItemSpace: {x: 0, y: 30}
 --- !u!114 &352627205

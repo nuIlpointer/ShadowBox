@@ -167,7 +167,6 @@ public class CreateController : MonoBehaviour
             for (int j = 0; j < marks.Length; j++) {
                 //Debug.LogWarning( worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) > 0);
                 if (!replase ? (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) == 0) : (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) != useBlock) && worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) > -2) {
-                    Debug.LogWarning("rerere");
                     if (x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() &&
                         y + marks[j].y >= 0 && y + marks[j].y < worldLoader.GetWorldSizeY()) {
                         if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) <= -2 || worldLoader.GetBlock(x, y, layerNumber) >= 80) {

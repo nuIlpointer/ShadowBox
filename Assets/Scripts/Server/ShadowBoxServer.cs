@@ -319,16 +319,14 @@ public class ShadowBoxServer : MonoBehaviour {
                                 worldInfo.SaveWorldData();
                                 if (debugMode) Debug.Log("[SERVER]World regenerate complete.");
                                 if (debugMode && standalone) serverGui.Log($"World regenerate complete.");
-                                foreach (NetworkConnection conn in connectionList)
-                                    Send(conn, "RCP");
                             }
 
                             //ワールドを再生成するやつ
                             if (receivedData.StartsWith("RGN")) {
                                 if (debugMode) Debug.Log("[SERVER]Start world regenerate...");
                                 if (debugMode && standalone) serverGui.Log($"Start world regenerate...");
-                                if (worldInfo != null) {
-                                    GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
+                                if (worldInfo != null) { 
+                                    RegenerateWorld();
                                 } else {
                                     Send(connectionList[i], "FGN");
                                 }
@@ -373,6 +371,8 @@ public class ShadowBoxServer : MonoBehaviour {
             worldInfo = newWorld;
         }
         GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
+        foreach (NetworkConnection conn in connectionList)
+            Send(conn, "RCP");
     }
 
     /// <summary>

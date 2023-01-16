@@ -78,6 +78,8 @@ public class PlayerController : MonoBehaviour {
 
     private bool firstUpdate = true;
 
+    private bool actPermittion;
+
     //Start()前の初期化完了最初のタイミングで実行
     void Awake() {
         ipAddress = TitleData.ipAddress;
@@ -98,6 +100,7 @@ public class PlayerController : MonoBehaviour {
                 server.CreateInternalServer();
                 //ipAddress = "172.16.103.111";
             }
+
             wrapper.Connect(ipAddress, port);
 
             //スキンid
@@ -136,19 +139,12 @@ public class PlayerController : MonoBehaviour {
             if (wakeUpWithWorldRegenerate) {
                 worldLoader.WakeUp();
             }
-            //初期地形生成処理
-            /*if (wrapper.IsConnectionActive()) {
-                Debug.LogWarning("/////////////////////////////////////////////////////////1");
-                if (!wrapper.IsWorldRegenerateFinished()) {
-                    Debug.LogWarning("/////////////////////////////////////////////////////////2");
-                    worldLoader.WakeUp();
-
-                    worldLoader.LoadChunks(transform.position);
-                }
-            }*/
+            
         }
 
+        //ワールドローダに動いていいか聞く
 
+        actPermittion = worldLoader.permitToPlayerAct;
 
         //スキンID変更時処理
         if (oldSkinID != skinID) {
@@ -460,7 +456,7 @@ public class PlayerController : MonoBehaviour {
         }
 
         //移動反映
-        controller.Move(movedir * Time.deltaTime);
+        if(actPermittion)controller.Move(movedir * Time.deltaTime);
 
     }
 

@@ -83,7 +83,8 @@ public class CameraManager : MonoBehaviour
         int wSizex = wl.GetWorldSizeX();
         int wSizey = wl.GetWorldSizeY();
         Vector2 imageSize = backGround.GetComponent<SpriteRenderer>().size;
-        
+
+        Vector2 bgMoveRange;
 
         
 

@@ -25,6 +25,8 @@ public class CameraManager : MonoBehaviour
     private float horFOVTan;
     private float verFOVTan;
 
+    public Transform backGround;
+
     //計算用フィールド
     public float horizontalFOV;
     private Vector2 aspect;
@@ -75,6 +77,13 @@ public class CameraManager : MonoBehaviour
         if (limitCalcPos.y > moveUpLimit) limitCalcPos.y = moveUpLimit;
 
         transform.position = limitCalcPos;
+
+        //背景追従
+        int wSizex = wl.GetWorldSizeX();
+        int wSizey = wl.GetWorldSizeY();
+        int imageSize;
+
+
     }
 
     void calcAspect() {

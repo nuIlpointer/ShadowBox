@@ -519,7 +519,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1724355515}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &142052762
 MonoBehaviour:
@@ -545,7 +545,7 @@ MonoBehaviour:
   playerName: Player
   skinID: 0
   wakeUpWithWorldRegenerate: 1
-  pointerLayer: 0
+  pointerLayer: 4
   outsideMaterial: {fileID: 2100000, guid: 998f68c0d9181bd41a6d9723fa9ac347, type: 2}
   insideMaterial: {fileID: 2100000, guid: 2cc09e7e254348a45a2ff6d20cdaf373, type: 2}
   syncTimeLate: 0.1
@@ -4534,6 +4534,7 @@ Transform:
   - {fileID: 1996666298}
   - {fileID: 814373628}
   - {fileID: 1906975259}
+  - {fileID: 1959518057}
   - {fileID: 142052761}
   - {fileID: 1784876088}
   m_Father: {fileID: 0}
@@ -4581,6 +4582,7 @@ MonoBehaviour:
   wideLoadMode: 1
   getChunkFromServer: 1
   permitToPlayerAct: 0
+  DebugLogEnter: 0
 --- !u!1 &1733044395
 GameObject:
   m_ObjectHideFlags: 0
@@ -4689,7 +4691,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1724355515}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1784876089
 MonoBehaviour:
@@ -5071,8 +5073,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 20, y: 15, z: -20}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1959518057}
+  m_Children: []
   m_Father: {fileID: 1724355515}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5291,10 +5292,10 @@ Transform:
   m_GameObject: {fileID: 1959518056}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1.2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
-  m_Father: {fileID: 1906975259}
-  m_RootOrder: 0
+  m_Father: {fileID: 1724355515}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1959518058
 SpriteRenderer:
@@ -5315,7 +5316,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 7a0a23db15d7e704781cda8339b5e9c4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

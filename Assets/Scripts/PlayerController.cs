@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour {
     //移動制御等
     private bool runR = false, runL = false, jump = false, moveB = false, moveF = false, 
         underTheWorld = false, atRightBorder, atLeftBorder;
-    private int inLayer = 2;
+    private int inLayer = 4;
     private Vector3 safePos;
 
     //プレイヤーstate
@@ -120,7 +120,7 @@ public class PlayerController : MonoBehaviour {
             pointer = Instantiate(pointer);
             pointerForMousePos = Instantiate(pointerForMousePos);
             mouse = Input.mousePosition;
-            pointerLayer = 3;
+            pointerLayer = 4;
 
 
 
@@ -287,7 +287,7 @@ public class PlayerController : MonoBehaviour {
         if (pointerLayer <= 3 && outsideMaterial.GetFloat("_Alpha") > 0.15) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") - (6 * Time.deltaTime));
         }
-        if (pointerLayer > 3 && outsideMaterial.GetFloat("_Alpha") < 1) {
+        if (pointerLayer >= 3 && outsideMaterial.GetFloat("_Alpha") < 1) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") + (6 * Time.deltaTime));
         }
 
@@ -460,4 +460,7 @@ public class PlayerController : MonoBehaviour {
 
     }
 
+    public void OnDestroy() {
+        outsideMaterial.SetFloat("_Alpha", 1f);
+    }
 }

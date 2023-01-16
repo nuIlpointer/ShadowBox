@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CameraManager : MonoBehaviour
 {
@@ -81,8 +82,10 @@ public class CameraManager : MonoBehaviour
         //背景追従
         int wSizex = wl.GetWorldSizeX();
         int wSizey = wl.GetWorldSizeY();
-        int imageSize;
+        Vector2 imageSize = backGround.GetComponent<SpriteRenderer>().size;
+        
 
+        
 
     }
 

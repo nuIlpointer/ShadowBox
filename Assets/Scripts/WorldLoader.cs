@@ -43,7 +43,9 @@ public class WorldLoader : MonoBehaviour
     Queue<KeyValuePair<int, Vector3>> loadChunksQueue = new Queue<KeyValuePair<int, Vector3>>();
 
     public bool wideLoadMode = false;
-    public bool getChunkFromServer = true; 
+    public bool getChunkFromServer = true;
+
+    public bool permitToPlayerAct;
 
     // Start is called before the first frame update
     void Start()
@@ -131,7 +133,7 @@ public class WorldLoader : MonoBehaviour
         // do something when world regenerate finished 
         Debug.Log("ワールドが再生成されました。");
         for (int i = 0; i < visit.Length; i++) visit[i] = false;        //visitを初期化し、再度読み込むようにする
-
+        permitToPlayerAct = false;
     }
 
     /// <summary>
@@ -141,6 +143,7 @@ public class WorldLoader : MonoBehaviour
         Debug.Log("サーバー側に地形データが存在しません。再生成が必要です。");
         wrapper.SetWorldData(cNumX, cNumY, cSize, cSize, heightRange, new System.Random().Next(0, Int32.MaxValue), "new_World");
         wrapper.RequestWorldRegenerate();
+        permitToPlayerAct = true;
     }
 
     /// <summary>
@@ -148,38 +151,11 @@ public class WorldLoader : MonoBehaviour
     /// </summary>
     public void OnWorldNoNeedRegenerate() {
         Debug.Log("ワールドの再生成は不要です。");
+        permitToPlayerAct = true;
     }
 
 
-    /*public bool WakeUp() {
-        if (!wrapper.IsConnectionActive()) {
-            Debug.LogWarning("[WorldLoader] > 地形の初期生成に失敗（接続が確認できない）");
-            return false;
-        }
-        if (wrapper.IsWorldRegenerateFinished()) {
-            Debug.Log("[WorldLoader] > 地形はすでに生成されています");
-            return false;
-        }
-        float timer = 0;
-        int sec = 0;
-        do {
-            timer += Time.deltaTime;
-
-            if (timer > sec) {
-                sec++;
-                Debug.Log($"[WorldLoader] >　サーバーからの生成完了応答を待っています({sec}s)");
-            }
-            if (sec > 10) {
-                Debug.LogWarning("[WorldLoader] > 地形の初期生成リクエストの応答が１０秒間返ってきませんでした。");
-                return false;
-            }
-        } while (!wrapper.IsWorldRegenerateFinished());
-
-        for (int i = 0; i < visit.Length; i++) visit[i] = false;
-        Debug.Log("[WorldLoader] > サーバ側生成完了を確認　地形ロード履歴をリセットしました");
-
-        return true;
-    }*/
+    
     public void WakeUp() {
         waking = true;
     }

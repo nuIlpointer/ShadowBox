@@ -10,10 +10,10 @@ public class kentiku : MonoBehaviour {
 
     public void OnClick() {
         if(expanded) {
-            expandButton.transform.Find("Arrow").GetComponent<TextMeshProUGUI>().text = "↑";
+            expandButton.transform.Find("Arrow").GetComponent<TextMeshProUGUI>().text = "クラフト↑";
             transform.position -= new Vector3(0, 300, 0);
         } else {
-            expandButton.transform.Find("Arrow").GetComponent<TextMeshProUGUI>().text = "↓";
+            expandButton.transform.Find("Arrow").GetComponent<TextMeshProUGUI>().text = "閉じる↓";
             transform.position += new Vector3(0, 300, 0);
         }
         expanded = !expanded;

@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CameraManager : MonoBehaviour
 {
@@ -12,17 +14,27 @@ public class CameraManager : MonoBehaviour
     public bool follow = true;
     public float followingLevel = 3;
     public float cameraDist = 10;
-    public float yCorrection = 3;
-    public float cameraFOV;
+    /// <summary>
+    /// カメラのY座標をフォロー対象からどれだけ上にずらすかを設定します（単位 : 画面サイズ）
+    /// </summary>
+    public float yDifferenceLevel = 0.2f;
+    private float yDifference;
+    public float camFOV;
     public WorldLoader wl;
     private Camera cam;
     public float moveLeftLimit, moveRightLimit, moveUpLimit, moveDownLimit;
-    
+
+    private float horFOVTan;
+    private float verFOVTan;
+
+    public Transform backGround;
 
     //計算用フィールド
-    private float verticalFOV;
-
+    public float horizontalFOV;
+    private Vector2 aspect;
+    private float aspectRatio;
     private Vector3 move = new Vector3(), noCorPos = new Vector3();
+
     Transform targetTF;
     // Start is called before the first frame update
     void Start()
@@ -30,36 +42,79 @@ public class CameraManager : MonoBehaviour
         targetTF = followTarget.transform;
         noCorPos = transform.position;
         cam = gameObject.GetComponent<Camera>();
-        cameraFOV = cam.fieldOfView;
 
+        calcAspect();
+        calcYDiff();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        cameraFOV = cam.fieldOfView;
+        calcAspect();
+        calcYDiff();
 
         if (follow) {
             move = targetTF.position - noCorPos;
             noCorPos = move * followingLevel * Time.deltaTime + noCorPos;
 
-            transform.position = new Vector3(noCorPos.x , noCorPos.y + yCorrection , cameraDist);
+            transform.position = new Vector3(noCorPos.x , noCorPos.y + yDifference , cameraDist);
 
         }
 
         //範囲外を映さないぎりぎりの位置を計算
-        verticalFOV = cameraFOV * 1.246516f;
-        //Debug.Log(verticalFOV);
-        moveLeftLimit = Mathf.Tan((verticalFOV / 2) * (Mathf.PI / 180)) * (-cameraDist + 3f);
+        moveLeftLimit = (-cameraDist + 1.2f) * horFOVTan;
+        moveRightLimit = wl.GetWorldSizeX() - 1 - moveLeftLimit;
+        moveDownLimit = (-cameraDist + 1.2f) * verFOVTan;
+        moveUpLimit = wl.GetWorldSizeY() - 1 - moveDownLimit;
 
-        moveRightLimit = wl.GetWorldSizeX() - moveLeftLimit;
-
-        moveDownLimit = Mathf.Tan((cameraFOV / 2) * (Mathf.PI / 180)) * (-cameraDist + 1.5f);
-
-        moveUpLimit = wl.GetWorldSizeY() - moveDownLimit;
-
+        moveDownLimit += yDifference;
+        moveUpLimit -= yDifference;
 
         //MoveLimitを超えた時の処理
 
+        Vector3 limitCalcPos = transform.position;
+        if (limitCalcPos.x < moveLeftLimit) limitCalcPos.x = moveLeftLimit;
+        if (limitCalcPos.x > moveRightLimit) limitCalcPos.x = moveRightLimit;
+        if (limitCalcPos.y < moveDownLimit) limitCalcPos.y = moveDownLimit;
+        if (limitCalcPos.y > moveUpLimit) limitCalcPos.y = moveUpLimit;
+
+        transform.position = limitCalcPos;
+
+        //背景追従
+        int wSizex = wl.GetWorldSizeX();
+        int wSizey = wl.GetWorldSizeY();
+        Vector2 imageSize = backGround.GetComponent<SpriteRenderer>().bounds.size;//backGround.GetComponent<SpriteRenderer>().size * backGround.localScale;
+
+        Vector2 bgMoveRange = new Vector2((float)wSizex, (float)wSizey) - imageSize;
+        Vector2 camMoveRange = new Vector2(moveRightLimit - moveLeftLimit, moveUpLimit - moveDownLimit);
+        Vector2 camPosInMoveRange = new Vector2(transform.position.x - moveLeftLimit, transform.position.y - moveDownLimit);
+
+        Vector2 bgPosLerp = new Vector2(camPosInMoveRange.x / camMoveRange.x, camPosInMoveRange.y / camMoveRange.y);
+        Vector3 bgPos = bgMoveRange * bgPosLerp;
+        
+        
+        bgPos.z = 1.2f;
+        backGround.transform.position = bgPos;
+
+        
+
+    }
+
+    void calcAspect() {
+
+        camFOV = cam.fieldOfView;
+        aspect = new Vector2(Screen.width, Screen.height);
+        aspectRatio = aspect.x / aspect.y;
+        
+        //縦視野のタンジェントにアスペクト比を掛けて横視野のタンジェントを求める
+        verFOVTan = Mathf.Tan((camFOV / 2) * Mathf.Deg2Rad);
+        horFOVTan = verFOVTan * aspectRatio;
+
+        //横視野のタンジェントを角度に戻す
+        horizontalFOV = Mathf.Atan(horFOVTan) * Mathf.Rad2Deg * 2;
+    }
+
+    void calcYDiff() {
+        yDifference = (cameraDist * verFOVTan) * -yDifferenceLevel;
     }
 }

@@ -4,7 +4,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
     enum Skins {
         error_man = 0,
-        test_kun_1 = 1
+        test_kun_1 = 1,
+        knit_chan = 2
     }
 
 
@@ -32,6 +33,8 @@ public class PlayerController : MonoBehaviour {
     private Vector3 pointerPos;
     private Vector3 mouse;
     public float pointerLayer;
+    public Material outsideMaterial; 
+    public Material insideMaterial;
 
     private GameObject pointer;
     private GameObject pointerForMousePos;
@@ -55,7 +58,7 @@ public class PlayerController : MonoBehaviour {
     //移動制御等
     private bool runR = false, runL = false, jump = false, moveB = false, moveF = false, 
         underTheWorld = false, atRightBorder, atLeftBorder;
-    private int inLayer = 2;
+    private int inLayer = 4;
     private Vector3 safePos;
 
     //プレイヤーstate
@@ -74,6 +77,8 @@ public class PlayerController : MonoBehaviour {
     public generaTester gt;
 
     private bool firstUpdate = true;
+
+    private bool actPermittion;
 
     //Start()前の初期化完了最初のタイミングで実行
     void Awake() {
@@ -95,6 +100,7 @@ public class PlayerController : MonoBehaviour {
                 server.CreateInternalServer();
                 //ipAddress = "172.16.103.111";
             }
+
             wrapper.Connect(ipAddress, port);
 
             //スキンid
@@ -110,11 +116,11 @@ public class PlayerController : MonoBehaviour {
 
             //ポインタ
             pointer = (GameObject)Resources.Load("Generic/Pointer");
-            pointerForMousePos = (GameObject)Resources.Load("Generic/Pointer");
+            pointerForMousePos = (GameObject)Resources.Load("Generic/PointerBox");
             pointer = Instantiate(pointer);
             pointerForMousePos = Instantiate(pointerForMousePos);
             mouse = Input.mousePosition;
-            pointerLayer = 1;
+            pointerLayer = 4;
 
 
 
@@ -133,19 +139,12 @@ public class PlayerController : MonoBehaviour {
             if (wakeUpWithWorldRegenerate) {
                 worldLoader.WakeUp();
             }
-            //初期地形生成処理
-            /*if (wrapper.IsConnectionActive()) {
-                Debug.LogWarning("/////////////////////////////////////////////////////////1");
-                if (!wrapper.IsWorldRegenerateFinished()) {
-                    Debug.LogWarning("/////////////////////////////////////////////////////////2");
-                    worldLoader.WakeUp();
-
-                    worldLoader.LoadChunks(transform.position);
-                }
-            }*/
+            
         }
 
+        //ワールドローダに動いていいか聞く
 
+        actPermittion = worldLoader.permitToPlayerAct;
 
         //スキンID変更時処理
         if (oldSkinID != skinID) {
@@ -262,19 +261,36 @@ public class PlayerController : MonoBehaviour {
 
         mouse = Input.mousePosition;
         //Debug.Log("mouse " + mouse);
-        mouse.z = -(cameraObj.transform.position.z /*+ (1.2f - (((int)pointerLayer - 1) * 0.4f))*/);
+        mouse.z = -cameraObj.transform.position.z + (1.2f - (((int)pointerLayer - 1) * 0.4f));
         pointerPos = Camera.main.ScreenToWorldPoint(mouse);
 
         pointerPos = new Vector3((float)Mathf.Floor(pointerPos.x + 0.5f), (float)Mathf.Floor(pointerPos.y + 0.5f), 0);
 
-        pointer.transform.position = new Vector3(pointerPos.x, pointerPos.y, 1.2f - ((int)pointerLayer - 1) * 0.4f);
-        pointerForMousePos.transform.position = new Vector3(pointerPos.x, pointerPos.y, 0);
+        Vector3 fpPos = new Vector3(pointerPos.x, pointerPos.y, 1.2f - ((int)pointerLayer - 1) * 0.4f);
+        Vector3 fpfmPos = new Vector3(pointerPos.x, pointerPos.y, 0);
 
+        int pSizeX, pSizeY;
+        bool isAllLayer;
+        creater.PointerSize(out pSizeX, out pSizeY, out isAllLayer);
+        fpPos += new Vector3(pSizeX / 2, pSizeY / 2 );
+        fpfmPos += new Vector3(pSizeX / 2, pSizeY / 2 );
 
-        pointerLayer += (Input.GetAxis("Mouse ScrollWheel") * 3);
+        pointer.transform.position = fpPos;
+        pointerForMousePos.transform.position = fpfmPos;
+        pointer.transform.GetChild(0).localScale = new Vector3(pSizeX, pSizeY);
+        pointerForMousePos.transform.GetChild(0).localScale = new Vector3(pSizeX, pSizeY, 1.2f);
+
+        pointerLayer -= (Input.GetAxis("Mouse ScrollWheel") * 6);
 
         if (pointerLayer > 4) pointerLayer = 4;
         else if (pointerLayer < 1) pointerLayer = 1;
+        if (pointerLayer <= 3 && outsideMaterial.GetFloat("_Alpha") > 0.15) {
+            outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") - (6 * Time.deltaTime));
+        }
+        if (pointerLayer >= 3 && outsideMaterial.GetFloat("_Alpha") < 1) {
+            outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") + (6 * Time.deltaTime));
+        }
+
 
         //建築
 
@@ -387,6 +403,7 @@ public class PlayerController : MonoBehaviour {
             moveF = false;
             GetComponent<SpriteRenderer>().sortingLayerName = "OutsideBlock";
             inLayer = 4;
+            transform.GetComponent<SpriteRenderer>().material = outsideMaterial;
         }
 
         if (moveB) {
@@ -396,6 +413,7 @@ public class PlayerController : MonoBehaviour {
 
             GetComponent<SpriteRenderer>().sortingLayerName = "InsideBlock";
             inLayer = 2;
+            transform.GetComponent<SpriteRenderer>().material = insideMaterial;
         }
 
         //Z軸ズレ補正
@@ -438,8 +456,11 @@ public class PlayerController : MonoBehaviour {
         }
 
         //移動反映
-        controller.Move(movedir * Time.deltaTime);
+        if(actPermittion)controller.Move(movedir * Time.deltaTime);
 
     }
 
+    public void OnDestroy() {
+        outsideMaterial.SetFloat("_Alpha", 1f);
+    }
 }

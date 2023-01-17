@@ -59,10 +59,16 @@ public class ShadowBoxServer : MonoBehaviour {
     /// ドライバと接続情報の破棄を行う
     /// </summary>
     public void OnDestroy() {
+        Debug.Log(TitleData.isMultiPlay);
+        if(!TitleData.isMultiPlay) {
+            if (debugMode) Debug.Log("Regenerating World");
+            RegenerateWorld();
+        }
         this.driver.Dispose();
         if (this.connectionList.IsCreated) {
             this.connectionList.Dispose();
         }
+        Debug.Log("Server Closed.");
     }
 
     /// <summary>
@@ -313,16 +319,14 @@ public class ShadowBoxServer : MonoBehaviour {
                                 worldInfo.SaveWorldData();
                                 if (debugMode) Debug.Log("[SERVER]World regenerate complete.");
                                 if (debugMode && standalone) serverGui.Log($"World regenerate complete.");
-                                foreach (NetworkConnection conn in connectionList)
-                                    Send(conn, "RCP");
                             }
 
                             //ワールドを再生成するやつ
                             if (receivedData.StartsWith("RGN")) {
                                 if (debugMode) Debug.Log("[SERVER]Start world regenerate...");
                                 if (debugMode && standalone) serverGui.Log($"Start world regenerate...");
-                                if (worldInfo != null) {
-                                    GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
+                                if (worldInfo != null) { 
+                                    RegenerateWorld();
                                 } else {
                                     Send(connectionList[i], "FGN");
                                 }
@@ -361,9 +365,14 @@ public class ShadowBoxServer : MonoBehaviour {
 
 
     public void RegenerateWorld() {
-        if(standalone) {
-            GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
+        if(!TitleData.isMultiPlay) {
+            var newWorld = new WorldInfo(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), new System.Random().Next(0, Int32.MaxValue), "world");
+            newWorld.SaveWorldData();
+            worldInfo = newWorld;
         }
+        GenerateWorld(worldInfo.GetWorldSizeX(), worldInfo.GetWorldSizeY(), worldInfo.GetChunkSizeX(), worldInfo.GetChunkSizeY(), worldInfo.GetHeightRange(), worldInfo.GetSeed());
+        foreach (NetworkConnection conn in connectionList)
+            Send(conn, "RCP");
     }
 
     /// <summary>

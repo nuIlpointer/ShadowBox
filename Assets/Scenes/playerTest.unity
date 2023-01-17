@@ -4708,8 +4708,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPos: {x: 20, y: 20, z: 0}
-  insideMat: {fileID: 0}
-  outsideMat: {fileID: 0}
+  insideMat: {fileID: 2100000, guid: 2cc09e7e254348a45a2ff6d20cdaf373, type: 2}
+  outsideMat: {fileID: 2100000, guid: 998f68c0d9181bd41a6d9723fa9ac347, type: 2}
 --- !u!1 &1825728590
 GameObject:
   m_ObjectHideFlags: 0

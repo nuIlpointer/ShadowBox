@@ -153,7 +153,7 @@ public class GenericEntityManager : MonoBehaviour
         //レイヤー同期
         players[id].sprite.GetComponent<SpriteRenderer>().sortingLayerName = Enum.GetName(typeof(ShadowBoxClientWrapper.BlockLayer), layer);
         Vector3 p = new Vector3(players[id].sprite.transform.position.x, players[id].sprite.transform.position.y, players[id].sprite.transform.position.z);
-        players[id].sprite.transform.position = new Vector3(p.x, p.y, (float)((layer - 1) * 0.4));
+        players[id].sprite.transform.position = new Vector3(p.x, p.y, (float)(1-(layer - 1) * 0.4));
         players[id].sprite.GetComponent<SpriteRenderer>().material = layer >= 3 ? outsideMat : insideMat;
         
 

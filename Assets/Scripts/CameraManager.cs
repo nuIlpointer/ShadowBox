@@ -119,6 +119,6 @@ public class CameraManager : MonoBehaviour
 
     void calcYDiff() {
         yDifference = (cameraDist * verFOVTan) * -yDifferenceLevel;
-        if (kentiku.expanded) yDifference *= 2;
+        if (kentiku.expanded) yDifference /= 2;
     }
 }

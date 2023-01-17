@@ -301,13 +301,20 @@ public class PlayerController : MonoBehaviour {
             if (Input.GetMouseButton(0)) {
                 List<RaycastResult> results = new List<RaycastResult>();
                 checkUIExist.position = Input.mousePosition;
-                creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+                EventSystem.current.RaycastAll(checkUIExist, results);
+                if(!results.Exists(result => true)) {
+                    creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+                }
+                
             }
                 
             if (Input.GetMouseButton(1)) {
                 List<RaycastResult> results = new List<RaycastResult>();
-
-                creater.DeleteBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+                checkUIExist.position = Input.mousePosition;
+                EventSystem.current.RaycastAll(checkUIExist, results);
+                if (!results.Exists(result => true)) {
+                    creater.DeleteBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+                }
             }
         }
 

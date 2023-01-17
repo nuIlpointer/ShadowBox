@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour {
     enum Skins {
@@ -38,6 +40,7 @@ public class PlayerController : MonoBehaviour {
 
     private GameObject pointer;
     private GameObject pointerForMousePos;
+    private PointerEventData checkUIExist;
 
     /// <summary>
     /// プレイヤーデータ送信レート
@@ -122,7 +125,7 @@ public class PlayerController : MonoBehaviour {
             mouse = Input.mousePosition;
             pointerLayer = 4;
 
-
+            checkUIExist = new PointerEventData(EventSystem.current);
 
         }
 
@@ -295,10 +298,17 @@ public class PlayerController : MonoBehaviour {
         //建築
 
         if (pointerPos.x >= 0 && pointerPos.y >= 0 && pointerPos.x < worldLoader.GetWorldSizeX() && pointerPos.y < worldLoader.GetWorldSizeY()) {
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(0)) {
+                List<RaycastResult> results = new List<RaycastResult>();
+                checkUIExist.position = Input.mousePosition;
                 creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
-            if (Input.GetMouseButton(1))
+            }
+                
+            if (Input.GetMouseButton(1)) {
+                List<RaycastResult> results = new List<RaycastResult>();
+
                 creater.DeleteBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+            }
         }
 
 

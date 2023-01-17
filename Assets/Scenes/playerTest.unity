@@ -1583,13 +1583,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 142999345}
         m_TargetAssemblyTypeName: pointer_layer, Assembly-CSharp
-        m_MethodName: 
+        m_MethodName: OnClickUp
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2506,6 +2506,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   expandButton: {fileID: 0}
+  expanded: 1
 --- !u!4 &699086681
 Transform:
   m_ObjectHideFlags: 0
@@ -3858,6 +3859,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   expandButton: {fileID: 266931387}
+  expanded: 1
 --- !u!1 &1385157380
 GameObject:
   m_ObjectHideFlags: 0
@@ -4706,6 +4708,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPos: {x: 20, y: 20, z: 0}
+  insideMat: {fileID: 0}
+  outsideMat: {fileID: 0}
 --- !u!1 &1825728590
 GameObject:
   m_ObjectHideFlags: 0
@@ -5101,6 +5105,7 @@ MonoBehaviour:
   moveUpLimit: 0
   moveDownLimit: 0
   backGround: {fileID: 1959518057}
+  kentiku: {fileID: 699086680}
   horizontalFOV: 0
 --- !u!1 &1926622003
 GameObject:

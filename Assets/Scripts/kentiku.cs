@@ -6,7 +6,7 @@ using TMPro;
 
 public class kentiku : MonoBehaviour {
     [SerializeField] private GameObject expandButton;
-    private bool expanded = true;
+    public bool expanded = true;
 
     public void OnClick() {
         if(expanded) {

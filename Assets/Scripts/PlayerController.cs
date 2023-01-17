@@ -287,7 +287,7 @@ public class PlayerController : MonoBehaviour {
 
         if (pointerLayer > 4) pointerLayer = 4;
         else if (pointerLayer < 1) pointerLayer = 1;
-        if (pointerLayer <= 3 && outsideMaterial.GetFloat("_Alpha") > 0.15) {
+        if (pointerLayer < 3 && outsideMaterial.GetFloat("_Alpha") > 0.2) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") - (6 * Time.deltaTime));
         }
         if (pointerLayer >= 3 && outsideMaterial.GetFloat("_Alpha") < 1) {

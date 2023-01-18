@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour {
     enum Skins {
@@ -38,6 +40,7 @@ public class PlayerController : MonoBehaviour {
 
     private GameObject pointer;
     private GameObject pointerForMousePos;
+    private PointerEventData checkUIExist;
 
     /// <summary>
     /// プレイヤーデータ送信レート
@@ -58,7 +61,7 @@ public class PlayerController : MonoBehaviour {
     //移動制御等
     private bool runR = false, runL = false, jump = false, moveB = false, moveF = false, 
         underTheWorld = false, atRightBorder, atLeftBorder;
-    private int inLayer = 2;
+    private int inLayer = 4;
     private Vector3 safePos;
 
     //プレイヤーstate
@@ -120,9 +123,9 @@ public class PlayerController : MonoBehaviour {
             pointer = Instantiate(pointer);
             pointerForMousePos = Instantiate(pointerForMousePos);
             mouse = Input.mousePosition;
-            pointerLayer = 3;
+            pointerLayer = 4;
 
-
+            checkUIExist = new PointerEventData(EventSystem.current);
 
         }
 
@@ -284,10 +287,10 @@ public class PlayerController : MonoBehaviour {
 
         if (pointerLayer > 4) pointerLayer = 4;
         else if (pointerLayer < 1) pointerLayer = 1;
-        if (pointerLayer <= 3 && outsideMaterial.GetFloat("_Alpha") > 0.15) {
+        if (pointerLayer < 3 && outsideMaterial.GetFloat("_Alpha") > 0.2) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") - (6 * Time.deltaTime));
         }
-        if (pointerLayer > 3 && outsideMaterial.GetFloat("_Alpha") < 1) {
+        if (pointerLayer >= 3 && outsideMaterial.GetFloat("_Alpha") < 1) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") + (6 * Time.deltaTime));
         }
 
@@ -295,10 +298,24 @@ public class PlayerController : MonoBehaviour {
         //建築
 
         if (pointerPos.x >= 0 && pointerPos.y >= 0 && pointerPos.x < worldLoader.GetWorldSizeX() && pointerPos.y < worldLoader.GetWorldSizeY()) {
-            if (Input.GetMouseButton(0))
-                creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
-            if (Input.GetMouseButton(1))
-                creater.DeleteBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+            if (Input.GetMouseButton(0)) {
+                List<RaycastResult> results = new List<RaycastResult>();
+                checkUIExist.position = Input.mousePosition;
+                EventSystem.current.RaycastAll(checkUIExist, results);
+                if(!results.Exists(result => result.gameObject.name != "DebugMessageBox")) {
+                    creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+                }
+                
+            }
+                
+            if (Input.GetMouseButton(1)) {
+                List<RaycastResult> results = new List<RaycastResult>();
+                checkUIExist.position = Input.mousePosition;
+                EventSystem.current.RaycastAll(checkUIExist, results);
+                if (!results.Exists(result => true)) {
+                    creater.DeleteBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+                }
+            }
         }
 
 
@@ -460,4 +477,7 @@ public class PlayerController : MonoBehaviour {
 
     }
 
+    public void OnDestroy() {
+        outsideMaterial.SetFloat("_Alpha", 1f);
+    }
 }

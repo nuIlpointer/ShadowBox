@@ -32,16 +32,34 @@ public class LayerManager : MonoBehaviour {
 
         //通常ブロック　
         leaf = 13,
+        bamboo = 14,
+        flower = 15,
+        flowerpurple = 16,
+        fried_egg_flower = 17,
+        weed = 18,
 
         clay_brick = 20,
         brick_stone = 21,
         tile = 22,
         glass = 23,
+        Bed = 24,
+        candle = 25,
+        flower_pot_flowers = 26,
+        Flower_pot_Cactus = 27,
+        fence = 28,
 
         Planks = 40,
-        whiteplanks = 41,
-        darkplanks = 42,
-
+        darkplanks = 41,
+        whiteplanks = 42,
+        Plankhalf01 = 43,
+        Plankhalf02 = 44, 
+        Plankhalf03 = 45,
+        darkplankhalf01 = 46,
+        darkplankhalf02 = 47,
+        darkplankhalf03 = 48,
+        whiteplankhalf01 = 49,
+        whiteplankhalf02 = 50,
+        whiteplankhalf03 = 51,
         //左右上下反転(60~79　 mod(4)が　0:デフォ　1:左右反転　2:上下反転　3:上下左右反転)
 
 

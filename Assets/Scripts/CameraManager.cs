@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,8 @@ public class CameraManager : MonoBehaviour
 
     public Transform backGround;
 
+    public kentiku kentiku;
+
     //計算用フィールド
     public float horizontalFOV;
     private Vector2 aspect;
@@ -51,7 +54,8 @@ public class CameraManager : MonoBehaviour
     {
         calcAspect();
         calcYDiff();
-
+        
+        //カメラフォロー
         if (follow) {
             move = targetTF.position - noCorPos;
             noCorPos = move * followingLevel * Time.deltaTime + noCorPos;
@@ -82,8 +86,18 @@ public class CameraManager : MonoBehaviour
         //背景追従
         int wSizex = wl.GetWorldSizeX();
         int wSizey = wl.GetWorldSizeY();
-        Vector2 imageSize = backGround.GetComponent<SpriteRenderer>().size;
+        Vector2 imageSize = backGround.GetComponent<SpriteRenderer>().bounds.size;//backGround.GetComponent<SpriteRenderer>().size * backGround.localScale;
+
+        Vector2 bgMoveRange = new Vector2((float)wSizex, (float)wSizey) - imageSize;
+        Vector2 camMoveRange = new Vector2(moveRightLimit - moveLeftLimit, moveUpLimit - moveDownLimit);
+        Vector2 camPosInMoveRange = new Vector2(transform.position.x - moveLeftLimit, transform.position.y - moveDownLimit);
+
+        Vector2 bgPosLerp = new Vector2(camPosInMoveRange.x / camMoveRange.x, camPosInMoveRange.y / camMoveRange.y);
+        Vector3 bgPos = bgMoveRange * bgPosLerp;
         
+        
+        bgPos.z = 1.2f;
+        backGround.transform.position = bgPos;
 
         
 
@@ -105,5 +119,6 @@ public class CameraManager : MonoBehaviour
 
     void calcYDiff() {
         yDifference = (cameraDist * verFOVTan) * -yDifferenceLevel;
+        if (kentiku.expanded) yDifference /= 2;
     }
 }

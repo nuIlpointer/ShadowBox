@@ -302,7 +302,7 @@ public class PlayerController : MonoBehaviour {
                 List<RaycastResult> results = new List<RaycastResult>();
                 checkUIExist.position = Input.mousePosition;
                 EventSystem.current.RaycastAll(checkUIExist, results);
-                if(!results.Exists(result => true)) {
+                if(!results.Exists(result => result.gameObject.name != "DebugMessageBox")) {
                     creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
                 }
                 

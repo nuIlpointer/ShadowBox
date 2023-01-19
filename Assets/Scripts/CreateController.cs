@@ -74,7 +74,7 @@ public class CreateController : MonoBehaviour
             LayerManager.UNNORMAL_SIZE_BLOCKS.TryGetValue(Enum.GetName(typeof(LayerManager.BLOCK_ID), useBlock), out blockSize);
             bool col = false;
 
-            int i, j;
+            int i = 0, j = 0;
             for(i = 0; i < blockSize.y; i++) {
                 for(j = 0; j < blockSize.x; j++) {
                     if (worldLoader.GetBlock(x + j, y + i, layerNumber) <= -2 || worldLoader.GetBlock(x + j, y + i, layerNumber) >= 80) {

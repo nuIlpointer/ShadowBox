@@ -4783,7 +4783,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   noNetMode: 0
   chunkSize: 16
-  chunksNumX: 8
+  chunksNumX: 12
   chunksNumY: 4
   heightRange: 6
 --- !u!4 &1724355515

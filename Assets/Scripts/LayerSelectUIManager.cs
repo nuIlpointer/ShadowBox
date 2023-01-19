@@ -54,15 +54,18 @@ public class LayerSelectUIManager : MonoBehaviour
     }
 
     public void UpperLayer() {
-        MoveSelectingLayer(1);
+        MoveSelectingLayer(selectingLayer + 1);
+        //Debug.Log("up");
     }
 
     public void LowerLayer() {
-        MoveSelectingLayer(-1);
+        MoveSelectingLayer(selectingLayer -1);
+        //Debug.Log("lo");
     }
 
     public void MoveSelectingLayer(int num) {
         selectingLayer = num;
+        //Debug.Log($"{num},{selectingLayer}");
         if (selectingLayer < 0) selectingLayer = 0;
         if (selectingLayer > 3) selectingLayer = 3;
         

@@ -51,7 +51,7 @@ public class CreateController : MonoBehaviour
     /// <param name="y"></param>
     /// <param name="leyerNumber"></param>
     public void DrawBlock(int x, int y, int layerNumber) {
-        
+        //Debug.LogWarning($"({x},{y})");
         Vector2Int[] marks = null;
         //ブラシのマーク位置を決定
         switch (lineWidth % 10) {

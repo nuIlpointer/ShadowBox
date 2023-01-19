@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEngine.Networking.UnityWebRequest;
 
 public class PlayerController : MonoBehaviour {
     enum Skins {
@@ -302,7 +303,16 @@ public class PlayerController : MonoBehaviour {
                 List<RaycastResult> results = new List<RaycastResult>();
                 checkUIExist.position = Input.mousePosition;
                 EventSystem.current.RaycastAll(checkUIExist, results);
-                if(!results.Exists(result => result.gameObject.name != "DebugMessageBox")) {
+                if(!results.Exists(result => 
+                    result.gameObject.name != "DebugMessageBox" 
+                    && result.gameObject.name != "pos_image"
+                    && result.gameObject.name != "Xpos"
+                    && result.gameObject.name != "Ypos"
+                    && result.gameObject.name != "Operation_Text"
+                    && result.gameObject.name != "Operation_image"
+                    && result.gameObject.name != "Operation_Text2"
+                    && result.gameObject.name != "Oparation_image2"
+                )) {
                     creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
                 }
                 
@@ -312,7 +322,16 @@ public class PlayerController : MonoBehaviour {
                 List<RaycastResult> results = new List<RaycastResult>();
                 checkUIExist.position = Input.mousePosition;
                 EventSystem.current.RaycastAll(checkUIExist, results);
-                if (!results.Exists(result => true)) {
+                if (!results.Exists(result =>
+                    result.gameObject.name != "DebugMessageBox"
+                    && result.gameObject.name != "pos_image"
+                    && result.gameObject.name != "Xpos"
+                    && result.gameObject.name != "Ypos"
+                    && result.gameObject.name != "Operation_Text"
+                    && result.gameObject.name != "Operation_image"
+                    && result.gameObject.name != "Operation_Text2"
+                    && result.gameObject.name != "Oparation_image2"
+                )) {
                     creater.DeleteBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
                 }
             }

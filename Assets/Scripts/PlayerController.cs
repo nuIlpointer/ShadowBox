@@ -278,7 +278,7 @@ public class PlayerController : MonoBehaviour {
         creater.PointerSize(out pSizeX, out pSizeY, out isAllLayer);
         fpPos += new Vector3(pSizeX / 2, pSizeY / 2 );
         fpfmPos += new Vector3(pSizeX / 2, pSizeY / 2 );
-        pointer.transform.GetChild(0).GetComponent<SpriteRenderer>().color = isAllLayer ? new Color(1, 1, 1, 0) : new Color(1, 1, 1, 1);
+        //pointer.transform.GetChild(0).GetComponent<SpriteRenderer>().color = isAllLayer ? new Color(1, 1, 1, 0) : new Color(1, 1, 1, 1);
 
 
         pointer.transform.position = fpPos;

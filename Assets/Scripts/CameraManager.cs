@@ -29,6 +29,8 @@ public class CameraManager : MonoBehaviour
 
     public Transform backGround;
 
+    public kentiku kentiku;
+
     //計算用フィールド
     public float horizontalFOV;
     private Vector2 aspect;
@@ -52,7 +54,8 @@ public class CameraManager : MonoBehaviour
     {
         calcAspect();
         calcYDiff();
-
+        
+        //カメラフォロー
         if (follow) {
             move = targetTF.position - noCorPos;
             noCorPos = move * followingLevel * Time.deltaTime + noCorPos;
@@ -116,5 +119,6 @@ public class CameraManager : MonoBehaviour
 
     void calcYDiff() {
         yDifference = (cameraDist * verFOVTan) * -yDifferenceLevel;
+        if (kentiku.expanded) yDifference /= 2;
     }
 }

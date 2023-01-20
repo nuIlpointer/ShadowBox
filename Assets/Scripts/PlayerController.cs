@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using static UnityEngine.Networking.UnityWebRequest;
 
 public class PlayerController : MonoBehaviour {
     enum Skins {
@@ -38,6 +41,7 @@ public class PlayerController : MonoBehaviour {
 
     private GameObject pointer;
     private GameObject pointerForMousePos;
+    private PointerEventData checkUIExist;
 
     /// <summary>
     /// プレイヤーデータ送信レート
@@ -122,7 +126,7 @@ public class PlayerController : MonoBehaviour {
             mouse = Input.mousePosition;
             pointerLayer = 4;
 
-
+            checkUIExist = new PointerEventData(EventSystem.current);
 
         }
 
@@ -274,6 +278,8 @@ public class PlayerController : MonoBehaviour {
         creater.PointerSize(out pSizeX, out pSizeY, out isAllLayer);
         fpPos += new Vector3(pSizeX / 2, pSizeY / 2 );
         fpfmPos += new Vector3(pSizeX / 2, pSizeY / 2 );
+        pointer.transform.GetChild(0).GetComponent<SpriteRenderer>().color = isAllLayer ? new Color(1, 1, 1, 0) : new Color(1, 1, 1, 1);
+
 
         pointer.transform.position = fpPos;
         pointerForMousePos.transform.position = fpfmPos;
@@ -284,10 +290,10 @@ public class PlayerController : MonoBehaviour {
 
         if (pointerLayer > 4) pointerLayer = 4;
         else if (pointerLayer < 1) pointerLayer = 1;
-        if (pointerLayer <= 3 && outsideMaterial.GetFloat("_Alpha") > 0.15) {
+        if (pointerLayer < 3 && /*!isAllLayer &&*/ outsideMaterial.GetFloat("_Alpha") > 0.2) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") - (6 * Time.deltaTime));
         }
-        if (pointerLayer >= 3 && outsideMaterial.GetFloat("_Alpha") < 1) {
+        if ((pointerLayer >= 3 /*|| isAllLayer*/)&& outsideMaterial.GetFloat("_Alpha") < 1) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") + (6 * Time.deltaTime));
         }
 
@@ -295,10 +301,42 @@ public class PlayerController : MonoBehaviour {
         //建築
 
         if (pointerPos.x >= 0 && pointerPos.y >= 0 && pointerPos.x < worldLoader.GetWorldSizeX() && pointerPos.y < worldLoader.GetWorldSizeY()) {
-            if (Input.GetMouseButton(0))
-                creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
-            if (Input.GetMouseButton(1))
-                creater.DeleteBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+            if (Input.GetMouseButton(0)) {
+                List<RaycastResult> results = new List<RaycastResult>();
+                checkUIExist.position = Input.mousePosition;
+                EventSystem.current.RaycastAll(checkUIExist, results);
+                if(!results.Exists(result => 
+                    result.gameObject.name != "DebugMessageBox" 
+                    && result.gameObject.name != "pos_image"
+                    && result.gameObject.name != "Xpos"
+                    && result.gameObject.name != "Ypos"
+                    && result.gameObject.name != "Operation_Text"
+                    && result.gameObject.name != "Operation_image"
+                    && result.gameObject.name != "Operation_Text2"
+                    && result.gameObject.name != "Oparation_image2"
+                )) {
+                    creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+                }
+                
+            }
+                
+            if (Input.GetMouseButton(1)) {
+                List<RaycastResult> results = new List<RaycastResult>();
+                checkUIExist.position = Input.mousePosition;
+                EventSystem.current.RaycastAll(checkUIExist, results);
+                if (!results.Exists(result =>
+                    result.gameObject.name != "DebugMessageBox"
+                    && result.gameObject.name != "pos_image"
+                    && result.gameObject.name != "Xpos"
+                    && result.gameObject.name != "Ypos"
+                    && result.gameObject.name != "Operation_Text"
+                    && result.gameObject.name != "Operation_image"
+                    && result.gameObject.name != "Operation_Text2"
+                    && result.gameObject.name != "Oparation_image2"
+                )) {
+                    creater.DeleteBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+                }
+            }
         }
 
 

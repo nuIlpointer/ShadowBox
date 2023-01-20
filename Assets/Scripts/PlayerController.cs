@@ -278,6 +278,8 @@ public class PlayerController : MonoBehaviour {
         creater.PointerSize(out pSizeX, out pSizeY, out isAllLayer);
         fpPos += new Vector3(pSizeX / 2, pSizeY / 2 );
         fpfmPos += new Vector3(pSizeX / 2, pSizeY / 2 );
+        pointer.transform.GetChild(0).GetComponent<SpriteRenderer>().color = isAllLayer ? new Color(1, 1, 1, 0) : new Color(1, 1, 1, 1);
+
 
         pointer.transform.position = fpPos;
         pointerForMousePos.transform.position = fpfmPos;
@@ -288,10 +290,10 @@ public class PlayerController : MonoBehaviour {
 
         if (pointerLayer > 4) pointerLayer = 4;
         else if (pointerLayer < 1) pointerLayer = 1;
-        if (pointerLayer < 3 && outsideMaterial.GetFloat("_Alpha") > 0.2) {
+        if (pointerLayer < 3 && /*!isAllLayer &&*/ outsideMaterial.GetFloat("_Alpha") > 0.2) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") - (6 * Time.deltaTime));
         }
-        if (pointerLayer >= 3 && outsideMaterial.GetFloat("_Alpha") < 1) {
+        if ((pointerLayer >= 3 /*|| isAllLayer*/)&& outsideMaterial.GetFloat("_Alpha") < 1) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") + (6 * Time.deltaTime));
         }
 

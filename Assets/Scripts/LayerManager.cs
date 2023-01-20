@@ -81,6 +81,13 @@ public class LayerManager : MonoBehaviour {
         {"door_0", new Vector2Int(2,3)},
         {"door_1", new Vector2Int(1,3)},
 
+        { "usb_0", new Vector2Int(1,1)},
+        { "usb_1", new Vector2Int(1,1)},
+        { "usb_2", new Vector2Int(1,1)},
+        { "usb_3", new Vector2Int(1,1)},
+        { "usb_4", new Vector2Int(1,1)},
+        { "usb_5", new Vector2Int(1,1)},
+
     };
 
 

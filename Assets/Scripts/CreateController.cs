@@ -68,13 +68,16 @@ public class CreateController : MonoBehaviour
                 break;
         }
         if (useBlock >= 80) {       //useBlock = 特殊サイズブロックの場合
+            int oldBlock = worldLoader.GetBlock(x, y, layerNumber);
+            if (oldBlock == useBlock) return;
+
 
             Vector2Int blockSize;
             LayerManager.UNNORMAL_SIZE_BLOCKS.TryGetValue(Enum.GetName(typeof(LayerManager.BLOCK_ID), useBlock), out blockSize);
             
             bool col = false;
             int i = 0, j = 0;
-            for(i = 0; i < blockSize.y; i++) {//ブラシサイズ分
+            for(i = 0; i < blockSize.y; i++) {//ブロックサイズ分
                 for(j = 0; j < blockSize.x; j++) {
                     if (worldLoader.GetBlock(x + j, y + i, layerNumber) <= -2 || worldLoader.GetBlock(x + j, y + i, layerNumber) >= 80) {
                         DeleteUnnormalSizeBlock(x + j, y + i, layerNumber);
@@ -239,9 +242,9 @@ public class CreateController : MonoBehaviour
                     else worldLoader.BlockUpdate(0, layerNumber, x, y);
                     break;
                 }
-                if(x - originPos.x > 20) {
+                if(x - originPos.x > 4) {
                     Debug.LogError($"[CreateController] > Unnormal size block origin search error : 特殊サイズブロックの削除において、ブロック原点を探索しましたが、見つかりませんでした。（x : {x} y : {y} layer number : {layerNumber} ）/n" +
-                                    $"Description : 20ブロックにわたってx軸を走査しましたが、原点ブロックが見つかりませんでした。");
+                                    $"Description : 4ブロックにわたってx軸を走査しましたが、原点ブロックが見つかりませんでした。");
                     if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x, y, 0);
                     else worldLoader.BlockUpdate(0, layerNumber, originPos.x, originPos.y);
                     break;

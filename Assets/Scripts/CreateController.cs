@@ -68,6 +68,9 @@ public class CreateController : MonoBehaviour
                 break;
         }
         if (useBlock >= 80) {       //useBlock = 特殊サイズブロックの場合
+            if (usbDelay < 0.2) return;
+            else usbDelay = 0;
+            
             int oldBlock = worldLoader.GetBlock(x, y, layerNumber);
             if (oldBlock == useBlock) return;
 
@@ -326,5 +329,11 @@ public class CreateController : MonoBehaviour
 
 
     // Update is called once per frame
-    
+    void Update() {
+        if(usbDelay < 0.2) {
+
+            usbDelay += Time.deltaTime;
+
+        }
+    }
 }

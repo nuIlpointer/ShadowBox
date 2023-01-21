@@ -81,6 +81,13 @@ public class LayerManager : MonoBehaviour {
         {"door_0", new Vector2Int(2,3)},
         {"door_1", new Vector2Int(1,3)},
 
+        { "usb_0", new Vector2Int(1,1)},
+        { "usb_1", new Vector2Int(1,1)},
+        { "usb_2", new Vector2Int(1,1)},
+        { "usb_3", new Vector2Int(1,1)},
+        { "usb_4", new Vector2Int(1,1)},
+        { "usb_5", new Vector2Int(1,1)},
+
     };
 
 
@@ -324,8 +331,9 @@ public class LayerManager : MonoBehaviour {
         }
 
 
-
+        Debug.LogWarning($"{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
         chunks[chunkNumber].blocks[y][x] = id;
+        Debug.LogWarning($"/{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
         if (id != 0) {                          //指定IDがair以外 （正しくは　id > 0　デバッグのため変更中）
 
             block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));
@@ -355,6 +363,7 @@ public class LayerManager : MonoBehaviour {
 
 
 
+        Debug.LogWarning($"/////{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
     }
 
     /// <summary>

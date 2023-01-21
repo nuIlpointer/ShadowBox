@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEngine.Networking.UnityWebRequest;
 
 public class PlayerController : MonoBehaviour {
     enum Skins {
@@ -61,7 +62,7 @@ public class PlayerController : MonoBehaviour {
     //移動制御等
     private bool runR = false, runL = false, jump = false, moveB = false, moveF = false, 
         underTheWorld = false, atRightBorder, atLeftBorder;
-    private int inLayer = 4;
+    private int inLayer = 4, getPosInterval = 0;
     private Vector3 safePos;
 
     //プレイヤーstate
@@ -83,6 +84,25 @@ public class PlayerController : MonoBehaviour {
 
     private bool actPermittion;
 
+
+    // SE再生用変数
+    [SerializeField] private GameObject seObject;
+    [SerializeField] private AudioClip blockBreakSound; //ブロック破壊時
+    [SerializeField] private AudioClip blockPlaceSound; //ブロック設置時
+    [SerializeField] private AudioClip walkSoundNormal; //通常歩行音
+    [SerializeField] private AudioClip walkSoundStone;  //石の上
+    [SerializeField] private int[] stoneBlockIds = { };
+    [SerializeField] private AudioClip walkSoundGravel; //土の上(砂利系？)
+    [SerializeField] private int[] gravelBlockIds = { };
+    [SerializeField] private int walkSoundInterval = 300;
+    private AudioSource soundEffect;
+    private int currentFromStart = 0;
+    private bool prevJumpState = false;
+    // ポインタ座標が変動した時にだけイベント発火するようにする変数(複数設置回避用)
+    private int previousX = -1;
+    private int previousY = -1;
+    private int previousLayer = -1;
+
     //Start()前の初期化完了最初のタイミングで実行
     void Awake() {
         ipAddress = TitleData.ipAddress;
@@ -95,6 +115,7 @@ public class PlayerController : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
+        soundEffect = seObject.GetComponent<AudioSource>();
         if (!started) {
             //クライアントサーバ系
             wrapper = wrapperObject.GetComponent<ShadowBoxClientWrapper>();
@@ -156,8 +177,6 @@ public class PlayerController : MonoBehaviour {
             oldSkinID = skinID;
         }
 
-
-
         //移動
         //(ミスによりrunLが右移動、runRが左移動になっています)
         runR = false;
@@ -189,6 +208,23 @@ public class PlayerController : MonoBehaviour {
             jumpCnt = 0;
         }
 
+
+        //移動音管理
+        if (!jump && controller.isGrounded && (runL||runR)) {
+            if (currentFromStart > walkSoundInterval && worldLoader.GetBlock((int)transform.position.x, ((int)transform.position.y) - 1, inLayer) > 0) {
+                currentFromStart = 0;
+                int blockNo = worldLoader.GetBlock((int)transform.position.x, ((int)transform.position.y) - 1, inLayer);
+                if (Array.IndexOf(gravelBlockIds, blockNo) != -1)
+                    soundEffect.PlayOneShot(walkSoundGravel);
+                else if (Array.IndexOf(stoneBlockIds, blockNo) != -1)
+                    soundEffect.PlayOneShot(walkSoundStone);
+                else soundEffect.PlayOneShot(walkSoundNormal);
+            }
+            currentFromStart++;
+        }
+        if (!jump && prevJumpState)
+            soundEffect.PlayOneShot(walkSoundNormal);
+        prevJumpState = jump;
         //キャラ反転
         if (Input.GetKeyDown(KeyCode.D)) {
             transform.localScale = new Vector3(1, 1, 1);
@@ -277,6 +313,8 @@ public class PlayerController : MonoBehaviour {
         creater.PointerSize(out pSizeX, out pSizeY, out isAllLayer);
         fpPos += new Vector3(pSizeX / 2, pSizeY / 2 );
         fpfmPos += new Vector3(pSizeX / 2, pSizeY / 2 );
+        //pointer.transform.GetChild(0).GetComponent<SpriteRenderer>().color = isAllLayer ? new Color(1, 1, 1, 0) : new Color(1, 1, 1, 1);
+
 
         pointer.transform.position = fpPos;
         pointerForMousePos.transform.position = fpfmPos;
@@ -287,10 +325,10 @@ public class PlayerController : MonoBehaviour {
 
         if (pointerLayer > 4) pointerLayer = 4;
         else if (pointerLayer < 1) pointerLayer = 1;
-        if (pointerLayer < 3 && outsideMaterial.GetFloat("_Alpha") > 0.2) {
+        if (pointerLayer < 3 && /*!isAllLayer &&*/ outsideMaterial.GetFloat("_Alpha") > 0.2) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") - (6 * Time.deltaTime));
         }
-        if (pointerLayer >= 3 && outsideMaterial.GetFloat("_Alpha") < 1) {
+        if ((pointerLayer >= 3 /*|| isAllLayer*/)&& outsideMaterial.GetFloat("_Alpha") < 1) {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") + (6 * Time.deltaTime));
         }
 
@@ -298,22 +336,56 @@ public class PlayerController : MonoBehaviour {
         //建築
 
         if (pointerPos.x >= 0 && pointerPos.y >= 0 && pointerPos.x < worldLoader.GetWorldSizeX() && pointerPos.y < worldLoader.GetWorldSizeY()) {
-            if (Input.GetMouseButton(0)) {
+            if (Input.GetMouseButton(0) 
+                && ((int)pointerPos.x != previousX
+                || (int)pointerPos.y != previousY
+                || (int)pointerLayer != previousLayer)
+            ) {
                 List<RaycastResult> results = new List<RaycastResult>();
                 checkUIExist.position = Input.mousePosition;
                 EventSystem.current.RaycastAll(checkUIExist, results);
-                if(!results.Exists(result => result.gameObject.name != "DebugMessageBox")) {
+                if(!results.Exists(result => 
+                    result.gameObject.name != "DebugMessageBox" 
+                    && result.gameObject.name != "pos_image"
+                    && result.gameObject.name != "Xpos"
+                    && result.gameObject.name != "Ypos"
+                    && result.gameObject.name != "Operation_Text"
+                    && result.gameObject.name != "Operation_image"
+                    && result.gameObject.name != "Operation_Text2"
+                    && result.gameObject.name != "Oparation_image2"
+                )) {
                     creater.DrawBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+                    previousX = (int)pointerPos.x;
+                    previousY = (int)pointerPos.y;
+                    previousLayer = (int)pointerLayer;
+                    soundEffect.PlayOneShot(blockPlaceSound);
                 }
                 
             }
                 
-            if (Input.GetMouseButton(1)) {
+            if (Input.GetMouseButton(1)
+                && ((int)pointerPos.x != previousX
+                || (int)pointerPos.y != previousY
+                || (int)pointerLayer != previousLayer)
+            ) {
                 List<RaycastResult> results = new List<RaycastResult>();
                 checkUIExist.position = Input.mousePosition;
                 EventSystem.current.RaycastAll(checkUIExist, results);
-                if (!results.Exists(result => true)) {
+                if (!results.Exists(result =>
+                    result.gameObject.name != "DebugMessageBox"
+                    && result.gameObject.name != "pos_image"
+                    && result.gameObject.name != "Xpos"
+                    && result.gameObject.name != "Ypos"
+                    && result.gameObject.name != "Operation_Text"
+                    && result.gameObject.name != "Operation_image"
+                    && result.gameObject.name != "Operation_Text2"
+                    && result.gameObject.name != "Oparation_image2"
+                )) {
                     creater.DeleteBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer);
+                    previousX = (int)pointerPos.x;
+                    previousY = (int)pointerPos.y;
+                    previousLayer = (int)pointerLayer;
+                    soundEffect.PlayOneShot(blockBreakSound);
                 }
             }
         }
@@ -339,7 +411,6 @@ public class PlayerController : MonoBehaviour {
 
 
     void FixedUpdate() {
-
         //移動
         if (runL) {
             if (movedir.x < 10) {

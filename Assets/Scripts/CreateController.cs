@@ -20,7 +20,6 @@ public class CreateController : MonoBehaviour
         { 11,   "bold\n(all Layer)"   }
     };
 
-
     public WorldLoader worldLoader;
     public ShadowBoxClientWrapper wrapper;
 
@@ -28,7 +27,7 @@ public class CreateController : MonoBehaviour
     public int useBlock;
     public int lineWidth;
 
-    private bool replase;
+    private bool replace;
 
     private Vector2Int[] SHARP_MARKS = {
         new Vector2Int(0, 0),
@@ -57,15 +56,15 @@ public class CreateController : MonoBehaviour
         switch (lineWidth % 10) {
             case 0:
                 marks = SHARP_MARKS;
-                replase = true;
+                replace = true;
                 break;
             case 1:
                 marks = BOLD_MARKS;
-                replase = false;
+                replace = false;
                 break;
             default:
                 marks = SHARP_MARKS;
-                replase = false;
+                replace = false;
                 break;
         }
         if (useBlock >= 80) {       //useBlock = 特殊サイズブロックの場合
@@ -89,13 +88,10 @@ public class CreateController : MonoBehaviour
 
             for (i = 0; i < blockSize.y; i++) {
                 for (j = 0; j < blockSize.x; j++) {
-                    
-                    if(i == 0 && j == 0) {
+                    if (i == 0 && j == 0) {
                         if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x, y, useBlock);
                         else worldLoader.BlockUpdate(useBlock, layerNumber, x, y);
-                    
                     } else {
-
                         if (wrapper.IsConnectionActive()) wrapper.SendBlockChange((ShadowBoxClientWrapper.BlockLayer)layerNumber, x + j, y + i, usbID);
                         else worldLoader.BlockUpdate(usbID, layerNumber, x + j, y + i);
                     }
@@ -142,8 +138,8 @@ public class CreateController : MonoBehaviour
         } else if(lineWidth / 10 == 1) {            //all layer
             for(int i = 1; i <= 4; i++) {                   //4レイヤー
                 for (int j = 0; j < marks.Length; j++) {            //ブラシのブロック数分
-                    //↓replase = falseなら　airのみブロック設置　：　trueなら　旧ブロックと新ブロックが違う　(かつ　旧ブロックがusbでなければ ← コメントアウト) 
-                    if (!replase ? (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) == 0) : (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) != useBlock) /*&& worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) > -2*/) {
+                    //↓replace = falseなら　airのみブロック設置　：　trueなら　旧ブロックと新ブロックが違う　(かつ　旧ブロックがusbでなければ ← コメントアウト) 
+                    if (!replace ? (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) == 0) : (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) != useBlock) /*&& worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) > -2*/) {
                         if( x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() && 
                             y + marks[j].y >= 0 && y + marks[j].y < worldLoader.GetWorldSizeY()) {
                             if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, i) <= -2 || worldLoader.GetBlock(x, y, layerNumber) >= 80) {
@@ -160,7 +156,7 @@ public class CreateController : MonoBehaviour
         } else {//single layer
             for (int j = 0; j < marks.Length; j++) {
                 //Debug.LogWarning( worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) > 0);
-                if (!replase ? (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) == 0) : (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) != useBlock) /*&& worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) > -2*/) {
+                if (!replace ? (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) == 0) : (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) != useBlock) /*&& worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) > -2*/) {
                     if (x + marks[j].x >= 0 && x + marks[j].x < worldLoader.GetWorldSizeX() &&
                         y + marks[j].y >= 0 && y + marks[j].y < worldLoader.GetWorldSizeY()) {
                         if (worldLoader.GetBlock(x + marks[j].x, y + marks[j].y, layerNumber) <= -2 || worldLoader.GetBlock(x, y, layerNumber) >= 80) {
@@ -173,7 +169,6 @@ public class CreateController : MonoBehaviour
                 }
             }
         }
-        
     }
 
 
@@ -319,10 +314,10 @@ public class CreateController : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         useBlock = 10;
         lineWidth = 1;
+
     }
 
 

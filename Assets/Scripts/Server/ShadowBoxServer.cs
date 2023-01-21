@@ -10,7 +10,7 @@ using UnityEngine.Assertions;
 public class ShadowBoxServer : MonoBehaviour {
     public bool debugMode = false;
     public bool standalone = false;
-
+    [SerializeField] private bool forcesave = false;
     /// <summary>
     /// 最後の通信からこの時間が経過した場合、切断とみなす時間
     /// </summary>
@@ -35,6 +35,7 @@ public class ShadowBoxServer : MonoBehaviour {
 
     private NetworkDriver driver;
     private NativeList<NetworkConnection> connectionList;
+    private Dictionary<string, ChunkData> cachedChunks;
     private Dictionary<Guid, PlayerData> userList;
     private Dictionary<int, Guid> guidConnectionList;
     private Dictionary<int, float> lastCommandSend;
@@ -46,6 +47,7 @@ public class ShadowBoxServer : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
+        cachedChunks = new Dictionary<string, ChunkData>();
         userList = new Dictionary<Guid, PlayerData>();
         guidConnectionList = new Dictionary<int, Guid>();
         lastCommandSend = new Dictionary<int, float>();
@@ -60,10 +62,13 @@ public class ShadowBoxServer : MonoBehaviour {
     /// </summary>
     public void OnDestroy() {
         Debug.Log(TitleData.isMultiPlay);
-        if(!TitleData.isMultiPlay) {
+        if(!TitleData.isMultiPlay && !forcesave) {
             if (debugMode) Debug.Log("Regenerating World");
             RegenerateWorld();
         }
+        Debug.Log("Saving World...");
+        WriteToDisk();
+        Debug.Log("Saved.");
         this.driver.Dispose();
         if (this.connectionList.IsCreated) {
             this.connectionList.Dispose();
@@ -394,19 +399,25 @@ public class ShadowBoxServer : MonoBehaviour {
     /// <param name="chunkID">読み込むチャンクのID</param>
     /// <returns></returns>
     public int[][]? LoadChunk(BlockLayer layerID, int chunkID) {
-        Debug.Log($"Loading ./worlddata/{layerID}.chunk{chunkID}.dat");
-        string fileName = $"./worlddata/{layerID}.chunk{chunkID}.dat";
-        if (File.Exists(fileName)) {
-            List<int[]> tempList = new List<int[]>();
-            using (var reader = new StreamReader(fileName, Encoding.UTF8)) {
-                while (0 <= reader.Peek())
-                    tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
-                return tempList.ToArray();
-            }
+        if (cachedChunks.ContainsKey($"{layerID}.{chunkID}")) {
+            Debug.Log("Returning cached data.");
+            return cachedChunks[$"{layerID}.{chunkID}"].chunkData.ToArray();
         } else {
-            var chunkData = LoadDefaultChunk();
-            SaveChunk(layerID, chunkID, chunkData);
-            return chunkData;
+            Debug.Log($"Data isn't cached, Loading ./worlddata/{layerID}.chunk{chunkID}.dat");
+            string fileName = $"./worlddata/{layerID}.chunk{chunkID}.dat";
+            if (File.Exists(fileName)) {
+                List<int[]> tempList = new List<int[]>();
+                using (var reader = new StreamReader(fileName, Encoding.UTF8)) {
+                    while (0 <= reader.Peek())
+                        tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
+                    cachedChunks.Add($"{layerID}.{chunkID}", new ChunkData(tempList, layerID, chunkID));
+                    return tempList.ToArray();
+                }
+            } else {
+                var chunkData = LoadDefaultChunk();
+                SaveChunk(layerID, chunkID, chunkData);
+                return chunkData;
+            }
         }
     }
 
@@ -417,12 +428,10 @@ public class ShadowBoxServer : MonoBehaviour {
     /// <param name="chunkID">チャンクのID</param>
     /// <param name="chunkData">保存するデータ</param>
     void SaveChunk(BlockLayer layerID, int chunkID, int[][] chunkData) {
-        if (!Directory.Exists("./worlddata/"))
-            Directory.CreateDirectory("./worlddata");
-        string fileName = $"./worlddata/{layerID}.chunk{chunkID}.dat";
-        using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
-            foreach (int[] row in chunkData)
-                writer.WriteLine(string.Join(",", row));
+        if(cachedChunks.ContainsKey($"{layerID}.{chunkID}")) {
+            cachedChunks[$"{layerID}.{chunkID}"].SetChunkData(new List<int[]>(chunkData));
+        } else {
+            cachedChunks.Add($"{layerID}.{chunkID}", new ChunkData(new List<int[]>(chunkData), layerID, chunkID));
         }
     }
 
@@ -433,5 +442,21 @@ public class ShadowBoxServer : MonoBehaviour {
                 tempList.Add(Array.ConvertAll(reader.ReadLine().Split(','), int.Parse));
             return tempList.ToArray();
         }
+    }
+
+    /// <summary>
+    /// キャッシュデータをすべてディスクに書き込む
+    /// </summary>
+    void WriteToDisk() {
+        if (!Directory.Exists("./worlddata/"))
+            Directory.CreateDirectory("./worlddata");
+        foreach (ChunkData chunk in cachedChunks.Values) {
+            string fileName = $"./worlddata/{chunk.GetBlockLayer()}.chunk{chunk.GetChunkID()}.dat";
+            using (var writer = new StreamWriter(fileName, false, Encoding.UTF8)) {
+                foreach (int[] row in chunk.GetChunkData().ToArray())
+                    writer.WriteLine(string.Join(",", row));
+            }
+        }
+        
     }
 }

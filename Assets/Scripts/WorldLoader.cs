@@ -47,6 +47,8 @@ public class WorldLoader : MonoBehaviour
 
     public bool permitToPlayerAct;
 
+    public bool DebugLogEnter = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -107,7 +109,7 @@ public class WorldLoader : MonoBehaviour
             //Debug.Log($"gc内容 {gc.x} , {gc.y}");
             if (getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
             //layers[gc.x].MakeChunk(gc.y);
-            Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
+            if(DebugLogEnter)Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
             visit[gc.y] = false;
         }    }
 
@@ -170,7 +172,7 @@ public class WorldLoader : MonoBehaviour
         if (!started) { Start(); }
         //サーバ非アクティブ時処理　叩いた内容をキューに保存し、次回実行時に呼び出す
         if (!wrapper.IsConnectionActive() || time < 0.1) {
-            Debug.Log($"[WorldLoader] > サーバが未接続な為、ロードチャンク待ちキューに引数を保存しました ID : {loadChunksQueueID}");
+            if (DebugLogEnter) Debug.Log($"[WorldLoader] > サーバが未接続な為、ロードチャンク待ちキューに引数を保存しました ID : {loadChunksQueueID}");
             loadChunksQueue.Enqueue(new KeyValuePair<int, Vector3>(loadChunksQueueID, pos));
             loadChunksQueueID++;
             return;
@@ -179,7 +181,7 @@ public class WorldLoader : MonoBehaviour
             while(loadChunksQueue.Count <= 0) {
                 KeyValuePair<int, Vector3> lc = loadChunksQueue.Dequeue();
                 LoadChunks(lc.Value);
-                Debug.Log($"[WorldLoader] > ロードチャンク待ちキューからロードチャンクを実行しました。 ID : {lc.Key}");
+                if (DebugLogEnter) Debug.Log($"[WorldLoader] > ロードチャンク待ちキューからロードチャンクを実行しました。 ID : {lc.Key}");
             }
         }
 
@@ -257,7 +259,7 @@ public class WorldLoader : MonoBehaviour
                 
                 for (int j = 1; j <= 4; j++){
                     if (!visit[loaded[i]]) {
-                        Debug.Log($"[WorldLoader] > チャンクデータ要求キューに追加 chunkNumber : {loaded[i]}  layer : {j}");
+                        if (DebugLogEnter) Debug.Log($"[WorldLoader] > チャンクデータ要求キューに追加 chunkNumber : {loaded[i]}  layer : {j}");
                         
                         
                         chunkGetQueue.Enqueue(new Vector2Int(j, loaded[i]));
@@ -330,7 +332,7 @@ public class WorldLoader : MonoBehaviour
     {
         if (!started) { Start();}
 
-        Debug.Log("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber + $"  \n{ChunkToString(blocks)}");
+        if (DebugLogEnter) Debug.Log("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber + $"  \n{ChunkToString(blocks)}");
         layers[layerNumber].UpdateChunk(blocks, chunkNumber);
         
         //UnityEngine.Debug.Log($"checkLive({chunkNumber}):"+checkLive(chunkNumber));
@@ -350,7 +352,7 @@ public class WorldLoader : MonoBehaviour
     /// <param name="y">置き換える位置（絶対座標）</param>
     /// <returns></returns>
     public bool BlockUpdate(int blockID, int layerNumber, int x, int y) {
-
+        //Debug.LogWarning($"ちゃんんくｋ{PosToChunkNum(x, y)}");
         layers[layerNumber].BlockChange(blockID, PosToChunkNum(x, y), x - ChunkNumToOriginPos(PosToChunkNum(x, y))[0], y - ChunkNumToOriginPos(PosToChunkNum(x, y))[1]);
         return true;
     }

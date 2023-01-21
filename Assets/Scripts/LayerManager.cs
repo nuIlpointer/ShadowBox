@@ -32,16 +32,34 @@ public class LayerManager : MonoBehaviour {
 
         //通常ブロック　
         leaf = 13,
+        bamboo = 14,
+        flower = 15,
+        flowerpurple = 16,
+        fried_egg_flower = 17,
+        weed = 18,
 
         clay_brick = 20,
         brick_stone = 21,
         tile = 22,
         glass = 23,
+        Bed = 24,
+        candle = 25,
+        flower_pot_flowers = 26,
+        Flower_pot_Cactus = 27,
+        fence = 28,
 
         Planks = 40,
-        whiteplanks = 41,
-        darkplanks = 42,
-
+        darkplanks = 41,
+        whiteplanks = 42,
+        Plankhalf01 = 43,
+        Plankhalf02 = 44, 
+        Plankhalf03 = 45,
+        darkplankhalf01 = 46,
+        darkplankhalf02 = 47,
+        darkplankhalf03 = 48,
+        whiteplankhalf01 = 49,
+        whiteplankhalf02 = 50,
+        whiteplankhalf03 = 51,
         //左右上下反転(60~79　 mod(4)が　0:デフォ　1:左右反転　2:上下反転　3:上下左右反転)
 
 
@@ -62,6 +80,13 @@ public class LayerManager : MonoBehaviour {
     public static Dictionary<String, Vector2Int> UNNORMAL_SIZE_BLOCKS = new Dictionary<string, Vector2Int>() {
         {"door_0", new Vector2Int(2,3)},
         {"door_1", new Vector2Int(1,3)},
+
+        { "usb_0", new Vector2Int(1,1)},
+        { "usb_1", new Vector2Int(1,1)},
+        { "usb_2", new Vector2Int(1,1)},
+        { "usb_3", new Vector2Int(1,1)},
+        { "usb_4", new Vector2Int(1,1)},
+        { "usb_5", new Vector2Int(1,1)},
 
     };
 
@@ -306,8 +331,9 @@ public class LayerManager : MonoBehaviour {
         }
 
 
-
+        Debug.LogWarning($"{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
         chunks[chunkNumber].blocks[y][x] = id;
+        Debug.LogWarning($"/{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
         if (id != 0) {                          //指定IDがair以外 （正しくは　id > 0　デバッグのため変更中）
 
             block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));
@@ -337,6 +363,7 @@ public class LayerManager : MonoBehaviour {
 
 
 
+        Debug.LogWarning($"/////{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
     }
 
     /// <summary>

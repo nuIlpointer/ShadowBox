@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugMode: 0
   standalone: 0
+  forcesave: 0
   timeout: 0.5
 --- !u!114 &1951639090243056316
 MonoBehaviour:

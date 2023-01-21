@@ -8,10 +8,14 @@ using UnityEngine;
 public class GenericEntityManager : MonoBehaviour
 {
     public Vector3 spawnPos = new Vector3(20,20,0);
+    public Material insideMat;
+    public Material outsideMat;
+
 
     public enum skinName {
         error_man   = 0,
-        test_kun    = 1
+        test_kun    = 1,
+        knit_chan   = 2
     }
 
     public enum ActState {
@@ -149,7 +153,9 @@ public class GenericEntityManager : MonoBehaviour
         //レイヤー同期
         players[id].sprite.GetComponent<SpriteRenderer>().sortingLayerName = Enum.GetName(typeof(ShadowBoxClientWrapper.BlockLayer), layer);
         Vector3 p = new Vector3(players[id].sprite.transform.position.x, players[id].sprite.transform.position.y, players[id].sprite.transform.position.z);
-        players[id].sprite.transform.position = new Vector3(p.x, p.y, (float)((layer - 1) * 0.4));
+        players[id].sprite.transform.position = new Vector3(p.x, p.y, (float)(1-(layer - 1) * 0.4));
+        players[id].sprite.GetComponent<SpriteRenderer>().material = layer >= 3 ? outsideMat : insideMat;
+        
 
         //アニメーション同期
         anim = players[id].sprite.GetComponent<Animator>();

@@ -33,13 +33,15 @@ public class BlockSelector : MonoBehaviour
         int setRow = 0;
         GameObject operatingButton;
         foreach(string blockName in Enum.GetNames(typeof(LayerManager.BLOCK_ID))) {
-            if(blockName != "air" && blockName != "unknown") {
+            if((int)Enum.Parse(typeof(LayerManager.BLOCK_ID), blockName) > 0) {
                 buttonPosX = rightMargin + (ButtonSpacing * setColumn);
                 buttonPosY = 0 - (topMargin + (ButtonSpacing * setRow));
                 operatingButton = Instantiate(buttonPrefab, content.transform);
                 operatingButton.transform.position = new Vector3(buttonPosX, buttonPosY);
                 
-                operatingButton.GetComponent<Image>().sprite = Resources.Load($"blockImages/{blockName}", typeof(Sprite)) as Sprite;
+                if((operatingButton.GetComponent<Image>().sprite = Resources.Load($"blockImages/{blockName}", typeof(Sprite)) as Sprite) == null)
+                    operatingButton.GetComponent<Image>().sprite = Resources.Load($"blockImages/unknown", typeof(Sprite)) as Sprite;
+                
                 operatingButton.GetComponent<BlockButton>().cc = cc;
                 operatingButton.GetComponent<BlockButton>().ccChange = (int)Enum.Parse(typeof(LayerManager.BLOCK_ID),blockName);
                 setColumn++;

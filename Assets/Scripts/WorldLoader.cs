@@ -43,7 +43,11 @@ public class WorldLoader : MonoBehaviour
     Queue<KeyValuePair<int, Vector3>> loadChunksQueue = new Queue<KeyValuePair<int, Vector3>>();
 
     public bool wideLoadMode = false;
-    public bool getChunkFromServer = true; 
+    public bool getChunkFromServer = true;
+
+    public bool permitToPlayerAct;
+
+    public bool DebugLogEnter = false;
 
     // Start is called before the first frame update
     void Start()
@@ -105,7 +109,8 @@ public class WorldLoader : MonoBehaviour
             //Debug.Log($"gc内容 {gc.x} , {gc.y}");
             if (getChunkFromServer)wrapper.GetChunk((ShadowBoxClientWrapper.BlockLayer)gc.x, gc.y);
             //layers[gc.x].MakeChunk(gc.y);
-            Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
+            if(DebugLogEnter)Debug.Log($"[WorldLoader] > チャンクデータ要求 : layer : {gc.x}  chunkNumber : {gc.y}");
+            visit[gc.y] = false;
         }    }
 
     // Update is called once per frame
@@ -130,7 +135,7 @@ public class WorldLoader : MonoBehaviour
         // do something when world regenerate finished 
         Debug.Log("ワールドが再生成されました。");
         for (int i = 0; i < visit.Length; i++) visit[i] = false;        //visitを初期化し、再度読み込むようにする
-
+        permitToPlayerAct = false;
     }
 
     /// <summary>
@@ -140,6 +145,7 @@ public class WorldLoader : MonoBehaviour
         Debug.Log("サーバー側に地形データが存在しません。再生成が必要です。");
         wrapper.SetWorldData(cNumX, cNumY, cSize, cSize, heightRange, new System.Random().Next(0, Int32.MaxValue), "new_World");
         wrapper.RequestWorldRegenerate();
+        permitToPlayerAct = true;
     }
 
     /// <summary>
@@ -147,38 +153,11 @@ public class WorldLoader : MonoBehaviour
     /// </summary>
     public void OnWorldNoNeedRegenerate() {
         Debug.Log("ワールドの再生成は不要です。");
+        permitToPlayerAct = true;
     }
 
 
-    /*public bool WakeUp() {
-        if (!wrapper.IsConnectionActive()) {
-            Debug.LogWarning("[WorldLoader] > 地形の初期生成に失敗（接続が確認できない）");
-            return false;
-        }
-        if (wrapper.IsWorldRegenerateFinished()) {
-            Debug.Log("[WorldLoader] > 地形はすでに生成されています");
-            return false;
-        }
-        float timer = 0;
-        int sec = 0;
-        do {
-            timer += Time.deltaTime;
-
-            if (timer > sec) {
-                sec++;
-                Debug.Log($"[WorldLoader] >　サーバーからの生成完了応答を待っています({sec}s)");
-            }
-            if (sec > 10) {
-                Debug.LogWarning("[WorldLoader] > 地形の初期生成リクエストの応答が１０秒間返ってきませんでした。");
-                return false;
-            }
-        } while (!wrapper.IsWorldRegenerateFinished());
-
-        for (int i = 0; i < visit.Length; i++) visit[i] = false;
-        Debug.Log("[WorldLoader] > サーバ側生成完了を確認　地形ロード履歴をリセットしました");
-
-        return true;
-    }*/
+    
     public void WakeUp() {
         waking = true;
     }
@@ -193,7 +172,7 @@ public class WorldLoader : MonoBehaviour
         if (!started) { Start(); }
         //サーバ非アクティブ時処理　叩いた内容をキューに保存し、次回実行時に呼び出す
         if (!wrapper.IsConnectionActive() || time < 0.1) {
-            Debug.Log($"[WorldLoader] > サーバが未接続な為、ロードチャンク待ちキューに引数を保存しました ID : {loadChunksQueueID}");
+            if (DebugLogEnter) Debug.Log($"[WorldLoader] > サーバが未接続な為、ロードチャンク待ちキューに引数を保存しました ID : {loadChunksQueueID}");
             loadChunksQueue.Enqueue(new KeyValuePair<int, Vector3>(loadChunksQueueID, pos));
             loadChunksQueueID++;
             return;
@@ -202,7 +181,7 @@ public class WorldLoader : MonoBehaviour
             while(loadChunksQueue.Count <= 0) {
                 KeyValuePair<int, Vector3> lc = loadChunksQueue.Dequeue();
                 LoadChunks(lc.Value);
-                Debug.Log($"[WorldLoader] > ロードチャンク待ちキューからロードチャンクを実行しました。 ID : {lc.Key}");
+                if (DebugLogEnter) Debug.Log($"[WorldLoader] > ロードチャンク待ちキューからロードチャンクを実行しました。 ID : {lc.Key}");
             }
         }
 
@@ -280,7 +259,7 @@ public class WorldLoader : MonoBehaviour
                 
                 for (int j = 1; j <= 4; j++){
                     if (!visit[loaded[i]]) {
-                        Debug.Log($"[WorldLoader] > チャンクデータ要求キューに追加 chunkNumber : {loaded[i]}  layer : {j}");
+                        if (DebugLogEnter) Debug.Log($"[WorldLoader] > チャンクデータ要求キューに追加 chunkNumber : {loaded[i]}  layer : {j}");
                         
                         
                         chunkGetQueue.Enqueue(new Vector2Int(j, loaded[i]));
@@ -353,7 +332,7 @@ public class WorldLoader : MonoBehaviour
     {
         if (!started) { Start();}
 
-        Debug.Log("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber + $"  \n{ChunkToString(blocks)}");
+        if (DebugLogEnter) Debug.Log("[WorldLoader] > チャンク更新 :"+layers[layerNumber] +" , " +layerNumber + $"  \n{ChunkToString(blocks)}");
         layers[layerNumber].UpdateChunk(blocks, chunkNumber);
         
         //UnityEngine.Debug.Log($"checkLive({chunkNumber}):"+checkLive(chunkNumber));
@@ -373,6 +352,7 @@ public class WorldLoader : MonoBehaviour
     /// <param name="y">置き換える位置（絶対座標）</param>
     /// <returns></returns>
     public bool BlockUpdate(int blockID, int layerNumber, int x, int y) {
+        //Debug.LogWarning($"ちゃんんくｋ{PosToChunkNum(x, y)}");
         layers[layerNumber].BlockChange(blockID, PosToChunkNum(x, y), x - ChunkNumToOriginPos(PosToChunkNum(x, y))[0], y - ChunkNumToOriginPos(PosToChunkNum(x, y))[1]);
         return true;
     }
@@ -411,43 +391,44 @@ public class WorldLoader : MonoBehaviour
 
     public bool CheckToFront(Vector3 pos) {
         if (!started) Start();
-        int x = (int)pos.x % cSize;
-        int y = (int)pos.y % cSize;
+        int x = (int)pos.x;
+        int y = (int)pos.y;
         int cn = 0, chx = 0, chy = 0;
         bool isSafe = true;
 
         //判定する場所リストを設定
 
-        float mod = pos.x - x;
+        float mod = pos.x % 1;
         Vector2Int[] checkList;
-        if(mod < 0.5) {//横3ブロックにまたがっていなければ
+        if (true/*mod < 0.5*/) {//右にまたがる
             checkList = new Vector2Int[6] {
                 new Vector2Int(x,y),
                 new Vector2Int(x+1,y),
                 new Vector2Int(x,y+1),
                 new Vector2Int(x+1,y+1),
-                new Vector2Int(x,y+2),
-                new Vector2Int(x+1,y+2)
+                new Vector2Int(x,y + 2),
+                new Vector2Int(x+1,y + 2)
             };
         } else {
             checkList = new Vector2Int[6] {
                 new Vector2Int(x,y),
-                new Vector2Int(x+1,y),
-                //new Vector2Int(x+2,y),
+                new Vector2Int(x-1,y),
                 new Vector2Int(x,y+1),
-                new Vector2Int(x+1,y+1),
-                //new Vector2Int(x+2,y+1),
-                new Vector2Int(x,y+2),
-                new Vector2Int(x+1,y+2),
-                //new Vector2Int(x+2,y+2)
+                new Vector2Int(x - 1,y+1),
+                new Vector2Int(x,y + 2),
+                new Vector2Int(x - 1,y + 2),
             };
         }
 
-        for(int i = 0; i < checkList.Length; i++) {
-            cn = PosToChunkNum(checkList[i].x, checkList[i].y);
+        for (int i = 0; i < checkList.Length; i++) {
+            cn = PosToChunkNum(checkList[i].x , checkList[i].y);
             chx = checkList[i].x - ChunkNumToOriginPos(cn)[0];
             chy = checkList[i].y - ChunkNumToOriginPos(cn)[1];
-            if (!layers[3].checkAir(cn, chx, chy) || !layers[3].checkAir(cn, chx, chy)) {
+            /*Debug.Log($">>>>>>cn{cn} chx{chx} chy{chy} clx{checkList[i].x} cly{checkList[i].y}    \n{ChunkNumToOriginPos(cn)[0]} {ChunkNumToOriginPos(cn)[1]}");
+            Debug.Log(layers[4].checkAir(cn, chx, chy));
+            Debug.Log(layers[3].checkAir(cn, chx, chy));*/
+
+            if (!layers[4].checkAir(cn, chx, chy) || !layers[3].checkAir(cn, chx, chy)) {
                 isSafe = false;
             }
         }
@@ -458,35 +439,32 @@ public class WorldLoader : MonoBehaviour
     public bool CheckToBack(Vector3 pos) {
 
         if (!started) Start();
-        int x = (int)pos.x % cSize;
-        int y = (int)pos.y % cSize;
+        int x = (int)pos.x ;
+        int y = (int)pos.y ;
         int cn = 0, chx = 0, chy = 0;
         bool isSafe = true;
 
         //判定する場所リストを設定
 
-        float mod = pos.x - x;
+        float mod = pos.x % 1;
         Vector2Int[] checkList;
-        if (mod < 0.5) {//横3ブロックにまたがっていなければ
+        if (true/*mod < 0.5*/) {//右にまたがる
             checkList = new Vector2Int[6] {
                 new Vector2Int(x,y),
                 new Vector2Int(x+1,y),
                 new Vector2Int(x,y+1),
                 new Vector2Int(x+1,y+1),
-                new Vector2Int(x,y+2),
-                new Vector2Int(x+1,y+2)
+                new Vector2Int(x,y + 2),
+                new Vector2Int(x+1,y +2)
             };
         } else {
             checkList = new Vector2Int[6] {
                 new Vector2Int(x,y),
-                new Vector2Int(x+1,y),
-                //new Vector2Int(x+2,y),
+                new Vector2Int(x-1,y),
                 new Vector2Int(x,y+1),
-                new Vector2Int(x+1,y+1),
-                //new Vector2Int(x+2,y+1),
-                new Vector2Int(x,y+2),
-                new Vector2Int(x+1,y+2),
-                //new Vector2Int(x+2,y+2)
+                new Vector2Int(x - 1,y+1),
+                new Vector2Int(x,y + 2),
+                new Vector2Int(x - 1,y+2),
             };
         }
 
@@ -494,7 +472,6 @@ public class WorldLoader : MonoBehaviour
             cn = PosToChunkNum(checkList[i].x, checkList[i].y);
             chx = checkList[i].x - ChunkNumToOriginPos(cn)[0];
             chy = checkList[i].y - ChunkNumToOriginPos(cn)[1];
-            //Debug.Log($">>>>>>cn{cn} chx{chx} chy{chy} clx{checkList[i].x} cly{checkList[i].y}    \n{ChunkNumToOriginPos(1)[0]} {ChunkNumToOriginPos(1)[1]}");
             if (!layers[2].checkAir(cn, chx, chy) || !layers[3].checkAir(cn, chx, chy)) {
                 isSafe = false;
             }
@@ -520,5 +497,15 @@ public class WorldLoader : MonoBehaviour
             result += "\n";
         }
         return result;
+    }
+
+
+
+
+    public int GetWorldSizeX() {
+        return cNumX * cSize;
+    }
+    public int GetWorldSizeY() {
+        return cNumY * cSize;
     }
 }

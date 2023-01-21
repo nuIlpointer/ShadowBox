@@ -22,9 +22,9 @@ public class pointer_layer : MonoBehaviour
     }
 
     public void OnClickUp() {
-        pc.pointerLayer = pc.pointerLayer + 1;    
+        pc.pointerLayer = pc.pointerLayer - 1;    
     }
     public void OnClickDown() {
-        pc.pointerLayer = pc.pointerLayer - 1;
+        pc.pointerLayer = pc.pointerLayer + 1;
     }
 }

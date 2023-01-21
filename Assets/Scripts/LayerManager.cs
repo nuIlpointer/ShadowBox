@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LayerManager : MonoBehaviour {
 
@@ -9,7 +11,10 @@ public class LayerManager : MonoBehaviour {
     /// 
 
     public String layerName;
+    public Material layerMaterial;
     public bool isWall = false;
+
+    public Color overrayColor;
 
     public enum BLOCK_ID {
         unknown = -1,
@@ -20,16 +25,71 @@ public class LayerManager : MonoBehaviour {
         cube_blue = 4,
         cube_black = 5,
 
+        //自然生成（極力変えない）
         grass_0 = 10,
         stone_0 = 11,
         dirt_0 = 12,
 
+        //通常ブロック　
+        leaf = 13,
+        bamboo = 14,
+        flower = 15,
+        flowerpurple = 16,
+        fried_egg_flower = 17,
+        weed = 18,
+
         clay_brick = 20,
+        brick_stone = 21,
+        tile = 22,
+        glass = 23,
+        Bed = 24,
+        candle = 25,
+        flower_pot_flowers = 26,
+        Flower_pot_Cactus = 27,
+        fence = 28,
 
-        door_0 = 30,
-        door_1 = 31
+        Planks = 40,
+        darkplanks = 41,
+        whiteplanks = 42,
+        Plankhalf01 = 43,
+        Plankhalf02 = 44, 
+        Plankhalf03 = 45,
+        darkplankhalf01 = 46,
+        darkplankhalf02 = 47,
+        darkplankhalf03 = 48,
+        whiteplankhalf01 = 49,
+        whiteplankhalf02 = 50,
+        whiteplankhalf03 = 51,
+        //左右上下反転(60~79　 mod(4)が　0:デフォ　1:左右反転　2:上下反転　3:上下左右反転)
 
+
+        //複数ブロック(80~　ブロック名を変更する場合はUNNOMAL_SIZE_BLOCKSも変更すること)
+        door_0 = 80,
+        door_1 = 81,
+
+        //制御用(変更厳禁)
+        usb_0 = -2,
+        usb_1 = -3,
+        usb_2 = -4,
+        usb_3 = -5,
+        usb_4 = -6,
+        usb_5 = -7,
+        
     }
+
+    public static Dictionary<String, Vector2Int> UNNORMAL_SIZE_BLOCKS = new Dictionary<string, Vector2Int>() {
+        {"door_0", new Vector2Int(2,3)},
+        {"door_1", new Vector2Int(1,3)},
+
+        { "usb_0", new Vector2Int(1,1)},
+        { "usb_1", new Vector2Int(1,1)},
+        { "usb_2", new Vector2Int(1,1)},
+        { "usb_3", new Vector2Int(1,1)},
+        { "usb_4", new Vector2Int(1,1)},
+        { "usb_5", new Vector2Int(1,1)},
+
+    };
+
 
 
     struct Chunk {
@@ -101,6 +161,9 @@ public class LayerManager : MonoBehaviour {
 
 
     void Start() {
+        string a = "-1";
+        Debug.LogWarning(int.Parse(a));
+
         if (!started) {
             ip = GetComponentInParent<InitialProcess>();
             blocks = new int[ip.chunkSize][];
@@ -155,11 +218,6 @@ public class LayerManager : MonoBehaviour {
         }
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    }
-
 
     /// <summary>
     /// 指定チャンク内のブロックを生成[テスト版]
@@ -203,7 +261,11 @@ public class LayerManager : MonoBehaviour {
 
             //ブロックプレハブ取得
             block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));
-            if (block == null) { block = (GameObject)Resources.Load("Blocks/unknown"); }
+            if (block == null) { 
+                block = (GameObject)Resources.Load("Blocks/unknown");
+                block.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = id.ToString();
+                block.GetComponent<SpriteRenderer>().material = layerMaterial;
+            }
 
             for (int px = 0; px < cSize; px++) {
                 for (int py = 0; py < cSize; py++) {
@@ -213,7 +275,7 @@ public class LayerManager : MonoBehaviour {
                         block = Instantiate(block, frame);
                         block.transform.localPosition = pos;
                         block.name = px + "_" + py + "_" + Enum.GetName(typeof(BLOCK_ID), id);
-
+                        block.GetComponent<SpriteRenderer>().material = layerMaterial;
 
                         block.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
                         if (isWall) {
@@ -221,7 +283,7 @@ public class LayerManager : MonoBehaviour {
                             if (bcl != null) Destroy(bcl);
                         }
 
-                        chunks[chunkNumber].blockObj[px][py] = block;
+                        chunks[chunkNumber].blockObj[py][px] = block;
                         //block.transform.SetParent(this.gameObject.transform);
                     }
                 }
@@ -246,7 +308,7 @@ public class LayerManager : MonoBehaviour {
             chunkFrame[chunkNumber].transform.localPosition = new Vector3(posBase.x, posBase.y, 0);
 
         } catch (Exception e) {
-            //Debug.Log(e);
+            Debug.LogError(e);
         }
     }
 
@@ -259,24 +321,35 @@ public class LayerManager : MonoBehaviour {
     /// <param name="y">！チャンク内の座標</param>
     public void BlockChange(int id, int chunkNumber, int x, int y) {
 
-        chunks[chunkNumber].blocks[y][x] = id;
 
-
-        if (!checkAir(chunkNumber, x, y)) {      //指定位置にブロックが存在
+        //既存ブロックを削除
+        int oldBlockID = GetBlock(chunkNumber, x, y);
+        if (oldBlockID != 0) {      //指定位置にブロックが存在
 
             Destroy(chunks[chunkNumber].blockObj[y][x]);
 
         }
-        if (id != 0) {                          //指定IDがair以外
+
+
+        Debug.LogWarning($"{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
+        chunks[chunkNumber].blocks[y][x] = id;
+        Debug.LogWarning($"/{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
+        if (id != 0) {                          //指定IDがair以外 （正しくは　id > 0　デバッグのため変更中）
 
             block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));
-            if (block == null) { block = (GameObject)Resources.Load("Blocks/unknown"); }
+            if (block == null) { 
+                block = (GameObject)Resources.Load("Blocks/unknown");
+                block.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>().text = id.ToString();
+            }
 
             Transform frame = chunkFrame[chunkNumber].transform;
             block = Instantiate(block, frame);
             block.transform.localPosition = new Vector3(x, y, 0);
             block.name = x + "_" + y + "_" + Enum.GetName(typeof(BLOCK_ID), id);
-            block.GetComponent<SpriteRenderer>().sortingLayerName = layerName;
+            SpriteRenderer spriteRenderer = block.GetComponent<SpriteRenderer>();
+            spriteRenderer.sortingLayerName = layerName;
+            spriteRenderer.material = layerMaterial;
+
             BoxCollider bcl;
             if (isWall) {
                 bcl = block.GetComponent<BoxCollider>();
@@ -285,10 +358,12 @@ public class LayerManager : MonoBehaviour {
 
             chunks[chunkNumber].blockObj[y][x] = block;
 
+            
         }
 
 
 
+        Debug.LogWarning($"/////{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
     }
 
     /// <summary>
@@ -326,6 +401,6 @@ public class LayerManager : MonoBehaviour {
     }
 
     public int GetBlock(int chunkNumber, int x, int y) {
-        return chunks[chunkNumber].blocks[y][x];
+        return (x >= 0 && y >= 0 && y < chunks[chunkNumber].blocks.Length && x < chunks[chunkNumber].blocks[y].Length) ? chunks[chunkNumber].blocks[y][x] : 0;
     }
 }

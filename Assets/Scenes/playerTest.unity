@@ -4682,7 +4682,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   noNetMode: 0
   chunkSize: 16
-  chunksNumX: 12
+  chunksNumX: 8
   chunksNumY: 4
   heightRange: 6
 --- !u!4 &1724355515
@@ -5068,7 +5068,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 20
+  m_ScrollSensitivity: 50
   m_Viewport: {fileID: 1505796486}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 404742082}

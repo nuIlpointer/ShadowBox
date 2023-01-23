@@ -170,7 +170,7 @@ public class GenericEntityManager : MonoBehaviour
         else {
             UnityEngine.Debug.Log("対象のactStateが見つかりませんでした。");
         }
-        if(actState / 10 == 1) {
+        if((actState / 10) % 10 == 1) {
             players[id].sprite.transform.localScale = new Vector3(-1,1, 1);
         }
         else {

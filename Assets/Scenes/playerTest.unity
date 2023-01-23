@@ -425,7 +425,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 100
 --- !u!222 &91854235
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1781,7 +1781,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 100
 --- !u!222 &404742084
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4682,7 +4682,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   noNetMode: 0
   chunkSize: 16
-  chunksNumX: 12
+  chunksNumX: 8
   chunksNumY: 4
   heightRange: 6
 --- !u!4 &1724355515
@@ -5062,13 +5062,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 482429221}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 50
   m_Viewport: {fileID: 1505796486}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 404742082}
@@ -5552,7 +5552,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: f10fe6e362726754cb853460cb575441, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 26a0604d64d8b1b4f9d5098cfe45b479, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -5723,7 +5723,7 @@ SpriteRenderer:
   m_SortingLayerID: 408496129
   m_SortingLayer: -5
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: c42fe54923179bf4a9b56b50257e38a6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: eaee55f9cc26d604e85a7e5d53429249, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

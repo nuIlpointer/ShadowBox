@@ -98,6 +98,8 @@ public class PlayerController : MonoBehaviour {
     private AudioSource soundEffect;
     private int currentFromStart = 0;
     private bool prevJumpState = false;
+    private bool mouseSEPlayed = false;
+    private int latestMouseBtn = -1;
     // ポインタ座標が変動した時にだけイベント発火するようにする変数(複数設置回避用)
     private int previousX = -1;
     private int previousY = -1;
@@ -332,15 +334,22 @@ public class PlayerController : MonoBehaviour {
             outsideMaterial.SetFloat("_Alpha", outsideMaterial.GetFloat("_Alpha") + (6 * Time.deltaTime));
         }
 
-
         //建築
+        if ((!Input.GetMouseButton(0) && !Input.GetMouseButton(1)))
+            latestMouseBtn = -1;
 
+        if ((!Input.GetMouseButton(0) && !Input.GetMouseButton(1)) || ((int)pointerPos.x != previousX
+                || (int)pointerPos.y != previousY
+                || (int)pointerLayer != previousLayer)) {
+            mouseSEPlayed = false;
+        }
         if (pointerPos.x >= 0 && pointerPos.y >= 0 && pointerPos.x < worldLoader.GetWorldSizeX() && pointerPos.y < worldLoader.GetWorldSizeY()) {
             if (Input.GetMouseButton(0) 
-                && ((int)pointerPos.x != previousX
+                && (((int)pointerPos.x != previousX
                 || (int)pointerPos.y != previousY
-                || (int)pointerLayer != previousLayer)
+                || (int)pointerLayer != previousLayer) || latestMouseBtn != 0)
             ) {
+                latestMouseBtn = 0;
                 List<RaycastResult> results = new List<RaycastResult>();
                 checkUIExist.position = Input.mousePosition;
                 EventSystem.current.RaycastAll(checkUIExist, results);
@@ -358,16 +367,21 @@ public class PlayerController : MonoBehaviour {
                     previousX = (int)pointerPos.x;
                     previousY = (int)pointerPos.y;
                     previousLayer = (int)pointerLayer;
-                    soundEffect.PlayOneShot(blockPlaceSound);
+                    if (!mouseSEPlayed) {
+                        soundEffect.PlayOneShot(blockPlaceSound);
+                        mouseSEPlayed = true;
+                    }
                 }
                 
             }
-                
+
             if (Input.GetMouseButton(1)
-                && ((int)pointerPos.x != previousX
+                && (((int)pointerPos.x != previousX
                 || (int)pointerPos.y != previousY
-                || (int)pointerLayer != previousLayer)
+                || (int)pointerLayer != previousLayer) || latestMouseBtn != 1) &&
+                worldLoader.GetBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer) > 0
             ) {
+                latestMouseBtn = 1;
                 List<RaycastResult> results = new List<RaycastResult>();
                 checkUIExist.position = Input.mousePosition;
                 EventSystem.current.RaycastAll(checkUIExist, results);
@@ -385,7 +399,10 @@ public class PlayerController : MonoBehaviour {
                     previousX = (int)pointerPos.x;
                     previousY = (int)pointerPos.y;
                     previousLayer = (int)pointerLayer;
-                    soundEffect.PlayOneShot(blockBreakSound);
+                    if(!mouseSEPlayed) {
+                        soundEffect.PlayOneShot(blockBreakSound);
+                        mouseSEPlayed = true;
+                    }
                 }
             }
         }

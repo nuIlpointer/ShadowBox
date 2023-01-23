@@ -30,13 +30,14 @@ public class LayerManager : MonoBehaviour {
         stone_0 = 11,
         dirt_0 = 12,
 
-        //通常ブロック　
-        leaf = 13,
-        bamboo = 14,
-        flower = 15,
-        flowerpurple = 16,
-        fried_egg_flower = 17,
-        weed = 18,
+        //通常ブロック
+        log = 13,　
+        leaf = 14,
+        bamboo = 15,
+        flower = 16,
+        flowerpurple = 17,
+        fried_egg_flower = 18,
+        weed = 19,
 
         clay_brick = 20,
         brick_stone = 21,

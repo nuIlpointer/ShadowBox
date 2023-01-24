@@ -212,7 +212,8 @@ public class ShadowBoxClientWrapper : MonoBehaviour {
                     var dataArr = receivedData.Split(',');
                     try {
                         worldLoader.BlockUpdate(Int32.Parse(dataArr[3]), (int)(BlockLayer)Enum.Parse(typeof(BlockLayer), dataArr[0]), Int32.Parse(dataArr[1]), Int32.Parse(dataArr[2]));
-                    } catch(Exception) {
+                    } catch(Exception e) {
+                        Debug.LogError(e);
                         Debug.LogError($"[WRAPPER]Failed to run BlockUpdate in {dataArr[0]},{dataArr[1]},{dataArr[2]}");
                     }
                 }

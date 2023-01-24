@@ -313,8 +313,8 @@ public class PlayerController : MonoBehaviour {
         int pSizeX, pSizeY;
         bool isAllLayer;
         creater.PointerSize(out pSizeX, out pSizeY, out isAllLayer);
-        fpPos += new Vector3(pSizeX / 2, pSizeY / 2 );
-        fpfmPos += new Vector3(pSizeX / 2, pSizeY / 2 );
+        fpPos += new Vector3((float)pSizeX / 2f - 0.5f, (float)pSizeY / 2f - 0.5f);
+        fpfmPos += new Vector3((float)pSizeX / 2f - 0.5f , (float)pSizeY / 2f - 0.5f);
         //pointer.transform.GetChild(0).GetComponent<SpriteRenderer>().color = isAllLayer ? new Color(1, 1, 1, 0) : new Color(1, 1, 1, 1);
 
 
@@ -378,8 +378,8 @@ public class PlayerController : MonoBehaviour {
             if (Input.GetMouseButton(1)
                 && (((int)pointerPos.x != previousX
                 || (int)pointerPos.y != previousY
-                || (int)pointerLayer != previousLayer) || latestMouseBtn != 1) &&
-                worldLoader.GetBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer) > 0
+                || (int)pointerLayer != previousLayer) || latestMouseBtn != 1)/* &&
+                worldLoader.GetBlock((int)pointerPos.x, (int)pointerPos.y, (int)pointerLayer) != 0*/
             ) {
                 latestMouseBtn = 1;
                 List<RaycastResult> results = new List<RaycastResult>();

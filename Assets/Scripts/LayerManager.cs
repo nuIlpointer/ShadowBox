@@ -332,9 +332,9 @@ public class LayerManager : MonoBehaviour {
         }
 
 
-        Debug.LogWarning($"{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
+        //Debug.LogWarning($"{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
         chunks[chunkNumber].blocks[y][x] = id;
-        Debug.LogWarning($"/{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
+        //Debug.LogWarning($"/{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
         if (id != 0) {                          //指定IDがair以外 （正しくは　id > 0　デバッグのため変更中）
 
             block = (GameObject)Resources.Load("Blocks/" + Enum.GetName(typeof(BLOCK_ID), id));
@@ -364,7 +364,7 @@ public class LayerManager : MonoBehaviour {
 
 
 
-        Debug.LogWarning($"/////{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
+        //Debug.LogWarning($"/////{chunkNumber},{x},{y},{chunks[chunkNumber].blocks[y][x]}");
     }
 
     /// <summary>

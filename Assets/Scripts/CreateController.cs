@@ -179,6 +179,9 @@ public class CreateController : MonoBehaviour
 
 
     public void DeleteBlock(int x, int y, int layerNumber) {
+
+        Debug.Log("ijijijijijijijijijijijijijijijijij");
+
         Vector2Int[] marks = null;
         //ブラシのマーク位置を決定
         switch (lineWidth % 10) {

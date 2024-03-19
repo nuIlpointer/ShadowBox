@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/playerTest.unity
     guid: 638a89eded9389c47969809f6376b747
+  - enabled: 0
+    path: Assets/Scripts/Server/Server.unity
+    guid: cd698bd5e7d9f1b448b511af9ecdd7a1
   m_configObjects: {}

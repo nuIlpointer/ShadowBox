@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour {
     public bool wakeUpWithWorldRegenerate = false;
 
     //マウス系
+    [SerializeField] private Camera screenCam;
     private Vector3 pointerPos;
     private Vector3 mouse;
     public float pointerLayer;
@@ -303,7 +304,7 @@ public class PlayerController : MonoBehaviour {
         mouse = Input.mousePosition;
         //Debug.Log("mouse " + mouse);
         mouse.z = -cameraObj.transform.position.z + (1.2f - (((int)pointerLayer - 1) * 0.4f));
-        pointerPos = Camera.main.ScreenToWorldPoint(mouse);
+        pointerPos = screenCam.ScreenToWorldPoint(mouse);
 
         pointerPos = new Vector3((float)Mathf.Floor(pointerPos.x + 0.5f), (float)Mathf.Floor(pointerPos.y + 0.5f), 0);
 

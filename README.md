@@ -18,7 +18,7 @@
 
 開発で用いるUnity バージョン:2020.3.8f1
 
-開発用クラウドストレージ: https://nuiru.com/cloud
+開発で用いたVisual Studio バージョン: 2019
 
 ## Server
 
